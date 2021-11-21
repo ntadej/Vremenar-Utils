@@ -1,4 +1,4 @@
-files: src/utils
+files: src/vremenar_utils
 repos:
   - repo: local
     hooks:

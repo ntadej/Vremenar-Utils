@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
-
-"""DWD current weather downloader."""
-
+"""DWD current weather utils."""
 from brightsky.parsers import CurrentObservationsParser  # type: ignore
 from csv import reader
+from deta import Deta  # type: ignore
 from json import dump
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
+
+from ..database.utils import BatchedPut
 
 DwdRecord = Dict[str, Any]
 NaN = float('nan')
@@ -25,30 +25,48 @@ def current_stations() -> List[str]:
     return stations
 
 
-def current_weather() -> None:
+def current_weather(
+    disable_cache: Optional[bool] = False, disable_database: Optional[bool] = False
+) -> None:
     """Cache DWD current weather data."""
-    DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    if not disable_database:
+        deta = Deta()
+        db = deta.Base('dwd_current')
 
     stations: List[str] = current_stations()
     records: List[DwdRecord] = []
 
-    for station_id in stations:
-        if len(station_id) == 4:
-            station_id += '_'
-        url = (
-            f'https://opendata.dwd.de/weather/weather_reports/poi/{station_id}-BEOB.csv'
-        )
+    with BatchedPut(db) as batch:
+        for station_id in stations:
+            if len(station_id) == 4:
+                station_id += '_'
+            url = (
+                'https://opendata.dwd.de/weather/weather_reports/poi/'
+                f'{station_id}-BEOB.csv'
+            )
 
-        print(url)
+            print(url)
 
-        parser = CurrentObservationsParser(url=url)
-        parser.download()
-        for record in parser.parse(lat=NaN, lon=NaN, height=NaN, station_name=''):
-            record['time'] = record['timestamp'].strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
-            record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
-            records.append(record)
-            break
-        parser.cleanup()  # If you wish to delete any downloaded files
+            parser = CurrentObservationsParser(url=url)
+            parser.download()
+            for record in parser.parse(lat=NaN, lon=NaN, height=NaN, station_name=''):
+                # update timestamps
+                record['time'] = record['timestamp'].strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
+                record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
+                # cleanup
+                del record['lat']
+                del record['lon']
+                del record['height']
+                del record['station_name']
+                # store
+                if not disable_database:
+                    key: str = record['wmo_station_id']
+                    batch.put(record, key)
+                if not disable_cache:
+                    records.append(record)
+            parser.cleanup()  # If you wish to delete any downloaded files
 
-    with open(DWD_CACHE_DIR / 'CURRENT.json', 'w') as file:
-        dump(records, file)
+    if not disable_cache:
+        DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        with open(DWD_CACHE_DIR / 'CURRENT.json', 'w') as file:
+            dump(records, file)

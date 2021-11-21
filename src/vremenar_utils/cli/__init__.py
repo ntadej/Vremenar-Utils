@@ -4,6 +4,7 @@ from typing import Optional
 
 from .. import __version__
 from ..dwd.current import current_weather as dwd_current_weather
+from ..dwd.mosmix import process_mosmix as dwd_mosmix
 
 application = typer.Typer()
 
@@ -33,11 +34,16 @@ def main(
 def dwd(
     current: Optional[bool] = typer.Option(  # noqa: B008
         False, '--current', help='Update current weather information.'
-    )
+    ),
+    use_database: Optional[bool] = typer.Option(  # noqa: B008
+        False, '--database', help='Update database.'
+    ),
 ) -> None:
     """DWD weather data utilities."""
     if current:
-        dwd_current_weather()
+        dwd_current_weather(disable_database=not use_database)
+    else:
+        dwd_mosmix(disable_database=not use_database)
 
 
 __all__ = ['application']
