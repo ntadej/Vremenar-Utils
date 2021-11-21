@@ -1,0 +1,13 @@
+.cache
+.coverage
+.mypy_cache
+.pytest_cache
+.venv
+*.egg-info
+*.code-workspace
+__pycache__
+/*.sh
+/coverage
+/coverage.xml
+/playground
+/version.json
