@@ -2,8 +2,10 @@
 from brightsky.parsers import CurrentObservationsParser  # type: ignore
 from csv import reader
 from deta import Deta  # type: ignore
+from io import BytesIO, TextIOWrapper
 from json import dump
 from pathlib import Path
+from pkgutil import get_data
 from typing import Any, Dict, List, Optional
 
 from ..database.utils import BatchedPut
@@ -11,24 +13,29 @@ from ..database.utils import BatchedPut
 DwdRecord = Dict[str, Any]
 NaN = float('nan')
 
-DWD_STATIONS_CURRENT: Path = Path.cwd() / 'data/stations/DWD.current.csv'
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
 
 
 def current_stations() -> List[str]:
     """Get a list of supported DWD stations."""
     stations: List[str] = []
-    with open(DWD_STATIONS_CURRENT, newline='') as csvfile:
-        csv = reader(csvfile)
-        for row in csv:
-            stations.append(row[0])
+    data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
+    if data:
+        bytes = BytesIO(data)
+        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+            csv = reader(csvfile)
+            for row in csv:
+                stations.append(row[0])
     return stations
 
 
 def current_weather(
-    disable_cache: Optional[bool] = False, disable_database: Optional[bool] = False
+    disable_cache: Optional[bool] = False,
+    disable_database: Optional[bool] = False,
+    use_tmp: Optional[bool] = False,
 ) -> None:
     """Cache DWD current weather data."""
+    db = None
     if not disable_database:
         deta = Deta()
         db = deta.Base('dwd_current')
@@ -44,10 +51,13 @@ def current_weather(
                 'https://opendata.dwd.de/weather/weather_reports/poi/'
                 f'{station_id}-BEOB.csv'
             )
+            path = None
+            if use_tmp:
+                path = f'/tmp/{station_id}.csv'
 
             print(url)
 
-            parser = CurrentObservationsParser(url=url)
+            parser = CurrentObservationsParser(url=url, path=path)
             parser.download()
             for record in parser.parse(lat=NaN, lon=NaN, height=NaN, station_name=''):
                 # update timestamps
