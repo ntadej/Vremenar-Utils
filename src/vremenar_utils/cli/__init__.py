@@ -32,6 +32,9 @@ def main(
 
 @application.command()
 def dwd(
+    job: Optional[int] = typer.Argument(  # noqa: B008
+        None, help='Job number for batched processing'
+    ),
     current: Optional[bool] = typer.Option(  # noqa: B008
         False, '--current', help='Update current weather information.'
     ),
@@ -43,7 +46,7 @@ def dwd(
     if current:
         dwd_current_weather(disable_database=not use_database)
     else:
-        dwd_mosmix(disable_database=not use_database)
+        dwd_mosmix(disable_database=not use_database, disable_cache=True, job=job)
 
 
 __all__ = ['application']
