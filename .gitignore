@@ -5,6 +5,7 @@
 .venv
 *.egg-info
 *.code-workspace
+*.kmz
 __pycache__
 /*.sh
 /coverage

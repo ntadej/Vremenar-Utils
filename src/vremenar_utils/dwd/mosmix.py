@@ -2,7 +2,7 @@
 import re
 from brightsky.parsers import Parser  # type: ignore
 from csv import reader
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from dateutil import parser
 from deta import Deta  # type: ignore
 from httpx import stream
@@ -54,6 +54,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
         with ZipFile(self.path) as zip:
             with zip.open(zip.namelist()[0]) as file:
                 timestamps = []
+                accepted_timestamps = []
                 placemark = 0
                 source = ''
                 for _, elem in iterparse(file):
@@ -70,19 +71,26 @@ class MOSMIXParserFast(Parser):  # type: ignore
                             parser.parse(r.text)
                             for r in elem.findall('dwd:TimeStep', namespaces=NS)
                         ]
+                        timestamps = [
+                            t.replace(tzinfo=timezone.utc) for t in timestamps
+                        ]
+                        accepted_timestamps = self._filter_timestamps(timestamps)
                         self._clear_element(elem)
 
                         print(
                             'Got %d timestamps for source %s'
                             % (len(timestamps), source)
                         )
+                        print('Using %d timestamps' % (len(accepted_timestamps),))
                     elif tag == 'Placemark':
                         records = None
                         if placemark >= min_entry and (
                             max_entry == 0 or placemark < max_entry
                         ):
-                            print(f'Processing placemark #{placemark}')
-                            records = self._parse_station(elem, timestamps, source)
+                            print(f'Processing placemark #{placemark+1}')
+                            records = self._parse_station(
+                                elem, timestamps, accepted_timestamps, source
+                            )
                         self._clear_element(elem)
                         if max_entry > 0 and placemark >= max_entry:
                             break
@@ -100,8 +108,36 @@ class MOSMIXParserFast(Parser):  # type: ignore
             while ancestor.getprevious() is not None:
                 del ancestor.getparent()[0]
 
+    @staticmethod
+    def _filter_timestamps(timestamps: List[datetime]) -> List[datetime]:
+        accepted = []
+        now = datetime.now(tz=timezone.utc)
+        now = now.replace(minute=0, second=0, microsecond=0)
+        if now >= timestamps[0] and now <= timestamps[-1]:
+            accepted.append(now)
+
+        daily = now + timedelta(hours=48 - now.hour)
+
+        # 2 days hourly
+        while now < daily:
+            now += timedelta(hours=1)
+            if now >= timestamps[0] and now <= timestamps[-1]:
+                accepted.append(now)
+
+        # 7 days
+        for i in range(28):
+            time = daily + timedelta(hours=i * 6)
+            if time >= timestamps[0] and time <= timestamps[-1]:
+                accepted.append(time)
+
+        return accepted
+
     def _parse_station(
-        self, station_elem: Element, timestamps: List[datetime], source: str
+        self,
+        station_elem: Element,
+        timestamps: List[datetime],
+        accepted_timestamps: List[datetime],
+        source: str,
     ) -> DwdGenerator:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
         station_name = station_elem.find('./kml:description', namespaces=NS).text
@@ -129,17 +165,14 @@ class MOSMIXParserFast(Parser):  # type: ignore
             ]
             assert len(records[column]) == len(timestamps)
         base_record = {
-            'observation_type': 'forecast',
             'source': source,
-            'lat': float(lat),
-            'lon': float(lon),
-            'height': float(height),
             'wmo_station_id': wmo_station_id,
-            'station_name': station_name,
         }
         # Turn dict of lists into list of dicts
         return (
-            {**base_record, **dict(zip(records, row))} for row in zip(*records.values())
+            {**base_record, **dict(zip(records, row))}
+            for row in zip(*records.values())
+            if row[0] in accepted_timestamps
         )
 
     def _sanitize_records(self, records: DwdGenerator) -> DwdGenerator:
@@ -155,7 +188,8 @@ class MOSMIXParserFast(Parser):  # type: ignore
 
 def download_mosmix(temporary_file: IO[bytes]) -> None:
     """Download the mosmix data."""
-    print(f'Downloading MOSMIX data to {temporary_file.name} ...')
+    print(f'Downloading MOSMIX data from {DWD_MOSMIX_URL} ...')
+    print(f'Temporary file: {temporary_file.name}')
     with stream('GET', DWD_MOSMIX_URL) as r:
         for chunk in r.iter_raw():
             temporary_file.write(chunk)
@@ -216,7 +250,6 @@ def process_mosmix(
         # parser.download()  # Not necessary if you supply a local path
         for record in parser.parse(min_entry, max_entry):
             source: str = output_name(record['timestamp'])
-            record['time'] = record['timestamp'].strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
             record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
             # write to the DB
             if not disable_database:
