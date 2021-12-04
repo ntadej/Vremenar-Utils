@@ -1,19 +1,13 @@
 """DWD MOSMIX utils."""
 import re
-from brightsky.parsers import Parser  # type: ignore
+from brightsky.parsers import Parser, wmo_id_to_dwd  # type: ignore
 from csv import reader
 from datetime import datetime, timedelta, timezone
 from dateutil import parser
-from deta import Deta  # type: ignore
 from httpx import stream
-from json import dumps
 from lxml.etree import iterparse, Element, QName  # type: ignore
-from pathlib import Path
-from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Generator, IO, List, Optional, TextIO, cast
+from typing import Any, Dict, Generator, IO, List, Optional, cast
 from zipfile import ZipFile
-
-from ..database.utils import BatchedPut
 
 DwdRecord = Dict[str, Any]
 DwdGenerator = Generator[DwdRecord, None, None]
@@ -23,7 +17,6 @@ DWD_MOSMIX_URL: str = (
     f'{DWD_OPEN_DATA}/weather/local_forecasts/mos/MOSMIX_S/'
     'all_stations/kml/MOSMIX_S_LATEST_240.kmz'
 )
-DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
 NS = {
     'dwd': f'{DWD_OPEN_DATA}/weather/lib/pointforecast_dwd_extension_V1_0.xsd',
     'kml': 'http://www.opengis.net/kml/2.2',
@@ -100,6 +93,25 @@ class MOSMIXParserFast(Parser):  # type: ignore
                         else:
                             continue
 
+    def stations(self) -> DwdGenerator:
+        """Parse the file."""
+        self.logger.info('Parsing %s', self.path)
+
+        with ZipFile(self.path) as zip:
+            with zip.open(zip.namelist()[0]) as file:
+                for _, elem in iterparse(file):
+                    tag = QName(elem.tag).localname
+
+                    if tag in ['ProductID', 'IssueTime', 'ForecastTimeSteps']:
+                        self._clear_element(elem)
+                    elif tag == 'Placemark':
+                        records = self._parse_station(elem, [], [])
+                        self._clear_element(elem)
+                        if records:
+                            yield from records
+                        else:
+                            continue
+
     @staticmethod
     def _clear_element(elem: Element) -> None:
         elem.clear()
@@ -137,7 +149,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
         station_elem: Element,
         timestamps: List[datetime],
         accepted_timestamps: List[datetime],
-        source: str,
+        source: Optional[str] = '',
     ) -> DwdGenerator:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
         station_name = station_elem.find('./kml:description', namespaces=NS).text
@@ -152,28 +164,47 @@ class MOSMIXParserFast(Parser):  # type: ignore
                 station_name,
             )
             return cast(DwdGenerator, [])
-        records: Dict[str, Any] = {'timestamp': timestamps}
-        for element, column in self.ELEMENTS.items():
-            values_str = station_elem.find(
-                f'./*/dwd:Forecast[@dwd:elementName="{element}"]/dwd:value',
-                namespaces=NS,
-            ).text
-            converter = getattr(self, f'parse_{column}', float)
-            records[column] = [
-                None if row[0] == '-' else converter(row[0])
-                for row in reader(re.sub(r'\s+', '\n', values_str.strip()).splitlines())
-            ]
-            assert len(records[column]) == len(timestamps)
+
         base_record = {
             'source': source,
             'wmo_station_id': wmo_station_id,
         }
-        # Turn dict of lists into list of dicts
-        return (
-            {**base_record, **dict(zip(records, row))}
-            for row in zip(*records.values())
-            if row[0] in accepted_timestamps
-        )
+
+        if timestamps:
+            records: Dict[str, Any] = {'timestamp': timestamps}
+            for element, column in self.ELEMENTS.items():
+                values_str = station_elem.find(
+                    f'./*/dwd:Forecast[@dwd:elementName="{element}"]/dwd:value',
+                    namespaces=NS,
+                ).text
+                converter = getattr(self, f'parse_{column}', float)
+                records[column] = [
+                    None if row[0] == '-' else converter(row[0])
+                    for row in reader(
+                        re.sub(r'\s+', '\n', values_str.strip()).splitlines()
+                    )
+                ]
+                assert len(records[column]) == len(timestamps)
+
+            # Turn dict of lists into list of dicts
+            return (
+                {**base_record, **dict(zip(records, row))}
+                for row in zip(*records.values())
+                if row[0] in accepted_timestamps
+            )
+
+        else:
+            dwd_station_id = wmo_id_to_dwd(wmo_station_id)
+            base_record.update(
+                {
+                    'lat': float(lat),
+                    'lon': float(lon),
+                    'height': float(height),
+                    'dwd_station_id': dwd_station_id,
+                    'station_name': station_name,
+                }
+            )
+            return cast(DwdGenerator, [base_record])
 
     def _sanitize_records(self, records: DwdGenerator) -> DwdGenerator:
         for r in records:
@@ -186,7 +217,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
             yield r
 
 
-def download_mosmix(temporary_file: IO[bytes]) -> None:
+def download(temporary_file: IO[bytes]) -> None:
     """Download the mosmix data."""
     print(f'Downloading MOSMIX data from {DWD_MOSMIX_URL} ...')
     print(f'Temporary file: {temporary_file.name}')
@@ -194,78 +225,3 @@ def download_mosmix(temporary_file: IO[bytes]) -> None:
         for chunk in r.iter_raw():
             temporary_file.write(chunk)
     print('Done!')
-
-
-def output_name(date: datetime) -> str:
-    """Get MOSMIX cache file name."""
-    return date.strftime('MOSMIX:%Y-%m-%dT%H:%M:%S') + 'Z'
-
-
-def open_file(source: str) -> TextIO:
-    """Open cache file."""
-    file = open(DWD_CACHE_DIR / f'{source}.json', 'w')
-    print('[', file=file)
-    return file
-
-
-def close_file(file: TextIO) -> None:
-    """Close cache file."""
-    print(']', file=file)
-    file.close()
-
-
-def process_mosmix(
-    disable_cache: Optional[bool] = False,
-    disable_database: Optional[bool] = False,
-    job: Optional[int] = 0,
-) -> str:
-    """Cache DWD MOSMIX data."""
-    if not disable_cache:
-        DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-
-    data: Dict[str, TextIO] = {}
-
-    db = None
-    if not disable_database:
-        deta = Deta()
-        db = deta.Base('dwd_mosmix')
-
-    # setup batching if needed
-    job_size: int = 250
-    min_entry: int = 0
-    max_entry: int = 0
-    message: str = 'Processed all placemarks'
-    if job and job > 0:
-        min_entry = (job - 1) * job_size
-        max_entry = job * job_size
-        message = f'Processed placemarks from #{min_entry+1} to #{max_entry}'
-        print(f'Processing placemarks from #{min_entry+1} to #{max_entry}')
-
-    with BatchedPut(db) as batch, NamedTemporaryFile(
-        suffix='.kmz', prefix='DWD_MOSMIX_'
-    ) as temporary_file:
-        download_mosmix(temporary_file)
-
-        parser = MOSMIXParserFast(path=temporary_file.name, url=None)
-        # parser.download()  # Not necessary if you supply a local path
-        for record in parser.parse(min_entry, max_entry):
-            source: str = output_name(record['timestamp'])
-            record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
-            # write to the DB
-            if not disable_database:
-                key: str = f"{record['timestamp']}_{record['wmo_station_id']}"
-                batch.put(record, key)
-            # write to the local cache
-            if not disable_cache:
-                if source not in data:
-                    data[source] = open_file(source)
-                    data[source].write(dumps(record))
-                else:
-                    data[source].write(f',\n{dumps(record)}')
-        # parser.cleanup()  # If you wish to delete any downloaded files
-
-    if not disable_cache:
-        for _, file in data.items():
-            close_file(file)
-
-    return message

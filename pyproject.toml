@@ -6,11 +6,13 @@ authors = ["Tadej Novak <tadej@tano.si>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-brightsky = "^1.0.8"
+brightsky = "~1.0.11"
+deta = {version = "^1.1.0a1", extras = ["async"]}
+geopandas = "^0.10.2"
 httpx = "^0.21.1"
+Shapely = "^1.8.0"
 typer = "^0.4.0"
 wheel = "^0.36.2"
-deta = {version = "^1.1.0a1", extras = ["async"]}
 
 [tool.poetry.scripts]
 vremenar_utils = 'vremenar_utils.cli:application'
@@ -18,15 +20,15 @@ vremenar_utils = 'vremenar_utils.cli:application'
 [tool.poetry.dev-dependencies]
 black = "^21.11b1"
 flake8 = "^4.0.1"
-flake8-bugbear = "^21.9.2"
+flake8-bugbear = "^21.11.29"
 flake8-docstrings = "^1.6.0"
 flake8-quotes = "^3.3.0"
 mypy = "^0.910"
 pep8-naming = "^0.12.1"
-pre-commit = "^2.15.0"
+pre-commit = "^2.16.0"
 pre-commit-hooks = "^4.0.1"
 pyupgrade = "^2.29.1"
-types-python-dateutil = "^2.8.2"
+types-python-dateutil = "^2.8.3"
 
 [tool.black]
 line-length = 88

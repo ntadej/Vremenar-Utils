@@ -1,5 +1,6 @@
 .cache
 .coverage
+.deta
 .mypy_cache
 .pytest_cache
 .venv
