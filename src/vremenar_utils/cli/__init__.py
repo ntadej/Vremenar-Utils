@@ -55,9 +55,14 @@ def dwd_stations(
     output: Optional[str] = typer.Argument(  # noqa: B008
         default='DWD.csv', help='Output file'
     ),
+    use_database: Optional[bool] = typer.Option(  # noqa: B008
+        False, '--database', help='Update database.'
+    ),
 ) -> None:
     """DWD process stations."""
-    dws_mosmix_stations(output if output else 'DWD.csv')
+    dws_mosmix_stations(
+        output if output else 'DWD.csv', disable_database=not use_database
+    )
 
 
 __all__ = ['application']
