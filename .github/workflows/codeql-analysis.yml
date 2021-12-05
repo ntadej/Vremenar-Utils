@@ -2,10 +2,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [master]
+    branches: [main]
   schedule:
     - cron: "40 5 * * 1"
 
@@ -32,7 +32,7 @@ jobs:
           python-version: "3.9"
 
       - name: Setup Poetry
-        uses: abatilo/actions-poetry@v2
+        uses: abatilo/actions-poetry@v2.1.4
 
       - name: Config Poetry
         run: |
