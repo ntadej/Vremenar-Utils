@@ -1,8 +1,10 @@
 """DWD stations utils."""
 from csv import reader, writer
 from deta import Deta  # type: ignore
+from httpx import get as httpx_get, RequestError, HTTPStatusError
 from io import BytesIO, TextIOWrapper
 from operator import itemgetter
+from os import getenv
 from pathlib import Path
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
@@ -14,6 +16,7 @@ from ..geo.shapes import load_shape, inside_shape
 from .mosmix import MOSMIXParserFast, download
 
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
+VREMENAR_STATIONS_ENDPOINT: str = 'https://1pjjgy.deta.dev/mosmix'
 
 
 def load_stations() -> Dict[str, Dict[str, Any]]:
@@ -39,34 +42,65 @@ def load_stations() -> Dict[str, Dict[str, Any]]:
     return stations
 
 
+def get_stations_mosmix() -> List[str]:
+    """Get DWD MOSMIX station IDs from a dedicated microservice."""
+    print(f"Getting DWD MOSMIX station IDs from '{VREMENAR_STATIONS_ENDPOINT}'")
+    headers = {
+        'Content-Type': 'application/json',
+        'X-API-Key': getenv('VREMENAR_DWD_STATIONS_KEY', ''),
+    }
+    try:
+        response = httpx_get(VREMENAR_STATIONS_ENDPOINT, headers=headers)
+    except RequestError as e:
+        print(f'An error occurred: {str(e)}')
+        return []
+    except HTTPStatusError as e:
+        print(f'Error response: {e.response.status_code}')
+        return []
+
+    if response.is_error:
+        print(f'Error response: {response.status_code}')
+        return []
+
+    return response.json()
+
+
 def process_mosmix_stations(
-    output: str, output_new: str, disable_database: Optional[bool] = False
+    output: str,
+    output_new: str,
+    disable_database: Optional[bool] = False,
+    local_source: Optional[bool] = False,
 ) -> None:
     """Load DWD MOSMIX stations."""
     old_stations = load_stations()
     exceptions = ['10015', 'E5344', '10033', 'A201', '10044', '10097', '10181', 'E043']
 
-    stations: List[Dict[str, Any]] = []
-    with NamedTemporaryFile(suffix='.kmz', prefix='DWD_MOSMIX_') as temporary_file:
+    temporary_file = None
+    if not local_source:
+        temporary_file = NamedTemporaryFile(suffix='.kmz', prefix='DWD_MOSMIX_')
         download(temporary_file)
 
-        meta_keys = ['name', 'type', 'admin', 'status']
+    meta_keys = ['name', 'type', 'admin', 'status']
 
-        parser = MOSMIXParserFast(path=temporary_file.name, url=None)
-        # parser.download()  # Not necessary if you supply a local path
-        for station in parser.stations():
-            if 'SWIS-PUNKT' in station['station_name']:
-                continue
-            id = station['wmo_station_id']
-            if id in old_stations.keys():
-                station.update({key: old_stations[id][key] for key in meta_keys})
-            else:
-                station.update({key: '' for key in meta_keys})
-            station['dwd_station_id'] = (
-                str(int(station['dwd_station_id'])) if station['dwd_station_id'] else ''
-            )
-            stations.append(station)
-        # parser.cleanup()  # If you wish to delete any downloaded files
+    parser = MOSMIXParserFast(
+        path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
+        url=None,
+    )
+    stations: List[Dict[str, Any]] = []
+    for station in parser.stations():
+        if 'SWIS-PUNKT' in station['station_name']:
+            continue
+        id = station['wmo_station_id']
+        if id in old_stations.keys():
+            station.update({key: old_stations[id][key] for key in meta_keys})
+        else:
+            station.update({key: '' for key in meta_keys})
+        station['dwd_station_id'] = (
+            str(int(station['dwd_station_id'])) if station['dwd_station_id'] else ''
+        )
+        stations.append(station)
+    if temporary_file:
+        temporary_file.close()
 
     # sort
     stations = sorted(stations, key=itemgetter('wmo_station_id', 'name', 'lon', 'lat'))

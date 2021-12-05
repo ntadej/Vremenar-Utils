@@ -40,7 +40,9 @@ class MOSMIXParserFast(Parser):  # type: ignore
         'ww': 'condition',
     }
 
-    def parse(self, min_entry: int, max_entry: int) -> DwdGenerator:
+    def parse(
+        self, station_ids: List[str], min_entry: int, max_entry: int
+    ) -> DwdGenerator:
         """Parse the file."""
         self.logger.info('Parsing %s', self.path)
 
@@ -80,15 +82,19 @@ class MOSMIXParserFast(Parser):  # type: ignore
                         if placemark >= min_entry and (
                             max_entry == 0 or placemark < max_entry
                         ):
-                            print(f'Processing placemark #{placemark+1}')
                             records = self._parse_station(
-                                elem, timestamps, accepted_timestamps, source
+                                elem,
+                                station_ids,
+                                timestamps,
+                                accepted_timestamps,
+                                source,
                             )
                         self._clear_element(elem)
                         if max_entry > 0 and placemark >= max_entry:
                             break
-                        placemark += 1
                         if records:
+                            print(f'Processed placemark #{placemark+1}')
+                            placemark += 1
                             yield from self._sanitize_records(records)
                         else:
                             continue
@@ -105,7 +111,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                     if tag in ['ProductID', 'IssueTime', 'ForecastTimeSteps']:
                         self._clear_element(elem)
                     elif tag == 'Placemark':
-                        records = self._parse_station(elem, [], [])
+                        records = self._parse_station(elem, [], [], [])
                         self._clear_element(elem)
                         if records:
                             yield from records
@@ -147,11 +153,15 @@ class MOSMIXParserFast(Parser):  # type: ignore
     def _parse_station(
         self,
         station_elem: Element,
+        station_ids: List[str],
         timestamps: List[datetime],
         accepted_timestamps: List[datetime],
         source: Optional[str] = '',
     ) -> DwdGenerator:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
+        if station_ids and wmo_station_id not in station_ids:
+            return cast(DwdGenerator, [])
+
         station_name = station_elem.find('./kml:description', namespaces=NS).text
         try:
             lon, lat, height = station_elem.find(

@@ -4,11 +4,13 @@ from deta import Deta  # type: ignore
 from json import dumps
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Dict, Optional, TextIO
+from typing import Dict, List, Optional, TextIO
 
 from ..database.utils import BatchedPut
 from .mosmix import MOSMIXParserFast, download
+from .stations import load_stations, get_stations_mosmix
 
+DWD_TMP_DIR: Path = Path.cwd() / '.cache/tmp'
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
 
 
@@ -19,7 +21,7 @@ def output_name(date: datetime) -> str:
 
 def open_file(source: str) -> TextIO:
     """Open cache file."""
-    file = open(DWD_CACHE_DIR / f'{source}.json', 'w')
+    file = open(DWD_TMP_DIR / f'{source}.json', 'w')
     print('[', file=file)
     return file
 
@@ -31,15 +33,25 @@ def close_file(file: TextIO) -> None:
 
 
 def process_mosmix(
+    job: Optional[int] = 0,
     disable_cache: Optional[bool] = False,
     disable_database: Optional[bool] = False,
-    job: Optional[int] = 0,
+    local_source: Optional[bool] = False,
+    local_stations: Optional[bool] = False,
 ) -> str:
     """Cache DWD MOSMIX data."""
     if not disable_cache:
-        DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        DWD_TMP_DIR.mkdir(parents=True, exist_ok=True)
 
     data: Dict[str, TextIO] = {}
+
+    # load stations to use
+    station_ids: List[str] = []
+    if not local_stations:
+        station_ids = get_stations_mosmix()
+    if not station_ids:
+        print('Loading DWD MOSMIX station IDs from the local database')
+        station_ids = [key for key in load_stations().keys()]
 
     db = None
     if not disable_database:
@@ -57,14 +69,17 @@ def process_mosmix(
         message = f'Processed placemarks from #{min_entry+1} to #{max_entry}'
         print(f'Processing placemarks from #{min_entry+1} to #{max_entry}')
 
-    with BatchedPut(db) as batch, NamedTemporaryFile(
-        suffix='.kmz', prefix='DWD_MOSMIX_'
-    ) as temporary_file:
-        download(temporary_file)
+    with BatchedPut(db) as batch:
+        temporary_file = None
+        if not local_source:
+            temporary_file = NamedTemporaryFile(suffix='.kmz', prefix='DWD_MOSMIX_')
+            download(temporary_file)
 
-        parser = MOSMIXParserFast(path=temporary_file.name, url=None)
-        # parser.download()  # Not necessary if you supply a local path
-        for record in parser.parse(min_entry, max_entry):
+        parser = MOSMIXParserFast(
+            path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
+            url=None,
+        )
+        for record in parser.parse(station_ids, min_entry, max_entry):
             source: str = output_name(record['timestamp'])
             record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
             # write to the DB
@@ -78,17 +93,24 @@ def process_mosmix(
                     data[source].write(dumps(record))
                 else:
                     data[source].write(f',\n{dumps(record)}')
-        # parser.cleanup()  # If you wish to delete any downloaded files
+        if temporary_file:
+            temporary_file.close()
 
     if not disable_cache:
         for _, file in data.items():
             close_file(file)
+
+        DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        for path in DWD_TMP_DIR.iterdir():
+            path.rename(DWD_CACHE_DIR / path.name)
+        DWD_TMP_DIR.rmdir()
 
     return message
 
 
 def cleanup_mosmix() -> None:
     """Cleanup DWD MOSMIX data."""
+    DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     now = datetime.utcnow()
     for path in DWD_CACHE_DIR.glob('MOSMIX*.json'):
         name = path.name.replace('MOSMIX:', '').strip('.json')
