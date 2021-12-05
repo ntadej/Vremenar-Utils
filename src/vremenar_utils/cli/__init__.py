@@ -55,13 +55,18 @@ def dwd_stations(
     output: Optional[str] = typer.Argument(  # noqa: B008
         default='DWD.csv', help='Output file'
     ),
+    output_new: Optional[str] = typer.Argument(  # noqa: B008
+        default='DWD.NEW.csv', help='Output file for new stations'
+    ),
     use_database: Optional[bool] = typer.Option(  # noqa: B008
         False, '--database', help='Update database.'
     ),
 ) -> None:
     """DWD process stations."""
     dws_mosmix_stations(
-        output if output else 'DWD.csv', disable_database=not use_database
+        output if output else 'DWD.csv',
+        output_new if output_new else 'DWD.NEW.csv',
+        disable_database=not use_database,
     )
 
 

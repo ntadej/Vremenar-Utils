@@ -40,7 +40,7 @@ def load_stations() -> Dict[str, Dict[str, Any]]:
 
 
 def process_mosmix_stations(
-    output: str, disable_database: Optional[bool] = False
+    output: str, output_new: str, disable_database: Optional[bool] = False
 ) -> None:
     """Load DWD MOSMIX stations."""
     old_stations = load_stations()
@@ -75,9 +75,7 @@ def process_mosmix_stations(
 
     shape, shape_buffered = load_shape('Germany')
     with open(output, 'w', newline='') as csvfile, open(
-        output.replace(output.split('/')[-1], f'NEW_{output.split("/")[-1]}'),
-        'w',
-        newline='',
+        output_new, 'w', newline=''
     ) as csvfile_new:
         csv = writer(csvfile)
         csv_new = writer(csvfile_new)

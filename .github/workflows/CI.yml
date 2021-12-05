@@ -1,0 +1,59 @@
+name: Continuous Integration
+on: [push]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.8, 3.9]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.1.4
+
+      - name: Config Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+
+      - name: Get full python version
+        id: full-python-version
+        run: |
+          echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+
+      - name: Set up cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: |
+            .venv
+            src/utils/.venv
+          key: ${{ runner.os }}-venv-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-${{ steps.full-python-version.outputs.version }}-
+
+      - name: Setup server
+        run: |
+          poetry install
+
+      - name: Run tests
+        run: |
+          poetry run pytest
+
+      - name: Report coverage with Codecov
+        if: github.event_name == 'push' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v2.0.3
+        with:
+          file: ./coverage.xml
+          flags: unittests

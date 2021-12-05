@@ -224,4 +224,5 @@ def download(temporary_file: IO[bytes]) -> None:
     with stream('GET', DWD_MOSMIX_URL) as r:
         for chunk in r.iter_raw():
             temporary_file.write(chunk)
+    temporary_file.flush()
     print('Done!')
