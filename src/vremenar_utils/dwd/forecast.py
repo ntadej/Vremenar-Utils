@@ -85,3 +85,16 @@ def process_mosmix(
             close_file(file)
 
     return message
+
+
+def cleanup_mosmix() -> None:
+    """Cleanup DWD MOSMIX data."""
+    now = datetime.utcnow()
+    for path in DWD_CACHE_DIR.glob('MOSMIX*.json'):
+        name = path.name.replace('MOSMIX:', '').strip('.json')
+        date = datetime.strptime(name, '%Y-%m-%dT%H:%M:%SZ')
+        delta = date - now
+
+        if delta.days < -1:
+            print(path.name)
+            path.unlink()

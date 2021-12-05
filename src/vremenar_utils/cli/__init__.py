@@ -4,7 +4,7 @@ from typing import Optional
 
 from .. import __version__
 from ..dwd.current import current_weather as dwd_current_weather
-from ..dwd.forecast import process_mosmix as dwd_mosmix
+from ..dwd.forecast import process_mosmix as dwd_mosmix, cleanup_mosmix as dwd_cleanup
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
 
 application = typer.Typer()
@@ -68,6 +68,12 @@ def dwd_stations(
         output_new if output_new else 'DWD.NEW.csv',
         disable_database=not use_database,
     )
+
+
+@application.command()
+def cleanup() -> None:
+    """Cleanup obsolete local caches."""
+    dwd_cleanup()
 
 
 __all__ = ['application']
