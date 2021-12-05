@@ -36,9 +36,7 @@ jobs:
       - name: Set up cache
         uses: actions/cache@v2
         with:
-          path: |
-            .venv
-            src/utils/.venv
+          path: .venv
           key: ${{ runner.os }}-venv-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-venv-${{ steps.full-python-version.outputs.version }}-
