@@ -9,7 +9,7 @@ from pathlib import Path
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from ..database.utils import BatchedPut
 from ..geo.shapes import load_shape, inside_shape
@@ -18,27 +18,76 @@ from .mosmix import MOSMIXParserFast, download
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
 VREMENAR_STATIONS_ENDPOINT: str = 'https://1pjjgy.deta.dev/mosmix'
 
+DWD_STATION_KEYS = [
+    'wmo_station_id',
+    'dwd_station_id',
+    'has_reports',
+    'station_name',
+    'name',
+    'lat',
+    'lon',
+    'type',
+    'admin',
+    'status',
+]
 
-def load_stations() -> Dict[str, Dict[str, Any]]:
+
+def load_stations() -> Dict[str, Dict[str, Union[str, int, float]]]:
     """Get a dictionary of supported DWD stations."""
-    stations: Dict[str, Dict[str, Any]] = {}
+    stations: Dict[str, Dict[str, Union[str, int, float]]] = {}
     data = get_data('vremenar_utils', 'data/stations/DWD.csv')
     if data:
         bytes = BytesIO(data)
         with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
             csv = reader(csvfile, dialect='excel')
             for row in csv:
-                stations[row[0]] = {
-                    'wmo_station_id': row[0],
-                    'dwd_station_id': row[1],
-                    'station_name': row[2],
-                    'name': row[3],
-                    'lat': float(row[4]),
-                    'lon': float(row[5]),
-                    'type': row[6],
-                    'admin': row[7],
-                    'status': row[8],
+                station: Dict[str, Union[str, int, float]] = {
+                    key: row[index] for index, key in enumerate(DWD_STATION_KEYS)
                 }
+                station['has_reports'] = int(station['has_reports'])
+                station['lat'] = float(station['lat'])
+                station['lon'] = float(station['lon'])
+
+                stations[row[0]] = station
+    return stations
+
+
+def load_stations_with_reports() -> List[str]:
+    """Get a list of DWD stations that have current weather reports available."""
+    stations: List[str] = []
+    data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
+    if data:
+        bytes = BytesIO(data)
+        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+            csv = reader(csvfile, dialect='excel')
+            for row in csv:
+                stations.append(row[0])
+    return stations
+
+
+def load_stations_included() -> List[str]:
+    """Get a list of DWD stations that should always be included."""
+    stations: List[str] = []
+    data = get_data('vremenar_utils', 'data/stations/DWD.include.csv')
+    if data:
+        bytes = BytesIO(data)
+        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+            csv = reader(csvfile, dialect='excel')
+            for row in csv:
+                stations.append(row[0])
+    return stations
+
+
+def load_stations_ignored() -> List[str]:
+    """Get a list of DWD stations that should be ignored."""
+    stations: List[str] = []
+    data = get_data('vremenar_utils', 'data/stations/DWD.ignore.csv')
+    if data:
+        bytes = BytesIO(data)
+        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+            csv = reader(csvfile, dialect='excel')
+            for row in csv:
+                stations.append(row[0])
     return stations
 
 
@@ -73,7 +122,9 @@ def process_mosmix_stations(
 ) -> None:
     """Load DWD MOSMIX stations."""
     old_stations = load_stations()
-    exceptions = ['10015', 'E5344', '10033', 'A201', '10044', '10097', '10181', 'E043']
+    stations_with_reports = load_stations_with_reports()
+    stations_included = load_stations_included()
+    stations_ignored = load_stations_ignored()
 
     temporary_file = None
     if not local_source:
@@ -91,6 +142,7 @@ def process_mosmix_stations(
         if 'SWIS-PUNKT' in station['station_name']:
             continue
         id = station['wmo_station_id']
+        station['has_reports'] = int(id in stations_with_reports)
         if id in old_stations.keys():
             station.update({key: old_stations[id][key] for key in meta_keys})
         else:
@@ -113,31 +165,22 @@ def process_mosmix_stations(
     ) as csvfile_new:
         csv = writer(csvfile)
         csv_new = writer(csvfile_new)
-        keys = [
-            'wmo_station_id',
-            'dwd_station_id',
-            'station_name',
-            'name',
-            'lat',
-            'lon',
-            'type',
-            'admin',
-            'status',
-        ]
         for station in stations:
             point = Point(station['lon'], station['lat'])
             valid = inside_shape(point, shape_buffered)
-            if station['wmo_station_id'] in exceptions:
+            if station['wmo_station_id'] in stations_ignored:
+                valid = False
+            if station['wmo_station_id'] in stations_included:
                 valid = True
             if not valid:
                 continue
 
             if station['name']:
-                csv.writerow([station[key] for key in keys])
+                csv.writerow([station[key] for key in DWD_STATION_KEYS])
                 stations_keys.append(station['wmo_station_id'])
-                stations_db.append({key: station[key] for key in keys})
+                stations_db.append({key: station[key] for key in DWD_STATION_KEYS})
             else:
-                csv_new.writerow([station[key] for key in keys])
+                csv_new.writerow([station[key] for key in DWD_STATION_KEYS])
 
     print(f'Processed {len(stations_db)} stations!')
 
