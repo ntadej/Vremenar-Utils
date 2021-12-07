@@ -164,7 +164,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
 
         station_name = station_elem.find('./kml:description', namespaces=NS).text
         try:
-            lon, lat, height = station_elem.find(
+            lon, lat, elevation = station_elem.find(
                 './kml:Point/kml:coordinates', namespaces=NS
             ).text.split(',')
         except AttributeError:
@@ -209,7 +209,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                 {
                     'lat': float(lat),
                     'lon': float(lon),
-                    'height': float(height),
+                    'elevation': float(elevation),
                     'dwd_station_id': dwd_station_id,
                     'station_name': station_name,
                 }
