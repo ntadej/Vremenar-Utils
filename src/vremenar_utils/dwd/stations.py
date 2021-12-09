@@ -26,7 +26,7 @@ DWD_STATION_KEYS = [
     'name',
     'lat',
     'lon',
-    'elevation',
+    'altitude',
     'type',
     'admin',
     'status',
@@ -48,7 +48,7 @@ def load_stations() -> Dict[str, Dict[str, Union[str, int, float]]]:
                 station['has_reports'] = int(station['has_reports'])
                 station['lat'] = float(station['lat'])
                 station['lon'] = float(station['lon'])
-                station['elevation'] = float(station['elevation'])
+                station['altitude'] = float(station['altitude'])
 
                 stations[row[0]] = station
     return stations
