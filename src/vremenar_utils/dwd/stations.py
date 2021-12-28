@@ -9,7 +9,7 @@ from pathlib import Path
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 from ..database.utils import BatchedPut
 from ..geo.shapes import load_shape, inside_shape
@@ -33,16 +33,16 @@ DWD_STATION_KEYS = [
 ]
 
 
-def load_stations() -> Dict[str, Dict[str, Union[str, int, float]]]:
+def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     """Get a dictionary of supported DWD stations."""
-    stations: Dict[str, Dict[str, Union[str, int, float]]] = {}
+    stations: dict[str, dict[str, Union[str, int, float]]] = {}
     data = get_data('vremenar_utils', 'data/stations/DWD.csv')
     if data:
         bytes = BytesIO(data)
         with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
             csv = reader(csvfile, dialect='excel')
             for row in csv:
-                station: Dict[str, Union[str, int, float]] = {
+                station: dict[str, Union[str, int, float]] = {
                     key: row[index] for index, key in enumerate(DWD_STATION_KEYS)
                 }
                 station['has_reports'] = int(station['has_reports'])
@@ -54,9 +54,9 @@ def load_stations() -> Dict[str, Dict[str, Union[str, int, float]]]:
     return stations
 
 
-def load_stations_with_reports() -> List[str]:
+def load_stations_with_reports() -> list[str]:
     """Get a list of DWD stations that have current weather reports available."""
-    stations: List[str] = []
+    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
     if data:
         bytes = BytesIO(data)
@@ -67,9 +67,9 @@ def load_stations_with_reports() -> List[str]:
     return stations
 
 
-def load_stations_included() -> List[str]:
+def load_stations_included() -> list[str]:
     """Get a list of DWD stations that should always be included."""
-    stations: List[str] = []
+    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.include.csv')
     if data:
         bytes = BytesIO(data)
@@ -80,9 +80,9 @@ def load_stations_included() -> List[str]:
     return stations
 
 
-def load_stations_ignored() -> List[str]:
+def load_stations_ignored() -> list[str]:
     """Get a list of DWD stations that should be ignored."""
-    stations: List[str] = []
+    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.ignore.csv')
     if data:
         bytes = BytesIO(data)
@@ -93,7 +93,7 @@ def load_stations_ignored() -> List[str]:
     return stations
 
 
-def get_stations_mosmix() -> List[str]:
+def get_stations_mosmix() -> list[str]:
     """Get DWD MOSMIX station IDs from a dedicated microservice."""
     print(f"Getting DWD MOSMIX station IDs from '{VREMENAR_STATIONS_ENDPOINT}'")
     headers = {
@@ -139,7 +139,7 @@ def process_mosmix_stations(
         path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
         url=None,
     )
-    stations: List[Dict[str, Any]] = []
+    stations: list[dict[str, Any]] = []
     for station in parser.stations():
         if 'SWIS-PUNKT' in station['station_name']:
             continue
@@ -158,8 +158,8 @@ def process_mosmix_stations(
 
     # sort
     stations = sorted(stations, key=itemgetter('wmo_station_id', 'name', 'lon', 'lat'))
-    stations_keys: List[str] = []
-    stations_db: List[Dict[str, Any]] = []
+    stations_keys: list[str] = []
+    stations_db: list[dict[str, Any]] = []
 
     shape, shape_buffered = load_shape('Germany')
     with open(output, 'w', newline='') as csvfile, open(
@@ -196,7 +196,7 @@ def process_mosmix_stations(
 
         print('Updated database!')
 
-        removed: List[str] = []
+        removed: list[str] = []
 
         last_item = None
         total_count = 0

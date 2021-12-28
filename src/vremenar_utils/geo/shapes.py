@@ -3,7 +3,6 @@ from geopandas import GeoDataFrame, read_file  # type: ignore
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
-from typing import Tuple
 
 
 def get_shape(id: str) -> None:
@@ -15,7 +14,7 @@ def get_shape(id: str) -> None:
     gdf.to_file(f'{id}.geojson', driver='GeoJSON')
 
 
-def load_shape(country: str) -> Tuple[GeoDataFrame, GeoDataFrame]:
+def load_shape(country: str) -> tuple[GeoDataFrame, GeoDataFrame]:
     """Load shape for a specific country."""
     data = get_data('vremenar_utils', f'data/shapes/{country}.json')
     if data:

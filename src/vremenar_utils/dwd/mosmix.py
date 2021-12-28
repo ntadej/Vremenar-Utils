@@ -6,10 +6,10 @@ from datetime import datetime, timedelta, timezone
 from dateutil import parser
 from httpx import stream
 from lxml.etree import iterparse, Element, QName  # type: ignore
-from typing import Any, Dict, Generator, IO, List, Optional, cast
+from typing import Any, Generator, IO, Optional, cast
 from zipfile import ZipFile
 
-DwdRecord = Dict[str, Any]
+DwdRecord = dict[str, Any]
 DwdGenerator = Generator[DwdRecord, None, None]
 
 DWD_OPEN_DATA: str = 'https://opendata.dwd.de'
@@ -41,7 +41,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
     }
 
     def parse(
-        self, station_ids: List[str], min_entry: int, max_entry: int
+        self, station_ids: list[str], min_entry: int, max_entry: int
     ) -> DwdGenerator:
         """Parse the file."""
         self.logger.info('Parsing %s', self.path)
@@ -127,7 +127,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                 del ancestor.getparent()[0]
 
     @staticmethod
-    def _filter_timestamps(timestamps: List[datetime]) -> List[datetime]:
+    def _filter_timestamps(timestamps: list[datetime]) -> list[datetime]:
         accepted = []
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
@@ -153,9 +153,9 @@ class MOSMIXParserFast(Parser):  # type: ignore
     def _parse_station(
         self,
         station_elem: Element,
-        station_ids: List[str],
-        timestamps: List[datetime],
-        accepted_timestamps: List[datetime],
+        station_ids: list[str],
+        timestamps: list[datetime],
+        accepted_timestamps: list[datetime],
         source: Optional[str] = '',
     ) -> DwdGenerator:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
@@ -181,7 +181,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
         }
 
         if timestamps:
-            records: Dict[str, Any] = {'timestamp': timestamps}
+            records: dict[str, Any] = {'timestamp': timestamps}
             for element, column in self.ELEMENTS.items():
                 values_str = station_elem.find(
                     f'./*/dwd:Forecast[@dwd:elementName="{element}"]/dwd:value',

@@ -4,7 +4,7 @@ from deta import Deta  # type: ignore
 from json import dumps
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Dict, List, Optional, TextIO
+from typing import Optional, TextIO
 
 from ..database.utils import BatchedPut
 from .mosmix import MOSMIXParserFast, download
@@ -43,10 +43,10 @@ def process_mosmix(
     if not disable_cache:
         DWD_TMP_DIR.mkdir(parents=True, exist_ok=True)
 
-    data: Dict[str, TextIO] = {}
+    data: dict[str, TextIO] = {}
 
     # load stations to use
-    station_ids: List[str] = []
+    station_ids: list[str] = []
     if not local_stations:
         station_ids = get_stations_mosmix()
     if not station_ids:

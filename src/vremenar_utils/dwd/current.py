@@ -6,19 +6,19 @@ from io import BytesIO, TextIOWrapper
 from json import dump
 from pathlib import Path
 from pkgutil import get_data
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from ..database.utils import BatchedPut
 
-DwdRecord = Dict[str, Any]
+DwdRecord = dict[str, Any]
 NaN = float('nan')
 
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
 
 
-def current_stations() -> List[str]:
+def current_stations() -> list[str]:
     """Get a list of supported DWD stations."""
-    stations: List[str] = []
+    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
     if data:
         bytes = BytesIO(data)
@@ -40,8 +40,8 @@ def current_weather(
         deta = Deta()
         db = deta.Base('dwd_current')
 
-    stations: List[str] = current_stations()
-    records: List[DwdRecord] = []
+    stations: list[str] = current_stations()
+    records: list[DwdRecord] = []
 
     with BatchedPut(db) as batch:
         for station_id in stations:
