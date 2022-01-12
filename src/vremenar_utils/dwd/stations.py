@@ -16,7 +16,7 @@ from ..geo.shapes import load_shape, inside_shape
 from .mosmix import MOSMIXParserFast, download
 
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
-VREMENAR_STATIONS_ENDPOINT: str = 'https://1pjjgy.deta.dev/mosmix'
+VREMENAR_STATIONS_ENDPOINT: str = 'https://dwd-stations.vremenar.tano.si/mosmix'
 
 DWD_STATION_KEYS = [
     'wmo_station_id',
