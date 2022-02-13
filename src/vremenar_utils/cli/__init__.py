@@ -8,6 +8,8 @@ from ..dwd.forecast import (
     cleanup_mosmix as dwd_cleanup_mosmix,
 )
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
+from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
+from ..meteoalarm.common import AlarmCountry
 
 application = typer.Typer()
 
@@ -79,6 +81,24 @@ def dwd_stations(
         output_new if output_new else 'DWD.NEW.csv',
         disable_database=not use_database,
         local_source=local_source,
+    )
+
+
+@application.command()
+def warnings_areas(
+    country: AlarmCountry = typer.Argument(..., help='Country'),  # noqa: B008
+    output: Optional[str] = typer.Argument(  # noqa: B008
+        default='areas.json', help='Output file'
+    ),
+    output_matches: Optional[str] = typer.Argument(  # noqa: B008
+        default='matches.json', help='Output file for area-station matches'
+    ),
+) -> None:
+    """Load MeteoAlarm areas."""
+    meteoalarm_areas(
+        country,
+        output if output else 'areas.json',
+        output_matches if output_matches else 'matches.json',
     )
 
 

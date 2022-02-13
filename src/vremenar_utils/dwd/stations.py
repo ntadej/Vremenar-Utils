@@ -9,7 +9,7 @@ from pathlib import Path
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, Optional, Union
+from typing import Any, Optional, TextIO, Union
 
 from ..database.utils import BatchedPut
 from ..geo.shapes import load_shape, inside_shape
@@ -39,18 +39,28 @@ def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     data = get_data('vremenar_utils', 'data/stations/DWD.csv')
     if data:
         bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
-            csv = reader(csvfile, dialect='excel')
-            for row in csv:
-                station: dict[str, Union[str, int, float]] = {
-                    key: row[index] for index, key in enumerate(DWD_STATION_KEYS)
-                }
-                station['has_reports'] = int(station['has_reports'])
-                station['lat'] = float(station['lat'])
-                station['lon'] = float(station['lon'])
-                station['altitude'] = float(station['altitude'])
+        with TextIOWrapper(bytes, encoding='utf-8') as csv_file:
+            stations = load_stations_from_csv(csv_file)
+    return stations
 
-                stations[row[0]] = station
+
+def load_stations_from_csv(
+    csv_file: TextIO,
+) -> dict[str, dict[str, Union[str, int, float]]]:
+    """Get a dictionary of supported DWD stations from a CSV file."""
+    stations: dict[str, dict[str, Union[str, int, float]]] = {}
+
+    csv = reader(csv_file, dialect='excel')
+    for row in csv:
+        station: dict[str, Union[str, int, float]] = {
+            key: row[index] for index, key in enumerate(DWD_STATION_KEYS)
+        }
+        station['has_reports'] = int(station['has_reports'])
+        station['lat'] = float(station['lat'])
+        station['lon'] = float(station['lon'])
+        station['altitude'] = float(station['altitude'])
+
+        stations[row[0]] = station
     return stations
 
 

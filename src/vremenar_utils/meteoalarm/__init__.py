@@ -1,0 +1,1 @@
+"""MeteoAlarm warnings utilities."""

@@ -8,6 +8,8 @@
 *.code-workspace
 *.kmz
 __pycache__
+/*.csv
+/*.json
 /*.sh
 /coverage
 /coverage.xml
