@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from enum import Enum
 from io import BytesIO, TextIOWrapper
-from json import load, JSONEncoder
+from json import load
 from pkgutil import get_data
 from typing import Any, Union
 
@@ -101,6 +101,15 @@ class AlertArea:
         """Represent MeteoAlarm area as string."""
         return f'{self.code}: {self.name} ({len(self.polygons)} polygon(s))'
 
+    def to_dict(self) -> dict[str, Any]:
+        """Get dictionary with class properties."""
+        return {'code': self.code, 'name': self.name, 'polygons': self.polygons}
+
+    @classmethod
+    def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertArea':
+        """Read AlertArea from a dictionary."""
+        return cls(dictionary['code'], dictionary['name'], dictionary['polygons'])
+
 
 class AlertInfo:
     """MeteoAlarm alert info."""
@@ -179,17 +188,6 @@ class AlertInfo:
         }
         alert.web = {AlertLanguage(k): v for k, v in dictionary['web'].items()}
         return alert
-
-
-class AlertEncoder(JSONEncoder):
-    """Common JSON encoder."""
-
-    def default(self, o: Any) -> Any:
-        """Return default value of JSON encoder."""
-        if isinstance(o, AlertArea):
-            return o.__dict__
-        if isinstance(o, set):
-            return list(o)
 
 
 def load_stations(

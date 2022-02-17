@@ -5,7 +5,7 @@ from pkgutil import get_data
 
 from ..geo.polygons import point_in_polygon
 
-from .common import AlertArea, AlertCountry, AlertEncoder, load_stations
+from .common import AlertArea, AlertCountry, load_stations
 
 
 def process_meteoalarm_areas(
@@ -34,7 +34,7 @@ def process_meteoalarm_areas(
         areas.append(area)
 
     with open(output, 'w') as f:
-        dump(areas, f, cls=AlertEncoder)
+        dump([area.to_dict() for area in areas], f)
 
     print(f'Total {len(areas)} areas')
 
@@ -91,3 +91,19 @@ def match_meteoalarm_areas(
 
     with open(output, 'w') as f:
         dump(matches, f, indent=2)
+
+
+def load_meteoalarm_areas(country: AlertCountry) -> list[AlertArea]:
+    """Load MeteoAlarm areas from file."""
+    areas: list[AlertArea] = []
+
+    data = get_data('vremenar_utils', f'data/meteoalarm/{country.value}.json')
+    if data:
+        bytes = BytesIO(data)
+        with TextIOWrapper(bytes, encoding='utf-8') as file:
+            areas_dict = load(file)
+
+    for area_obj in areas_dict:
+        areas.append(AlertArea.from_dict(area_obj))
+
+    return areas

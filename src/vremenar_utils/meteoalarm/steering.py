@@ -3,6 +3,7 @@ from deta import Deta  # type: ignore
 
 from ..database.utils import BatchedPut
 
+from .areas import load_meteoalarm_areas
 from .common import AlertCountry, AlertInfo
 from .parser import MeteoAlarmParser
 
@@ -43,14 +44,35 @@ def get_alerts(country: AlertCountry) -> None:
 
     print(f'Removed {len(parser.obsolete_alert_ids)} obsolete alerts')
 
+    all_alerts: list[AlertInfo] = []
     last_item = None
     total_count = 0
     while True:
         result = db.fetch(last=last_item)
         total_count += result.count
+        for item in result.items:
+            all_alerts.append(AlertInfo.from_dict(item))
         if not result.last:
             break
         last_item = result.last
 
     print()
     print(f'Total of {total_count} alerts are available for {country.value}')
+
+    # make area-warning mappings
+    areas = load_meteoalarm_areas(country)
+    areas_with_alerts: set[str] = set()
+    area_mappings: dict[str, list[str]] = {area.code: [] for area in areas}
+    for alert in all_alerts:
+        for area in alert.areas:
+            if alert.id not in area_mappings[area]:
+                area_mappings[area].append(alert.id)
+                areas_with_alerts.add(area)
+
+    db_mappings = deta.Base(f'{country.value}_meteoalarm_areas')
+    with BatchedPut(db_mappings) as batch:
+        for area, alerts in area_mappings.items():
+            batch.put({'alerts': alerts}, area)
+
+    print()
+    print(f'Areas with alerts: {len(areas_with_alerts)}')
