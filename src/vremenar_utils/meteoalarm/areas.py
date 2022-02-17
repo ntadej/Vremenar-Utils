@@ -5,17 +5,17 @@ from pkgutil import get_data
 
 from ..geo.polygons import point_in_polygon
 
-from .common import AlarmArea, AlarmCountry, AlarmEncoder, load_stations
+from .common import AlertArea, AlertCountry, AlertEncoder, load_stations
 
 
 def process_meteoalarm_areas(
-    country: AlarmCountry, output: str, output_matches: str
+    country: AlertCountry, output: str, output_matches: str
 ) -> None:
     """Process MeteoAlarm ares."""
     with open('meteoalarm_geocodes.json') as f:
         data = load(f)
 
-    areas: list[AlarmArea] = []
+    areas: list[AlertArea] = []
 
     for feature in data['features']:
         properties = feature['properties']
@@ -29,12 +29,12 @@ def process_meteoalarm_areas(
                 polygon = polygon[0]
             polygons.append(polygon)
 
-        area = AlarmArea(properties['code'], properties['name'], polygons)
+        area = AlertArea(properties['code'], properties['name'], polygons)
         print(area)
         areas.append(area)
 
     with open(output, 'w') as f:
-        dump(areas, f, cls=AlarmEncoder)
+        dump(areas, f, cls=AlertEncoder)
 
     print(f'Total {len(areas)} areas')
 
@@ -42,7 +42,7 @@ def process_meteoalarm_areas(
 
 
 def match_meteoalarm_areas(
-    country: AlarmCountry, output: str, areas: list[AlarmArea]
+    country: AlertCountry, output: str, areas: list[AlertArea]
 ) -> None:
     """Match MeteoAlarm areas with weather stations."""
     # load stations
@@ -59,18 +59,19 @@ def match_meteoalarm_areas(
 
     matches: dict[str, str] = {}
 
-    for s in stations:
-        if country is AlarmCountry.Germany:
-            s = stations[s]
-            id = s['wmo_station_id']
+    for station in stations:
+        if country is AlertCountry.Germany:
+            s = stations[station]
+            id = str(s['wmo_station_id'])
             label = s['name']
-            coordinate = [s['lon'], s['lat']]
-        elif country is AlarmCountry.Slovenia:
+            coordinate = [float(s['lon']), float(s['lat'])]
+        elif country is AlertCountry.Slovenia:
+            s = stations[station]
             if s['country'] != country.country_code():
                 continue
-            id = s['id'].strip('_')
+            id = str(s['id']).strip('_')
             label = s['title']
-            coordinate = [s['longitude'], s['latitude']]
+            coordinate = [float(s['longitude']), float(s['latitude'])]
 
         found = False
         for area in areas:

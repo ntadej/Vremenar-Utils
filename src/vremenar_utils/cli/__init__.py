@@ -9,7 +9,8 @@ from ..dwd.forecast import (
 )
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
 from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
-from ..meteoalarm.common import AlarmCountry
+from ..meteoalarm.common import AlertCountry
+from ..meteoalarm.steering import get_alerts as meteoalarm_alerts_get
 
 application = typer.Typer()
 
@@ -85,8 +86,8 @@ def dwd_stations(
 
 
 @application.command()
-def warnings_areas(
-    country: AlarmCountry = typer.Argument(..., help='Country'),  # noqa: B008
+def alerts_areas(
+    country: AlertCountry = typer.Argument(..., help='Country'),  # noqa: B008
     output: Optional[str] = typer.Argument(  # noqa: B008
         default='areas.json', help='Output file'
     ),
@@ -100,6 +101,14 @@ def warnings_areas(
         output if output else 'areas.json',
         output_matches if output_matches else 'matches.json',
     )
+
+
+@application.command()
+def alerts_get(
+    country: AlertCountry = typer.Argument(..., help='Country'),  # noqa: B008
+) -> None:
+    """Load MeteoAlarm alerts."""
+    meteoalarm_alerts_get(country)
 
 
 @application.command()

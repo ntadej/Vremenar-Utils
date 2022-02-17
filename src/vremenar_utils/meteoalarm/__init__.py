@@ -1,1 +1,1 @@
-"""MeteoAlarm warnings utilities."""
+"""MeteoAlarm utilities."""

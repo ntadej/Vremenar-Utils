@@ -16,7 +16,7 @@ class BatchedPut:
         """Context manager init."""
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, *args: Any) -> None:
         """Context manager exit."""
         self._drain()
 

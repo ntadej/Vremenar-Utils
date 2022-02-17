@@ -9,7 +9,7 @@ from pathlib import Path
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, Optional, TextIO, Union
+from typing import Any, Optional, TextIO, Union, cast
 
 from ..database.utils import BatchedPut
 from ..geo.shapes import load_shape, inside_shape
@@ -123,7 +123,7 @@ def get_stations_mosmix() -> list[str]:
         print(f'Error response: {response.status_code}')
         return []
 
-    return response.json()
+    return cast(list[str], response.json())
 
 
 def process_mosmix_stations(
