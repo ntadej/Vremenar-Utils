@@ -146,7 +146,7 @@ class AlertInfo:
     def to_dict(self) -> dict[str, Any]:
         """Get dictionary with class properties."""
         return {
-            'id': self.id,
+            'key': self.id,
             'areas': list(self.areas),
             'type': self.type.value,
             'severity': self.severity.value,
@@ -165,7 +165,7 @@ class AlertInfo:
     @classmethod
     def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertInfo':
         """Read AlertInfo from a dictionary."""
-        alert = cls(dictionary['id'])
+        alert = cls(dictionary['key'])
         alert.areas = set(dictionary['areas'])
         alert.type = AlertType(dictionary['type'])
         alert.severity = AlertSeverity(dictionary['severity'])
@@ -188,6 +188,32 @@ class AlertInfo:
         }
         alert.web = {AlertLanguage(k): v for k, v in dictionary['web'].items()}
         return alert
+
+
+class AlertNotificationInfo:
+    """Alert notification info."""
+
+    def __init__(self, id: str) -> None:
+        """Initialise alert notification info."""
+        self.id: str = id
+        self.announce: bool = False
+        self.onset: bool = False
+
+    def __repr__(self) -> str:
+        """Represent alert notification info as string."""
+        return f'{self.id}: {self.announce}/{self.onset}'
+
+    def to_dict(self) -> dict[str, Any]:
+        """Get dictionary with class properties."""
+        return {'key': self.id, 'announce': self.announce, 'onset': self.onset}
+
+    @classmethod
+    def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertNotificationInfo':
+        """Read alert notification info from a dictionary."""
+        info = cls(dictionary['key'])
+        info.announce = dictionary['announce']
+        info.onset = dictionary['onset']
+        return info
 
 
 def load_stations(

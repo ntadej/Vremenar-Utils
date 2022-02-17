@@ -4,21 +4,22 @@ from deta import Deta  # type: ignore
 from ..database.utils import BatchedPut
 
 from .areas import load_meteoalarm_areas
-from .common import AlertCountry, AlertInfo
+from .common import AlertCountry, AlertInfo, AlertNotificationInfo
 from .parser import MeteoAlarmParser
 
 
 def get_alerts(country: AlertCountry) -> None:
     """Get alerts for a specific country."""
     deta = Deta()
-    db = deta.Base(f'{country.value}_meteoalarm_alerts')
+    db_alerts = deta.Base(f'{country.value}_meteoalarm_alerts')
+    db_notifications = deta.Base(f'{country.value}_meteoalarm_notifications')
 
     existing_alerts: list[AlertInfo] = []
 
     last_item = None
     total_count = 0
     while True:
-        result = db.fetch(last=last_item)
+        result = db_alerts.fetch(last=last_item)
         total_count += result.count
         for item in result.items:
             existing_alerts.append(AlertInfo.from_dict(item))
@@ -32,15 +33,19 @@ def get_alerts(country: AlertCountry) -> None:
     parser = MeteoAlarmParser(country, existing_alerts)
     new_alerts = parser.get_new_alerts()
 
-    with BatchedPut(db) as batch:
+    with BatchedPut(db_alerts) as batch_alerts, BatchedPut(
+        db_notifications
+    ) as batch_notifications:
         for id, url in new_alerts:
             alert = parser.parse_cap(id, url)
-            batch.put(alert.to_dict(), alert.id)
+            batch_alerts.put(alert.to_dict(), alert.id)
+            batch_notifications.put(AlertNotificationInfo(alert.id).to_dict(), alert.id)
 
     print(f'Added {len(new_alerts)} new alerts')
 
     for id in parser.obsolete_alert_ids:
-        db.delete(id)
+        db_alerts.delete(id)
+        db_notifications.delete(id)
 
     print(f'Removed {len(parser.obsolete_alert_ids)} obsolete alerts')
 
@@ -48,7 +53,7 @@ def get_alerts(country: AlertCountry) -> None:
     last_item = None
     total_count = 0
     while True:
-        result = db.fetch(last=last_item)
+        result = db_alerts.fetch(last=last_item)
         total_count += result.count
         for item in result.items:
             all_alerts.append(AlertInfo.from_dict(item))
