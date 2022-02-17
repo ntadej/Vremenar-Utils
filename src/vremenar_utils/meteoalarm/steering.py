@@ -43,11 +43,17 @@ def get_alerts(country: AlertCountry) -> None:
 
     print(f'Added {len(new_alerts)} new alerts')
 
-    for id in parser.obsolete_alert_ids:
+    # remove expired
+    obsolete = parser.obsolete_alert_ids
+    for alert in existing_alerts:
+        if alert.expires < parser.now:
+            obsolete.add(alert.id)
+
+    for id in obsolete:
         db_alerts.delete(id)
         db_notifications.delete(id)
 
-    print(f'Removed {len(parser.obsolete_alert_ids)} obsolete alerts')
+    print(f'Removed {len(obsolete)} obsolete alerts')
 
     all_alerts: list[AlertInfo] = []
     last_item = None
@@ -64,7 +70,7 @@ def get_alerts(country: AlertCountry) -> None:
     print()
     print(f'Total of {total_count} alerts are available for {country.value}')
 
-    # make area-warning mappings
+    # make area-alert mappings
     areas = load_meteoalarm_areas(country)
     areas_with_alerts: set[str] = set()
     area_mappings: dict[str, list[str]] = {area.code: [] for area in areas}

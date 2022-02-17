@@ -27,6 +27,7 @@ class MeteoAlarmParser:
     def __init__(self, country: AlertCountry, existing_alerts: list[AlertInfo]) -> None:
         """Initialize MeteoAlarm parser."""
         self.country: AlertCountry = country
+        self.now: datetime = datetime.utcnow().replace(tzinfo=timezone.utc)
         self.existing_alerts: list[AlertInfo] = existing_alerts
         self.existing_alert_ids: set[str] = {alert.id for alert in existing_alerts}
         self.obsolete_alert_ids: set[str] = set()
@@ -39,7 +40,6 @@ class MeteoAlarmParser:
 
         all_ids = set()
         new_ids = set()
-        now = datetime.utcnow().replace(tzinfo=timezone.utc)
 
         # Parse the XML response for the alert feed and loop over the entries
         feed_data = parse(result)
@@ -52,7 +52,7 @@ class MeteoAlarmParser:
                 continue
 
             expires = self.parse_alert_datetime(entry.get('cap:expires'))
-            if expires < now:
+            if expires < self.now:
                 continue
 
             # Get the cap URL for additional alert data
