@@ -84,6 +84,7 @@ class MeteoAlarmParser:
         # Parse the XML response for the alert information
         response = httpx.get(url, timeout=10)
         result = response.text
+        result = result[: result.rfind('>') + 1]  # ignore characters after last XML tag
 
         alert_data = parse(result)
         alert_dict = alert_data.get('alert', {})
@@ -134,10 +135,10 @@ class MeteoAlarmParser:
         """Parse alert information."""
         alert.onset = self.parse_alert_datetime(data.get('onset', ''))
         alert.expires = self.parse_alert_datetime(data.get('expires', ''))
-        alert.certainty = AlertCertainty(data.get('certainty'))
-        alert.severity = AlertSeverity(data.get('severity'))
-        alert.urgency = AlertUrgency(data.get('urgency'))
-        alert.response_type = AlertResponseType(data.get('responseType'))
+        alert.certainty = AlertCertainty(data.get('certainty', '').lower())
+        alert.severity = AlertSeverity(data.get('severity', '').lower())
+        alert.urgency = AlertUrgency(data.get('urgency', '').lower())
+        alert.response_type = AlertResponseType(data.get('responseType', '').lower())
 
     def parse_alert_translations(
         self, alert: AlertInfo, language: AlertLanguage, data: dict[str, str]

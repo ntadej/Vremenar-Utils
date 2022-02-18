@@ -50,42 +50,42 @@ class AlertType(Enum):
 class AlertResponseType(Enum):
     """Alert response type."""
 
-    Shelter = 'Shelter'  # Take shelter in place or per instructions
-    Evacuate = 'Evacuate'  # Relocate as instructed in instructions
-    Prepare = 'Prepare'  # Make preparations per instructions
-    Execute = 'Execute'  # Execute a pre-planned activity identified in instructions
-    Avoid = 'Avoid'  # Avoid the subject event as per instructions
-    Monitor = 'Monitor'  # Attend to information sources as described in instructions
-    AllClear = 'AllClear'  # The subject event no longer poses a threat or concern and
+    Shelter = 'shelter'  # Take shelter in place or per instructions
+    Evacuate = 'evacuate'  # Relocate as instructed in instructions
+    Prepare = 'prepare'  # Make preparations per instructions
+    Execute = 'execute'  # Execute a pre-planned activity identified in instructions
+    Avoid = 'avoid'  # Avoid the subject event as per instructions
+    Monitor = 'monitor'  # Attend to information sources as described in instructions
+    AllClear = 'allclear'  # The subject event no longer poses a threat or concern and
     # any follow on action is described in instructions
-    NoResponse = 'None'  # No recommended action
+    NoResponse = 'none'  # No recommended action
 
 
 class AlertUrgency(Enum):
     """Alert urgency."""
 
-    Immediate = 'Immediate'  # Responsive action should be taken immediately.
-    Expected = 'Expected'  # Responsive action should be taken within the next hour.
-    Future = 'Future'  # Responsive action should be taken in the near future.
-    Past = 'Past'  # Responsive action no longer required.
+    Immediate = 'immediate'  # Responsive action should be taken immediately.
+    Expected = 'expected'  # Responsive action should be taken within the next hour.
+    Future = 'future'  # Responsive action should be taken in the near future.
+    Past = 'past'  # Responsive action no longer required.
 
 
 class AlertSeverity(Enum):
     """Alert severity."""
 
-    Minor = 'Minor'  # green
-    Moderate = 'Moderate'  # yellow
-    Severe = 'Severe'  # orange
-    Extreme = 'Extreme'  # red
+    Minor = 'minor'  # green
+    Moderate = 'moderate'  # yellow
+    Severe = 'severe'  # orange
+    Extreme = 'extreme'  # red
 
 
 class AlertCertainty(Enum):
     """Alert certainty."""
 
-    Observed = 'Observed'
-    Likely = 'Likely'  # p > 50 %
-    Possible = 'Possible'  # p < 50 %
-    Unlikely = 'Unlikely'  # p < 5 %
+    Observed = 'observed'
+    Likely = 'likely'  # p > 50 %
+    Possible = 'possible'  # p < 50 %
+    Unlikely = 'unlikely'  # p < 5 %
 
 
 class AlertArea:
