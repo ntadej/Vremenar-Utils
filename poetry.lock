@@ -111,7 +111,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "brightsky"
-version = "1.0.12"
+version = "1.0.13"
 description = "JSON API for DWD's open weather data."
 category = "main"
 optional = false
@@ -1114,7 +1114,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2643a6345f18d60b591957d2a4c2a60e63aeb336e313ce945aeb621e9a7d5b7c"
+content-hash = "15cc58f5fe801c0e9e005fb95ab72a7f284185cd4e689b609c9ccaaaeac8e34e"
 
 [metadata.files]
 aiohttp = [
@@ -1241,8 +1241,8 @@ black = [
     {file = "black-22.1.0.tar.gz", hash = "sha256:a7c0192d35635f6fc1174be575cb7915e92e5dd629ee79fdaf0dcfa41a80afb5"},
 ]
 brightsky = [
-    {file = "brightsky-1.0.12-py3-none-any.whl", hash = "sha256:a7ceee72afe80194d74786078d05dda20a643f972e056767737820ebb44216e0"},
-    {file = "brightsky-1.0.12.tar.gz", hash = "sha256:87fc2fdae0acf21fb1254b5e8180dbef9a14ff905054027fabaa9349b59728b2"},
+    {file = "brightsky-1.0.13-py3-none-any.whl", hash = "sha256:bf8a3253020a518f56c03edaf29a108e3d4961789d5e7d8f0c69e98eea5158bb"},
+    {file = "brightsky-1.0.13.tar.gz", hash = "sha256:c044c1acfa12ab8f375b12c966a43f35de4e46f592201a143bad4652ddeec35d"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
@@ -1450,6 +1450,7 @@ geopandas = [
     {file = "geopandas-0.10.2.tar.gz", hash = "sha256:efbf47e70732e25c3727222019c92b39b2e0a66ebe4fe379fbe1aa43a2a871db"},
 ]
 gunicorn = [
+    {file = "gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e"},
     {file = "gunicorn-20.1.0.tar.gz", hash = "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8"},
 ]
 h11 = [
@@ -1875,6 +1876,10 @@ rfc3986 = [
     {file = "ruamel.yaml-0.17.20.tar.gz", hash = "sha256:4b8a33c1efb2b443a93fcaafcfa4d2e445f8e8c29c528d9f5cdafb7cc9e4004c"},
 ]
 "ruamel.yaml.clib" = [
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6e7be2c5bcb297f5b82fee9c665eb2eb7001d1050deaba8471842979293a80b0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:221eca6f35076c6ae472a531afa1c223b9c29377e62936f61bc8e6e8bdc5f9e7"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win32.whl", hash = "sha256:1070ba9dd7f9370d0513d649420c3b362ac2d687fe78c6e888f5b12bf8bc7bee"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win_amd64.whl", hash = "sha256:77df077d32921ad46f34816a9a16e6356d8100374579bc35e15bab5d4e9377de"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:cfdb9389d888c5b74af297e51ce357b800dd844898af9d4a547ffc143fa56751"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:7b2927e92feb51d830f531de4ccb11b320255ee95e791022555971c466af4527"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win32.whl", hash = "sha256:ada3f400d9923a190ea8b59c8f60680c4ef8a4b0dfae134d2f2ff68429adfab5"},
