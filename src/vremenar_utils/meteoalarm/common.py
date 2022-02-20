@@ -73,10 +73,10 @@ class AlertUrgency(Enum):
 class AlertSeverity(Enum):
     """Alert severity."""
 
-    Minor = 'minor'  # green
-    Moderate = 'moderate'  # yellow
-    Severe = 'severe'  # orange
-    Extreme = 'extreme'  # red
+    Minor = 'minor'  # yellow
+    Moderate = 'moderate'  # orange
+    Severe = 'severe'  # red
+    Extreme = 'extreme'  # violet
 
 
 class AlertCertainty(Enum):
@@ -149,6 +149,7 @@ class AlertInfo:
             'key': self.id,
             'areas': list(self.areas),
             'type': self.type.value,
+            'urgency': self.urgency.value,
             'severity': self.severity.value,
             'certainty': self.certainty.value,
             'response_type': self.response_type.value,
@@ -168,6 +169,7 @@ class AlertInfo:
         alert = cls(dictionary['key'])
         alert.areas = set(dictionary['areas'])
         alert.type = AlertType(dictionary['type'])
+        alert.urgency = AlertUrgency(dictionary['urgency'])
         alert.severity = AlertSeverity(dictionary['severity'])
         alert.certainty = AlertCertainty(dictionary['certainty'])
         alert.response_type = AlertResponseType(dictionary['response_type'])
