@@ -33,7 +33,7 @@ def get_alerts(country: AlertCountry) -> None:
     parser = MeteoAlarmParser(country, existing_alerts)
     new_alerts = parser.get_new_alerts()
 
-    with BatchedPut(db_alerts) as batch_alerts, BatchedPut(
+    with BatchedPut(db_alerts, limit=5) as batch_alerts, BatchedPut(
         db_notifications
     ) as batch_notifications:
         for id, url in new_alerts:

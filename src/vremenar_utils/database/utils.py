@@ -6,11 +6,11 @@ from typing import Any, Optional
 class BatchedPut:
     """Put items to DB in batches."""
 
-    def __init__(self, db: _Base) -> None:
+    def __init__(self, db: _Base, limit: Optional[int] = 25) -> None:
         """Initialise with DB."""
         self.db = db
         self.queue: list[dict[str, Any]] = []
-        self.limit = 25
+        self.limit = limit
 
     def __enter__(self) -> 'BatchedPut':
         """Context manager init."""
