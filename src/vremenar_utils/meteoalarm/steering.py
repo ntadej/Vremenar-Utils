@@ -38,6 +38,8 @@ def get_alerts(country: AlertCountry) -> None:
     ) as batch_notifications:
         for id, url in new_alerts:
             alert = parser.parse_cap(id, url)
+            if not alert:
+                continue
             batch_alerts.put(alert.to_dict(), alert.id)
             batch_notifications.put(AlertNotificationInfo(alert.id).to_dict(), alert.id)
 

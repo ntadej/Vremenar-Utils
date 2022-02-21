@@ -2,7 +2,7 @@
 # Inspired and based on https://github.com/rolfberkenbosch/meteoalert-api
 import httpx
 from datetime import datetime, timezone
-from typing import Union, cast
+from typing import Optional, Union, cast
 from xmltodict import parse  # type: ignore
 
 from .common import (
@@ -77,23 +77,21 @@ class MeteoAlarmParser:
         """Parse alert date/time."""
         return datetime.strptime(string, '%Y-%m-%dT%H:%M:%S%z')
 
-    def parse_cap(self, id: str, url: str) -> AlertInfo:
+    def parse_cap(self, id: str, url: str) -> Optional[AlertInfo]:
         """Parse CAP."""
         alert = AlertInfo(id)
 
         # Parse the XML response for the alert information
         response = httpx.get(url, timeout=10)
         result = response.text
+        # can be empty
+        if not result:
+            return None
+
         result = result[: result.rfind('>') + 1]  # ignore characters after last XML tag
 
         alert_data = parse(result)
         alert_dict = alert_data.get('alert', {})
-
-        # check if this CAP supersedes any other
-        references = alert_dict.get('references', '').split(',')
-        for r in references:
-            if r in self.existing_alert_ids:
-                self.obsolete_alert_ids.add(r)
 
         # get the alert data in the supported languages
         translations = alert_dict.get('info', [])
