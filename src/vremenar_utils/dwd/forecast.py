@@ -6,7 +6,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Optional, TextIO
 
-from ..database.utils import BatchedPut
+from ..database.deta import BatchedPut
 from .mosmix import MOSMIXParserFast, download
 from .stations import load_stations, get_stations_mosmix
 

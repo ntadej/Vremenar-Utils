@@ -11,7 +11,7 @@ from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
 from typing import Any, Optional, TextIO, Union, cast
 
-from ..database.utils import BatchedPut
+from ..database.deta import BatchedPut
 from ..geo.shapes import load_shape, inside_shape
 from .mosmix import MOSMIXParserFast, download
 

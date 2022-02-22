@@ -1,4 +1,5 @@
 """Vremenar Utils CLI."""
+import asyncio
 import typer
 from typing import Optional
 
@@ -108,7 +109,7 @@ def alerts_get(
     country: AlertCountry = typer.Argument(..., help='Country'),  # noqa: B008
 ) -> None:
     """Load MeteoAlarm alerts."""
-    meteoalarm_alerts_get(country)
+    asyncio.run(meteoalarm_alerts_get(country))
 
 
 @application.command()

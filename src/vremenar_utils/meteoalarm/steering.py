@@ -1,91 +1,56 @@
 """MeteoAlarm steering code."""
-from deta import Deta  # type: ignore
-
-from ..database.utils import BatchedPut
-
 from .areas import load_meteoalarm_areas
-from .common import AlertCountry, AlertInfo, AlertNotificationInfo
+from .database import (
+    delete_alert,
+    get_alert_area_map,
+    get_alert_ids,
+    store_alert,
+    store_alerts_for_area,
+)
+from .common import AlertCountry
 from .parser import MeteoAlarmParser
 
 
-def get_alerts(country: AlertCountry) -> None:
+async def get_alerts(country: AlertCountry) -> None:
     """Get alerts for a specific country."""
-    deta = Deta()
-    db_alerts = deta.Base(f'{country.value}_meteoalarm_alerts')
-    db_notifications = deta.Base(f'{country.value}_meteoalarm_notifications')
-
-    existing_alerts: list[AlertInfo] = []
-
-    last_item = None
-    total_count = 0
-    while True:
-        result = db_alerts.fetch(last=last_item)
-        total_count += result.count
-        for item in result.items:
-            existing_alerts.append(AlertInfo.from_dict(item))
-        if not result.last:
-            break
-        last_item = result.last
-
-    print(f'Read {total_count} existing alerts from the database')
+    existing_alerts: set[str] = await get_alert_ids(country)
+    print(f'Read {len(existing_alerts)} existing alerts from the database')
     print()
 
     parser = MeteoAlarmParser(country, existing_alerts)
     new_alerts = parser.get_new_alerts()
 
-    with BatchedPut(db_alerts, limit=5) as batch_alerts, BatchedPut(
-        db_notifications
-    ) as batch_notifications:
-        for id, url in new_alerts:
-            alert = parser.parse_cap(id, url)
-            if not alert:
-                continue
-            batch_alerts.put(alert.to_dict(), alert.id)
-            batch_notifications.put(AlertNotificationInfo(alert.id).to_dict(), alert.id)
+    for id, url in new_alerts:
+        alert = parser.parse_cap(id, url)
+        if not alert:
+            continue
+        await store_alert(country, alert)
 
     print(f'Added {len(new_alerts)} new alerts')
 
-    # remove expired
-    obsolete = parser.obsolete_alert_ids
-    for alert in existing_alerts:
-        if alert.expires < parser.now:
-            obsolete.add(alert.id)
+    # TODO: remove expired
 
-    for id in obsolete:
-        db_alerts.delete(id)
-        db_notifications.delete(id)
+    for id in parser.obsolete_alert_ids:
+        await delete_alert(country, id)
 
-    print(f'Removed {len(obsolete)} obsolete alerts')
+    print(f'Removed {len(parser.obsolete_alert_ids)} obsolete alerts')
 
-    all_alerts: list[AlertInfo] = []
-    last_item = None
-    total_count = 0
-    while True:
-        result = db_alerts.fetch(last=last_item)
-        total_count += result.count
-        for item in result.items:
-            all_alerts.append(AlertInfo.from_dict(item))
-        if not result.last:
-            break
-        last_item = result.last
+    alert_areas: dict[str, set[str]] = await get_alert_area_map(country)
 
     print()
-    print(f'Total of {total_count} alerts are available for {country.value}')
+    print(f'Total of {len(alert_areas)} alerts are available for {country.value}')
 
     # make area-alert mappings
-    areas = load_meteoalarm_areas(country)
+    areas_list = load_meteoalarm_areas(country)
     areas_with_alerts: set[str] = set()
-    area_mappings: dict[str, list[str]] = {area.code: [] for area in areas}
-    for alert in all_alerts:
-        for area in alert.areas:
-            if alert.id not in area_mappings[area]:
-                area_mappings[area].append(alert.id)
-                areas_with_alerts.add(area)
+    area_mappings: dict[str, set[str]] = {area.code: set() for area in areas_list}
+    for alert_id, areas in alert_areas.items():
+        for area in areas:
+            area_mappings[area].add(alert_id)
+            areas_with_alerts.add(area)
 
-    db_mappings = deta.Base(f'{country.value}_meteoalarm_areas')
-    with BatchedPut(db_mappings) as batch:
-        for area, alerts in area_mappings.items():
-            batch.put({'alerts': alerts}, area)
+    for area, alerts in area_mappings.items():
+        await store_alerts_for_area(country, area, alerts)
 
     print()
     print(f'Areas with alerts: {len(areas_with_alerts)}')

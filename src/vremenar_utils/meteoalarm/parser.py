@@ -24,12 +24,11 @@ METEOALARM_ATOM_ENDPOINT = (
 class MeteoAlarmParser:
     """MeteoAlarm Atom feed parser."""
 
-    def __init__(self, country: AlertCountry, existing_alerts: list[AlertInfo]) -> None:
+    def __init__(self, country: AlertCountry, existing_alerts: set[str]) -> None:
         """Initialize MeteoAlarm parser."""
         self.country: AlertCountry = country
         self.now: datetime = datetime.utcnow().replace(tzinfo=timezone.utc)
-        self.existing_alerts: list[AlertInfo] = existing_alerts
-        self.existing_alert_ids: set[str] = {alert.id for alert in existing_alerts}
+        self.existing_alert_ids: set[str] = existing_alerts
         self.obsolete_alert_ids: set[str] = set()
 
     def get_new_alerts(self) -> set[tuple[str, str]]:

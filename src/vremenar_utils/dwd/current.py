@@ -8,7 +8,7 @@ from pathlib import Path
 from pkgutil import get_data
 from typing import Any, Optional
 
-from ..database.utils import BatchedPut
+from ..database.deta import BatchedPut
 
 DwdRecord = dict[str, Any]
 NaN = float('nan')

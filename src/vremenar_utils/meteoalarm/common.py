@@ -143,25 +143,77 @@ class AlertInfo:
             f' ({self.onset} - {self.expires})'
         )
 
-    def to_dict(self) -> dict[str, Any]:
-        """Get dictionary with class properties."""
+    def to_info_dict(self) -> dict[str, str]:
+        """Get dictionary with common properties."""
         return {
-            'key': self.id,
-            'areas': list(self.areas),
+            'id': self.id,
             'type': self.type.value,
             'urgency': self.urgency.value,
             'severity': self.severity.value,
             'certainty': self.certainty.value,
             'response_type': self.response_type.value,
-            'onset': self.onset.timestamp(),
-            'expires': self.expires.timestamp(),
-            'event': {k.value: v for k, v in self.event.items()},
-            'headline': {k.value: v for k, v in self.headline.items()},
-            'description': {k.value: v for k, v in self.description.items()},
-            'instructions': {k.value: v for k, v in self.instructions.items()},
-            'sender_name': {k.value: v for k, v in self.sender_name.items()},
-            'web': {k.value: v for k, v in self.web.items()},
+            'onset': f'{str(self.onset.timestamp())}000',
+            'expires': f'{str(self.expires.timestamp())}000',
         }
+
+    def to_localised_dict(self, language: AlertLanguage) -> dict[str, str]:
+        """Get dictionary with localised properties."""
+        output: dict[str, str] = {}
+        if self.event:
+            output['event'] = (
+                self.event[language]
+                if language in self.event
+                else self.event[AlertLanguage.English]
+            )
+        else:
+            output['event'] = ''
+
+        if self.headline:
+            output['headline'] = (
+                self.headline[language]
+                if language in self.headline
+                else self.headline[AlertLanguage.English]
+            )
+        else:
+            output['headline'] = ''
+
+        if self.description:
+            output['description'] = (
+                self.description[language]
+                if language in self.description
+                else self.description[AlertLanguage.English]
+            )
+        else:
+            output['description'] = ''
+
+        if self.instructions:
+            output['instructions'] = (
+                self.instructions[language]
+                if language in self.instructions
+                else self.instructions[AlertLanguage.English]
+            )
+        else:
+            output['instructions'] = ''
+
+        if self.sender_name:
+            output['sender_name'] = (
+                self.sender_name[language]
+                if language in self.sender_name
+                else self.sender_name[AlertLanguage.English]
+            )
+        else:
+            output['sender_name'] = ''
+
+        if self.web:
+            output['web'] = (
+                self.web[language]
+                if language in self.web
+                else self.web[AlertLanguage.English]
+            )
+        else:
+            output['web'] = ''
+
+        return output
 
     @classmethod
     def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertInfo':
@@ -198,8 +250,8 @@ class AlertNotificationInfo:
     def __init__(self, id: str) -> None:
         """Initialise alert notification info."""
         self.id: str = id
-        self.announce: bool = False
-        self.onset: bool = False
+        self.announce: int = 0
+        self.onset: int = 0
 
     def __repr__(self) -> str:
         """Represent alert notification info as string."""
@@ -207,7 +259,7 @@ class AlertNotificationInfo:
 
     def to_dict(self) -> dict[str, Any]:
         """Get dictionary with class properties."""
-        return {'key': self.id, 'announce': self.announce, 'onset': self.onset}
+        return {'announce': self.announce, 'onset': self.onset}
 
     @classmethod
     def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertNotificationInfo':
