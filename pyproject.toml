@@ -7,7 +7,7 @@ authors = ["Tadej Novak <tadej@tano.si>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 brightsky = "~1.0.12"
-deta = {version = "^1.1.0a1", extras = ["async"]}
+deta = {version = "^1.1.0a2", extras = ["async"]}
 geopandas = "^0.10.2"
 httpx = "^0.22.0"
 Shapely = "^1.8.0"
