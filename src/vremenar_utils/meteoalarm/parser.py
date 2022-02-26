@@ -124,7 +124,10 @@ class MeteoAlarmParser:
 
         # parse parameters
         parameters = translation.get('parameter', [])
-        self.parse_alert_parameters(alert, parameters)
+        try:
+            self.parse_alert_parameters(alert, parameters)
+        except ValueError:  # if alert type is invalid, ignore alert
+            return None
 
         # parse areas
         areas = translation.get('area', [])

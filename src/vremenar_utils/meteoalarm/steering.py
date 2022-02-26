@@ -20,14 +20,16 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
 
     parser = MeteoAlarmParser(logger, country, existing_alerts)
     new_alerts = await parser.get_new_alerts()
+    counter = 0
 
     for id, url in new_alerts:
         alert = await parser.parse_cap(id, url)
         if not alert:
             continue
         await store_alert(country, alert)
+        counter += 1
 
-    logger.info(f'Added {len(new_alerts)} new alerts')
+    logger.info(f'Added {counter} new alerts')
 
     for id in parser.obsolete_alert_ids:
         await delete_alert(country, id)
