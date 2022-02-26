@@ -25,16 +25,18 @@ async def get_alert_ids(country: CountryID) -> set[str]:
 async def store_alert(country: CountryID, alert: AlertInfo) -> None:
     """Store alert to redis."""
     async with redis.pipeline() as pipe:
-        pipe.hmset(f'alert:{country.value}:{alert.id}:info', alert.to_info_dict())
+        pipe.hset(
+            f'alert:{country.value}:{alert.id}:info', mapping=alert.to_info_dict()
+        )
         pipe.sadd(f'alert:{country.value}:{alert.id}:areas', *alert.areas)
         for language in LanguageID:
-            pipe.hmset(
+            pipe.hset(
                 f'alert:{country.value}:{alert.id}:localised_{language.value}',
-                alert.to_localised_dict(language),
+                mapping=alert.to_localised_dict(language),
             )
-        pipe.hmset(
+        pipe.hset(
             f'alert:{country.value}:{alert.id}:notifications',
-            AlertNotificationInfo(alert.id).to_dict(),
+            mapping=AlertNotificationInfo(alert.id).to_dict(),
         )
         await pipe.execute()
 

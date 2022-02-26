@@ -4,14 +4,15 @@ from json import load, dump
 from pkgutil import get_data
 
 from ..cli.common import CountryID
-from ..database.stations import load_stations
+from ..cli.logging import Logger
+from ..database.stations import load_stations, store_station
 from ..geo.polygons import point_in_polygon
 
 from .common import AlertArea
 
 
 async def process_meteoalarm_areas(
-    country: CountryID, output: str, output_matches: str
+    logger: Logger, country: CountryID, output: str, output_matches: str
 ) -> None:
     """Process MeteoAlarm ares."""
     with open('meteoalarm_geocodes.json') as f:
@@ -32,13 +33,13 @@ async def process_meteoalarm_areas(
             polygons.append(polygon)
 
         area = AlertArea(properties['code'], properties['name'], polygons)
-        print(area)
+        logger.info(area)
         areas.append(area)
 
     with open(output, 'w') as f:
         dump([area.to_dict() for area in areas], f)
 
-    print(f'Total {len(areas)} areas')
+    logger.info(f'Total {len(areas)} areas')
 
     await match_meteoalarm_areas(country, output_matches, areas)
 
@@ -81,8 +82,11 @@ async def match_meteoalarm_areas(
         if not found:
             if id in overrides:
                 matches[id] = overrides[id]
-                continue
-            raise ValueError(id, label, coordinate)
+            else:
+                raise ValueError(id, label, coordinate)
+
+        # update database
+        await store_station(country, {'id': id, 'alerts_area': matches[id]})
 
     with open(output, 'w') as f:
         dump(matches, f, indent=2)

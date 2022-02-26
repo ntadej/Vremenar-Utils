@@ -1,5 +1,6 @@
 """Vremenar Utils CLI."""
 import asyncio
+import sys
 import typer
 from typing import Optional
 
@@ -17,6 +18,11 @@ from ..dwd.forecast import (
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
 from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
 from ..meteoalarm.steering import get_alerts as meteoalarm_alerts_get
+
+if not sys.warnoptions:
+    import warnings
+
+    warnings.simplefilter('default')
 
 application = typer.Typer()
 
@@ -49,10 +55,9 @@ def stations_store(
     """Load stations into the database."""
     logger = setup_logger()
 
-    message = 'Storing stations into database for country %s'
-    color_message = (
-        f'Storing stations into database for country {style("%s", fg=colors.CYAN)}'
-    )
+    base_message = 'Storing stations into database for country'
+    message = f'{base_message} %s'
+    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
     logger.info(message, country.label(), extra={'color_message': color_message})
 
     database_info(logger)
@@ -121,8 +126,18 @@ def alerts_areas(
     ),
 ) -> None:
     """Load MeteoAlarm areas."""
+    logger = setup_logger()
+
+    base_message = 'Processing weather alerts areas for country'
+    message = f'{base_message} %s'
+    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
+    logger.info(message, country.label(), extra={'color_message': color_message})
+
+    database_info(logger)
+
     asyncio.run(
         meteoalarm_areas(
+            logger,
             country,
             output if output else 'areas.json',
             output_matches if output_matches else 'matches.json',
@@ -135,7 +150,16 @@ def alerts_get(
     country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
 ) -> None:
     """Load MeteoAlarm alerts."""
-    asyncio.run(meteoalarm_alerts_get(country))
+    logger = setup_logger('meteoalarm')
+
+    base_message = 'Processing weather alerts for country'
+    message = f'{base_message} %s'
+    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
+    logger.info(message, country.label(), extra={'color_message': color_message})
+
+    database_info(logger)
+
+    asyncio.run(meteoalarm_alerts_get(logger, country))
 
 
 @application.command()

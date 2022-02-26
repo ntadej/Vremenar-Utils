@@ -1,4 +1,7 @@
 """MeteoAlarm steering code."""
+from ..cli.common import CountryID
+from ..cli.logging import Logger
+
 from .areas import load_meteoalarm_areas
 from .database import (
     delete_alert,
@@ -9,37 +12,31 @@ from .database import (
 )
 from .parser import MeteoAlarmParser
 
-from ..cli.common import CountryID
 
-
-async def get_alerts(country: CountryID) -> None:
+async def get_alerts(logger: Logger, country: CountryID) -> None:
     """Get alerts for a specific country."""
     existing_alerts: set[str] = await get_alert_ids(country)
-    print(f'Read {len(existing_alerts)} existing alerts from the database')
-    print()
+    logger.info(f'Read {len(existing_alerts)} existing alerts from the database')
 
-    parser = MeteoAlarmParser(country, existing_alerts)
-    new_alerts = parser.get_new_alerts()
+    parser = MeteoAlarmParser(logger, country, existing_alerts)
+    new_alerts = await parser.get_new_alerts()
 
     for id, url in new_alerts:
-        alert = parser.parse_cap(id, url)
+        alert = await parser.parse_cap(id, url)
         if not alert:
             continue
         await store_alert(country, alert)
 
-    print(f'Added {len(new_alerts)} new alerts')
-
-    # TODO: remove expired
+    logger.info(f'Added {len(new_alerts)} new alerts')
 
     for id in parser.obsolete_alert_ids:
         await delete_alert(country, id)
 
-    print(f'Removed {len(parser.obsolete_alert_ids)} obsolete alerts')
+    logger.info(f'Removed {len(parser.obsolete_alert_ids)} obsolete alerts')
 
     alert_areas: dict[str, set[str]] = await get_alert_area_map(country)
 
-    print()
-    print(f'Total of {len(alert_areas)} alerts are available for {country.value}')
+    logger.info(f'Total of {len(alert_areas)} alerts are available for {country.value}')
 
     # make area-alert mappings
     areas_list = load_meteoalarm_areas(country)
@@ -53,5 +50,4 @@ async def get_alerts(country: CountryID) -> None:
     for area, alerts in area_mappings.items():
         await store_alerts_for_area(country, area, alerts)
 
-    print()
-    print(f'Areas with alerts: {len(areas_with_alerts)}')
+    logger.info(f'Areas with alerts: {len(areas_with_alerts)}')

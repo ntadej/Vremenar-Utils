@@ -1,19 +1,22 @@
 """Stations database helpers."""
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from ..cli.common import CountryID
 from .redis import redis
 
 
 async def store_station(
-    country: CountryID, station: dict[str, Any], metadata: dict[str, Any]
+    country: CountryID,
+    station: dict[str, Any],
+    metadata: Optional[dict[str, Any]] = None,
 ) -> None:
     """Store a station to redis."""
     id = station['id']
 
     async with redis.pipeline() as pipe:
-        pipe.hmset(f'station:{country.value}:{id}', station)
-        pipe.hmset(f'station:{country.value}:{id}', metadata)
+        pipe.hset(f'station:{country.value}:{id}', mapping=station)
+        if metadata is not None:
+            pipe.hset(f'station:{country.value}:{id}', mapping=metadata)
         await pipe.execute()
 
 

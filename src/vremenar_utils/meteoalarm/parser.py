@@ -1,11 +1,12 @@
 """MeteoAlarm parsing."""
 # Inspired and based on https://github.com/rolfberkenbosch/meteoalert-api
-import httpx
 from datetime import datetime, timezone
+from httpx import AsyncClient, codes
 from typing import Optional, Union, cast
 from xmltodict import parse  # type: ignore
 
 from ..cli.common import CountryID, LanguageID
+from ..cli.logging import Logger
 
 from .common import (
     AlertCertainty,
@@ -24,17 +25,21 @@ METEOALARM_ATOM_ENDPOINT = (
 class MeteoAlarmParser:
     """MeteoAlarm Atom feed parser."""
 
-    def __init__(self, country: CountryID, existing_alerts: set[str]) -> None:
+    def __init__(
+        self, logger: Logger, country: CountryID, existing_alerts: set[str]
+    ) -> None:
         """Initialize MeteoAlarm parser."""
+        self.logger: Logger = logger
         self.country: CountryID = country
         self.now: datetime = datetime.utcnow().replace(tzinfo=timezone.utc)
         self.existing_alert_ids: set[str] = existing_alerts
         self.obsolete_alert_ids: set[str] = set()
 
-    def get_new_alerts(self) -> set[tuple[str, str]]:
+    async def get_new_alerts(self) -> set[tuple[str, str]]:
         """Retrieve new alerts."""
-        endpoint = METEOALARM_ATOM_ENDPOINT.format(self.country.value)
-        response = httpx.get(endpoint, timeout=10)
+        endpoint = METEOALARM_ATOM_ENDPOINT.format(self.country.full_name())
+        async with AsyncClient() as client:
+            response = await client.get(endpoint, timeout=10)
         result = response.text
 
         all_ids = set()
@@ -76,12 +81,17 @@ class MeteoAlarmParser:
         """Parse alert date/time."""
         return datetime.strptime(string, '%Y-%m-%dT%H:%M:%S%z')
 
-    def parse_cap(self, id: str, url: str) -> Optional[AlertInfo]:
+    async def parse_cap(self, id: str, url: str) -> Optional[AlertInfo]:
         """Parse CAP."""
         alert = AlertInfo(id)
 
         # Parse the XML response for the alert information
-        response = httpx.get(url, timeout=10)
+        async with AsyncClient() as client:
+            response = await client.get(url, timeout=10)
+        # can be missing
+        if response.status_code != codes.OK:
+            return None
+
         result = response.text
         # can be empty
         if not result:
@@ -122,10 +132,9 @@ class MeteoAlarmParser:
             areas = [areas]
         self.parse_alert_areas(alert, areas)
 
-        # print the summary
-        print(alert)
-        print(alert.areas)
-        print()
+        # log the summary
+        self.logger.debug(alert)
+        self.logger.debug(alert.areas)
         return alert
 
     def parse_alert_info(self, alert: AlertInfo, data: dict[str, str]) -> None:
