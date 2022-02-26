@@ -83,12 +83,20 @@ def dwd_mosmix(
     """DWD weather MOSMIX data caching."""
     logger = setup_logger('dwd_mosmix')
 
-    dwd_process_mosmix(
-        logger,
-        job=job,
-        disable_cache=False,
-        local_source=local_source,
-        local_stations=local_stations,
+    message = 'Processing MOSMIX data for Germany'
+    color_message = f'Processing {style("MOSMIX", fg=colors.CYAN)} data for Germany'
+    logger.info(message, extra={'color_message': color_message})
+
+    database_info(logger)
+
+    asyncio.run(
+        dwd_process_mosmix(
+            logger,
+            job=job,
+            disable_cache=False,
+            local_source=local_source,
+            local_stations=local_stations,
+        )
     )
 
 
@@ -107,11 +115,13 @@ def dwd_stations(
     """DWD process stations."""
     logger = setup_logger()
 
-    dws_mosmix_stations(
-        logger,
-        output if output else 'DWD.csv',
-        output_new if output_new else 'DWD.NEW.csv',
-        local_source=local_source,
+    asyncio.run(
+        dws_mosmix_stations(
+            logger,
+            output if output else 'DWD.csv',
+            output_new if output_new else 'DWD.NEW.csv',
+            local_source=local_source,
+        )
     )
 
 

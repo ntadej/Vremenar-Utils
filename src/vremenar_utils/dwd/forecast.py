@@ -5,10 +5,15 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Optional, TextIO
 
-from ..cli.logging import Logger
+from vremenar_utils.cli.common import CountryID
 
+from ..cli.logging import Logger
+from ..database.redis import redis
+from ..database.stations import load_stations
+
+from .database import store_mosmix_record
 from .mosmix import MOSMIXParserFast, download
-from .stations import load_stations
+from .stations import load_stations as load_local_stations
 
 DWD_TMP_DIR: Path = Path.cwd() / '.cache/tmp'
 DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
@@ -32,7 +37,7 @@ def close_file(file: TextIO) -> None:
     file.close()
 
 
-def process_mosmix(
+async def process_mosmix(
     logger: Logger,
     job: Optional[int] = 0,
     disable_cache: Optional[bool] = False,
@@ -47,8 +52,12 @@ def process_mosmix(
 
     # load stations to use
     station_ids: list[str] = []
-    logger.info('Loading DWD MOSMIX station IDs from the local database')
-    station_ids = [key for key in load_stations().keys()]
+    if local_stations:
+        logger.info('Loading DWD MOSMIX station IDs from the local database')
+        station_ids = [key for key in load_local_stations().keys()]
+    else:
+        stations_dict = await load_stations(CountryID.Germany)
+        station_ids = list(stations_dict.keys())
 
     # setup batching if needed
     job_size: int = 250
@@ -64,26 +73,25 @@ def process_mosmix(
     temporary_file = None
     if not local_source:
         temporary_file = NamedTemporaryFile(suffix='.kmz', prefix='DWD_MOSMIX_')
-        download(logger, temporary_file)
+        await download(logger, temporary_file)
 
     parser = MOSMIXParserFast(
         path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
         url=None,
     )
-    for record in parser.parse(station_ids, min_entry, max_entry):
-        source: str = output_name(record['timestamp'])
-        record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
-        # write to the DB
-        # if not disable_database:
-        #     key: str = f"{record['timestamp']}_{record['wmo_station_id']}"
-        #     batch.put(record, key)
-        # write to the local cache
-        if not disable_cache:
-            if source not in data:
-                data[source] = open_file(source)
-                data[source].write(dumps(record))
-            else:
-                data[source].write(f',\n{dumps(record)}')
+    async with redis.client() as db:
+        for record in parser.parse(station_ids, min_entry, max_entry):
+            source: str = output_name(record['timestamp'])
+            record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
+            id: str = f"{record['timestamp']}:{record['station_id']}"
+            await store_mosmix_record(id, record, db)
+            # write to the local cache
+            if not disable_cache:
+                if source not in data:
+                    data[source] = open_file(source)
+                    data[source].write(dumps(record))
+                else:
+                    data[source].write(f',\n{dumps(record)}')
     if temporary_file:
         temporary_file.close()
 

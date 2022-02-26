@@ -4,7 +4,7 @@ from brightsky.parsers import Parser, wmo_id_to_dwd  # type: ignore
 from csv import reader
 from datetime import datetime, timedelta, timezone
 from dateutil import parser
-from httpx import stream
+from httpx import AsyncClient
 from lxml.etree import iterparse, Element, QName  # type: ignore
 from typing import Any, Generator, IO, Optional, cast
 from zipfile import ZipFile
@@ -181,7 +181,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
 
         base_record = {
             'source': source,
-            'wmo_station_id': wmo_station_id,
+            'station_id': wmo_station_id,
         }
 
         if timestamps:
@@ -231,12 +231,13 @@ class MOSMIXParserFast(Parser):  # type: ignore
             yield r
 
 
-def download(logger: Logger, temporary_file: IO[bytes]) -> None:
+async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
     """Download the mosmix data."""
     logger.info(f'Downloading MOSMIX data from {DWD_MOSMIX_URL} ...')
     logger.info(f'Temporary file: {temporary_file.name}')
-    with stream('GET', DWD_MOSMIX_URL) as r:
-        for chunk in r.iter_raw():
+    client = AsyncClient()
+    async with client.stream('GET', DWD_MOSMIX_URL) as r:
+        async for chunk in r.aiter_raw():
             temporary_file.write(chunk)
     temporary_file.flush()
     logger.info('Done!')

@@ -21,4 +21,4 @@ def database_info(logger: Logger) -> None:
     logger.debug('Using %s database with ID %d', db_env, database)
 
 
-__all__ = ['redis']
+__all__ = ['redis', 'Redis']

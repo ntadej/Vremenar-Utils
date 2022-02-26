@@ -12,7 +12,7 @@ from ..geo.shapes import load_shape, inside_shape
 from .mosmix import MOSMIXParserFast, download
 
 DWD_STATION_KEYS = [
-    'wmo_station_id',
+    'station_id',
     'dwd_station_id',
     'has_reports',
     'station_name',
@@ -114,7 +114,7 @@ def load_stations_ignored() -> list[str]:
     return stations
 
 
-def process_mosmix_stations(
+async def process_mosmix_stations(
     logger: Logger,
     output: str,
     output_new: str,
@@ -129,7 +129,7 @@ def process_mosmix_stations(
     temporary_file = None
     if not local_source:
         temporary_file = NamedTemporaryFile(suffix='.kmz', prefix='DWD_MOSMIX_')
-        download(logger, temporary_file)
+        await download(logger, temporary_file)
 
     meta_keys = ['name', 'type', 'admin', 'status']
 
@@ -141,7 +141,7 @@ def process_mosmix_stations(
     for station in parser.stations():
         if 'SWIS-PUNKT' in station['station_name']:
             continue
-        id = station['wmo_station_id']
+        id = station['station_id']
         station['has_reports'] = int(id in stations_with_reports)
         if id in old_stations.keys():
             station.update({key: old_stations[id][key] for key in meta_keys})
@@ -155,7 +155,7 @@ def process_mosmix_stations(
         temporary_file.close()
 
     # sort
-    stations = sorted(stations, key=itemgetter('wmo_station_id', 'name', 'lon', 'lat'))
+    stations = sorted(stations, key=itemgetter('station_id', 'name', 'lon', 'lat'))
     stations_keys: list[str] = []
     stations_db: list[dict[str, Any]] = []
 
@@ -168,16 +168,16 @@ def process_mosmix_stations(
         for station in stations:
             point = Point(station['lon'], station['lat'])
             valid = inside_shape(point, shape_buffered)
-            if station['wmo_station_id'] in stations_ignored:
+            if station['station_id'] in stations_ignored:
                 valid = False
-            if station['wmo_station_id'] in stations_included:
+            if station['station_id'] in stations_included:
                 valid = True
             if not valid:
                 continue
 
             if station['name']:
                 csv.writerow([station[key] for key in DWD_STATION_KEYS])
-                stations_keys.append(station['wmo_station_id'])
+                stations_keys.append(station['station_id'])
                 stations_db.append({key: station[key] for key in DWD_STATION_KEYS})
             else:
                 csv_new.writerow([station[key] for key in DWD_STATION_KEYS])
