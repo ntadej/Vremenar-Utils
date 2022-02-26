@@ -3,6 +3,8 @@ import asyncio
 import typer
 from typing import Optional
 
+from .logging import setup_logger
+
 from .. import __version__
 from ..dwd.forecast import (
     process_mosmix as dwd_process_mosmix,
@@ -42,9 +44,6 @@ def dwd_mosmix(
     job: Optional[int] = typer.Argument(  # noqa: B008
         None, help='Job number for batched processing'
     ),
-    use_database: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--database', help='Update database.'
-    ),
     local_source: Optional[bool] = typer.Option(  # noqa: B008
         False, '--local-source', help="Use local 'MOSMIX_S_LATEST_240.kmz'."
     ),
@@ -53,9 +52,11 @@ def dwd_mosmix(
     ),
 ) -> None:
     """DWD weather MOSMIX data caching."""
+    logger = setup_logger('dwd_mosmix')
+
     dwd_process_mosmix(
+        logger,
         job=job,
-        disable_database=not use_database,
         disable_cache=False,
         local_source=local_source,
         local_stations=local_stations,
@@ -70,18 +71,17 @@ def dwd_stations(
     output_new: Optional[str] = typer.Argument(  # noqa: B008
         default='DWD.NEW.csv', help='Output file for new stations'
     ),
-    use_database: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--database', help='Update database.'
-    ),
     local_source: Optional[bool] = typer.Option(  # noqa: B008
         False, '--local-source', help="Use local 'MOSMIX_S_LATEST_240.kmz'."
     ),
 ) -> None:
     """DWD process stations."""
+    logger = setup_logger()
+
     dws_mosmix_stations(
+        logger,
         output if output else 'DWD.csv',
         output_new if output_new else 'DWD.NEW.csv',
-        disable_database=not use_database,
         local_source=local_source,
     )
 

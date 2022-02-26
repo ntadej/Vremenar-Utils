@@ -5,6 +5,7 @@ from csv import reader
 from datetime import datetime, timedelta, timezone
 from dateutil import parser
 from httpx import stream
+from logging import Logger
 from lxml.etree import iterparse, Element, QName  # type: ignore
 from typing import Any, Generator, IO, Optional, cast
 from zipfile import ZipFile
@@ -72,11 +73,13 @@ class MOSMIXParserFast(Parser):  # type: ignore
                         accepted_timestamps = self._filter_timestamps(timestamps)
                         self._clear_element(elem)
 
-                        print(
+                        self.logger.info(
                             'Got %d timestamps for source %s'
                             % (len(timestamps), source)
                         )
-                        print('Using %d timestamps' % (len(accepted_timestamps),))
+                        self.logger.info(
+                            'Using %d timestamps' % (len(accepted_timestamps),)
+                        )
                     elif tag == 'Placemark':
                         records = None
                         if placemark >= min_entry and (
@@ -93,7 +96,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                         if max_entry > 0 and placemark >= max_entry:
                             break
                         if records:
-                            print(f'Processed placemark #{placemark+1}')
+                            self.logger.info(f'Processed placemark #{placemark+1}')
                             placemark += 1
                             yield from self._sanitize_records(records)
                         else:
@@ -227,12 +230,12 @@ class MOSMIXParserFast(Parser):  # type: ignore
             yield r
 
 
-def download(temporary_file: IO[bytes]) -> None:
+def download(logger: Logger, temporary_file: IO[bytes]) -> None:
     """Download the mosmix data."""
-    print(f'Downloading MOSMIX data from {DWD_MOSMIX_URL} ...')
-    print(f'Temporary file: {temporary_file.name}')
+    logger.info(f'Downloading MOSMIX data from {DWD_MOSMIX_URL} ...')
+    logger.info(f'Temporary file: {temporary_file.name}')
     with stream('GET', DWD_MOSMIX_URL) as r:
         for chunk in r.iter_raw():
             temporary_file.write(chunk)
     temporary_file.flush()
-    print('Done!')
+    logger.info('Done!')

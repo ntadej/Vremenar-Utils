@@ -1,22 +1,15 @@
 """DWD stations utils."""
 from csv import reader, writer
-from deta import Deta  # type: ignore
-from httpx import get as httpx_get, RequestError, HTTPStatusError
 from io import BytesIO, TextIOWrapper
+from logging import Logger
 from operator import itemgetter
-from os import getenv
-from pathlib import Path
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, Optional, TextIO, Union, cast
+from typing import Any, Optional, TextIO, Union
 
-from ..database.deta import BatchedPut
 from ..geo.shapes import load_shape, inside_shape
 from .mosmix import MOSMIXParserFast, download
-
-DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
-VREMENAR_STATIONS_ENDPOINT: str = 'https://dwd-stations.vremenar.tano.si/mosmix'
 
 DWD_STATION_KEYS = [
     'wmo_station_id',
@@ -103,33 +96,10 @@ def load_stations_ignored() -> list[str]:
     return stations
 
 
-def get_stations_mosmix() -> list[str]:
-    """Get DWD MOSMIX station IDs from a dedicated microservice."""
-    print(f"Getting DWD MOSMIX station IDs from '{VREMENAR_STATIONS_ENDPOINT}'")
-    headers = {
-        'Content-Type': 'application/json',
-        'X-API-Key': getenv('VREMENAR_DWD_STATIONS_KEY', ''),
-    }
-    try:
-        response = httpx_get(VREMENAR_STATIONS_ENDPOINT, headers=headers)
-    except RequestError as e:
-        print(f'An error occurred: {str(e)}')
-        return []
-    except HTTPStatusError as e:
-        print(f'Error response: {e.response.status_code}')
-        return []
-
-    if response.is_error:
-        print(f'Error response: {response.status_code}')
-        return []
-
-    return cast(list[str], response.json())
-
-
 def process_mosmix_stations(
+    logger: Logger,
     output: str,
     output_new: str,
-    disable_database: Optional[bool] = False,
     local_source: Optional[bool] = False,
 ) -> None:
     """Load DWD MOSMIX stations."""
@@ -141,7 +111,7 @@ def process_mosmix_stations(
     temporary_file = None
     if not local_source:
         temporary_file = NamedTemporaryFile(suffix='.kmz', prefix='DWD_MOSMIX_')
-        download(temporary_file)
+        download(logger, temporary_file)
 
     meta_keys = ['name', 'type', 'admin', 'status']
 
@@ -194,33 +164,4 @@ def process_mosmix_stations(
             else:
                 csv_new.writerow([station[key] for key in DWD_STATION_KEYS])
 
-    print(f'Processed {len(stations_db)} stations!')
-
-    if not disable_database:
-        deta = Deta()
-        db = deta.Base('dwd_stations')
-
-        with BatchedPut(db) as batch:
-            for station in stations_db:
-                batch.put(station, station['wmo_station_id'])
-
-        print('Updated database!')
-
-        removed: list[str] = []
-
-        last_item = None
-        total_count = 0
-        while True:
-            result = db.fetch(last=last_item)
-            total_count += result.count
-            for item in result.items:
-                if item['key'] not in stations_keys:
-                    db.delete(item['key'])
-                    removed.append(item['key'])
-            if not result.last:
-                break
-            last_item = result.last
-
-        print(f'Read {total_count} stations from the database')
-        print(f'Deleted {len(removed)} obsolete stations')
-        print(f'Total {total_count - len(removed)} stations')
+    logger.info(f'Processed {len(stations_db)} stations!')
