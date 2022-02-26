@@ -11,7 +11,7 @@ from ..cli.logging import Logger
 from ..database.redis import redis
 from ..database.stations import load_stations
 
-from .database import store_mosmix_record
+from .database import BatchedMosmix
 from .mosmix import MOSMIXParserFast, download
 from .stations import load_stations as load_local_stations
 
@@ -80,18 +80,18 @@ async def process_mosmix(
         url=None,
     )
     async with redis.client() as db:
-        for record in parser.parse(station_ids, min_entry, max_entry):
-            source: str = output_name(record['timestamp'])
-            record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
-            id: str = f"{record['timestamp']}:{record['station_id']}"
-            await store_mosmix_record(id, record, db)
-            # write to the local cache
-            if not disable_cache:
-                if source not in data:
-                    data[source] = open_file(source)
-                    data[source].write(dumps(record))
-                else:
-                    data[source].write(f',\n{dumps(record)}')
+        async with BatchedMosmix(db) as batch:
+            for record in parser.parse(station_ids, min_entry, max_entry):
+                source: str = output_name(record['timestamp'])
+                record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
+                await batch.add(record)
+                # write to the local cache
+                if not disable_cache:
+                    if source not in data:
+                        data[source] = open_file(source)
+                        data[source].write(dumps(record))
+                    else:
+                        data[source].write(f',\n{dumps(record)}')
     if temporary_file:
         temporary_file.close()
 

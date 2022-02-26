@@ -1,10 +1,10 @@
 """DWD database utilities."""
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Any
 
 from ..cli.common import CountryID
 from ..cli.logging import Logger
-from ..database.redis import redis, Redis
+from ..database.redis import Redis, BatchedRedis
 from ..database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
@@ -42,14 +42,11 @@ async def store_stations(logger: Logger) -> None:
     logger.info('%d obsolete stations removed', removed)
 
 
-async def store_mosmix_record(
-    id: str, record: dict[str, str], connection: Optional[Redis] = None
-) -> None:
-    """Store MOSMIX records."""
-    if connection is None:
-        connection = redis
+class BatchedMosmix(BatchedRedis):
+    """Batched MOSMIX save."""
 
-    async with connection.pipeline() as pipe:
+    def process(self, pipeline: Redis, record: dict[str, Any]) -> None:
+        """Process MOSMIX record."""
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
         reference = now + timedelta(hours=-2)
@@ -62,12 +59,11 @@ async def store_mosmix_record(
         empty_keys = set()
         for key, value in record.items():
             if value is None:
-                empty_keys.add(key)  # type: ignore
+                empty_keys.add(key)
         for key in empty_keys:
             del record[key]
 
         # store in the DB
-        key = f'mosmix:{id}'
-        pipe.hset(key, mapping=record)
-        pipe.expire(key, delta)
-        await pipe.execute()
+        key = f"mosmix:{record['timestamp']}:{record['station_id']}"
+        pipeline.hset(key, mapping=record)
+        pipeline.expire(key, delta)

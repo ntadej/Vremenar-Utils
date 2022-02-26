@@ -13,32 +13,29 @@ async def store_station(
     """Store a station to redis."""
     id = station['id']
 
-    async with redis.pipeline() as pipe:
-        pipe.hset(f'station:{country.value}:{id}', mapping=station)
+    async with redis.pipeline() as pipeline:
+        pipeline.sadd(f'station:{country.value}', id)
+        pipeline.hset(f'station:{country.value}:{id}', mapping=station)
         if metadata is not None:
-            pipe.hset(f'station:{country.value}:{id}', mapping=metadata)
-        await pipe.execute()
+            pipeline.hset(f'station:{country.value}:{id}', mapping=metadata)
+        await pipeline.execute()
 
 
 async def validate_stations(country: CountryID, ids: set[str]) -> int:
     """Validate station IDs and remove obsolete."""
+    existing_ids: set[str] = await redis.smembers(f'station:{country.value}')
     ids_to_remove: set[str] = set()
 
-    async with redis.client() as conn:
-        cur = b'0'  # set initial cursor to 0
-        while cur:
-            cur, keys = await conn.scan(
-                cur,  # type: ignore
-                match=f'station:{country.value}:*',
-            )
-            for key in keys:
-                id = await conn.hget(key, 'id')
-                if id not in ids:
-                    ids_to_remove.add(id)
+    for id in existing_ids:
+        if id not in ids:
+            ids_to_remove.add(id)
 
-    async with redis.client() as conn:
+    async with redis.client() as connection:
         for id in ids_to_remove:
-            conn.delete(f'station:{country.value}:{id}')
+            async with connection.pipeline() as pipeline:
+                pipeline.srem(f'station:{country.value}', id)
+                pipeline.delete(f'station:{country.value}:{id}')
+                await pipeline.execute()
 
     return len(ids_to_remove)
 
@@ -48,14 +45,14 @@ async def load_stations(
 ) -> dict[str, dict[str, Union[str, int, float]]]:
     """Load stations from redis."""
     stations: dict[str, dict[str, Union[str, int, float]]] = {}
-    async with redis.client() as conn:
-        cur = b'0'  # set initial cursor to 0
-        while cur:
-            cur, keys = await conn.scan(
-                cur,  # type: ignore
-                match=f'station:{country.value}:*',
-            )
-            for key in keys:
-                _, station = await conn.hscan(key, count=25)
-                stations[station['id']] = station
+    async with redis.client() as connection:
+        ids: set[str] = await redis.smembers(f'station:{country.value}')
+        async with connection.pipeline(transaction=False) as pipeline:
+            for id in ids:
+                pipeline.hgetall(f'station:{country.value}:{id}')
+            response = await pipeline.execute()
+
+    for station in response:
+        stations[station['id']] = station
+
     return stations
