@@ -3,16 +3,18 @@ import asyncio
 import typer
 from typing import Optional
 
+from .common import CountryID
 from .logging import setup_logger
 
 from .. import __version__
+from ..arso.database import store_stations as arso_store_stations
+from ..dwd.database import store_stations as dwd_store_stations
 from ..dwd.forecast import (
     process_mosmix as dwd_process_mosmix,
     cleanup_mosmix as dwd_cleanup_mosmix,
 )
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
 from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
-from ..meteoalarm.common import AlertCountry
 from ..meteoalarm.steering import get_alerts as meteoalarm_alerts_get
 
 application = typer.Typer()
@@ -37,6 +39,19 @@ def main(
 ) -> None:
     """Vremenar Utilities CLI app."""
     return
+
+
+@application.command()
+def stations_store(
+    country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
+) -> None:
+    """Load stations into the database."""
+    logger = setup_logger()
+
+    if country is CountryID.Germany:
+        asyncio.run(dwd_store_stations(logger))
+    elif country is CountryID.Slovenia:
+        asyncio.run(arso_store_stations(logger))
 
 
 @application.command()
@@ -88,7 +103,7 @@ def dwd_stations(
 
 @application.command()
 def alerts_areas(
-    country: AlertCountry = typer.Argument(..., help='Country'),  # noqa: B008
+    country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
     output: Optional[str] = typer.Argument(  # noqa: B008
         default='areas.json', help='Output file'
     ),
@@ -97,16 +112,18 @@ def alerts_areas(
     ),
 ) -> None:
     """Load MeteoAlarm areas."""
-    meteoalarm_areas(
-        country,
-        output if output else 'areas.json',
-        output_matches if output_matches else 'matches.json',
+    asyncio.run(
+        meteoalarm_areas(
+            country,
+            output if output else 'areas.json',
+            output_matches if output_matches else 'matches.json',
+        )
     )
 
 
 @application.command()
 def alerts_get(
-    country: AlertCountry = typer.Argument(..., help='Country'),  # noqa: B008
+    country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
 ) -> None:
     """Load MeteoAlarm alerts."""
     asyncio.run(meteoalarm_alerts_get(country))

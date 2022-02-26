@@ -1,13 +1,13 @@
 """DWD stations utils."""
 from csv import reader, writer
 from io import BytesIO, TextIOWrapper
-from logging import Logger
 from operator import itemgetter
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
 from typing import Any, Optional, TextIO, Union
 
+from ..cli.logging import Logger
 from ..geo.shapes import load_shape, inside_shape
 from .mosmix import MOSMIXParserFast, download
 
@@ -24,6 +24,24 @@ DWD_STATION_KEYS = [
     'admin',
     'status',
 ]
+
+
+def zoom_level_conversion(location_type: str, admin_level: float) -> float:
+    """DWD zoom level conversions."""
+    # location_type: {'city', 'town', 'village', 'suburb', 'hamlet', 'isolated',
+    #                 'airport', 'special' }
+    # admin_level: {'4', '6', '8', '9', '10'}
+    if admin_level >= 10:
+        return 10.35
+    if admin_level >= 9:
+        return 9.9
+    if admin_level >= 8:
+        if location_type in ['town']:
+            return 8.5
+        if location_type in ['village', 'suburb']:
+            return 9.1
+        return 9.5
+    return 7.5
 
 
 def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:

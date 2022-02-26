@@ -5,10 +5,11 @@ from csv import reader
 from datetime import datetime, timedelta, timezone
 from dateutil import parser
 from httpx import stream
-from logging import Logger
 from lxml.etree import iterparse, Element, QName  # type: ignore
 from typing import Any, Generator, IO, Optional, cast
 from zipfile import ZipFile
+
+from ..cli.logging import Logger
 
 DwdRecord = dict[str, Any]
 DwdGenerator = Generator[DwdRecord, None, None]

@@ -1,10 +1,11 @@
 """DWD MOSMIX utils."""
 from datetime import datetime
 from json import dumps
-from logging import Logger
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Optional, TextIO
+
+from ..cli.logging import Logger
 
 from .mosmix import MOSMIXParserFast, download
 from .stations import load_stations

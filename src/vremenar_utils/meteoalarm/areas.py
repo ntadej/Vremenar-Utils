@@ -3,13 +3,15 @@ from io import BytesIO, TextIOWrapper
 from json import load, dump
 from pkgutil import get_data
 
+from ..cli.common import CountryID
+from ..database.stations import load_stations
 from ..geo.polygons import point_in_polygon
 
-from .common import AlertArea, AlertCountry, load_stations
+from .common import AlertArea
 
 
-def process_meteoalarm_areas(
-    country: AlertCountry, output: str, output_matches: str
+async def process_meteoalarm_areas(
+    country: CountryID, output: str, output_matches: str
 ) -> None:
     """Process MeteoAlarm ares."""
     with open('meteoalarm_geocodes.json') as f:
@@ -19,7 +21,7 @@ def process_meteoalarm_areas(
 
     for feature in data['features']:
         properties = feature['properties']
-        if properties['country'] != country.country_code():
+        if properties['country'].lower() != country.value:
             continue
 
         coordinates = feature['geometry']['coordinates']
@@ -38,15 +40,15 @@ def process_meteoalarm_areas(
 
     print(f'Total {len(areas)} areas')
 
-    match_meteoalarm_areas(country, output_matches, areas)
+    await match_meteoalarm_areas(country, output_matches, areas)
 
 
-def match_meteoalarm_areas(
-    country: AlertCountry, output: str, areas: list[AlertArea]
+async def match_meteoalarm_areas(
+    country: CountryID, output: str, areas: list[AlertArea]
 ) -> None:
     """Match MeteoAlarm areas with weather stations."""
     # load stations
-    stations = load_stations(country)
+    stations = await load_stations(country)
     # load overries
     overrides: dict[str, str] = {}
     overrides_data = get_data(
@@ -59,19 +61,12 @@ def match_meteoalarm_areas(
 
     matches: dict[str, str] = {}
 
-    for station in stations:
-        if country is AlertCountry.Germany:
-            s = stations[station]
-            id = str(s['wmo_station_id'])
-            label = s['name']
-            coordinate = [float(s['lon']), float(s['lat'])]
-        elif country is AlertCountry.Slovenia:
-            s = stations[station]
-            if s['country'] != country.country_code():
-                continue
-            id = str(s['id']).strip('_')
-            label = s['title']
-            coordinate = [float(s['longitude']), float(s['latitude'])]
+    for id, station in stations.items():
+        if 'country' in station and str(station['country']).lower() != country.value:
+            continue
+
+        label = station['name']
+        coordinate = [float(station['longitude']), float(station['latitude'])]
 
         found = False
         for area in areas:
@@ -93,7 +88,7 @@ def match_meteoalarm_areas(
         dump(matches, f, indent=2)
 
 
-def load_meteoalarm_areas(country: AlertCountry) -> list[AlertArea]:
+def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:
     """Load MeteoAlarm areas from file."""
     areas: list[AlertArea] = []
 

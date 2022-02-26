@@ -7,11 +7,12 @@ from .database import (
     store_alert,
     store_alerts_for_area,
 )
-from .common import AlertCountry
 from .parser import MeteoAlarmParser
 
+from ..cli.common import CountryID
 
-async def get_alerts(country: AlertCountry) -> None:
+
+async def get_alerts(country: CountryID) -> None:
     """Get alerts for a specific country."""
     existing_alerts: set[str] = await get_alert_ids(country)
     print(f'Read {len(existing_alerts)} existing alerts from the database')

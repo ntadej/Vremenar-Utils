@@ -5,11 +5,11 @@ from datetime import datetime, timezone
 from typing import Optional, Union, cast
 from xmltodict import parse  # type: ignore
 
+from ..cli.common import CountryID, LanguageID
+
 from .common import (
     AlertCertainty,
-    AlertCountry,
     AlertInfo,
-    AlertLanguage,
     AlertResponseType,
     AlertSeverity,
     AlertType,
@@ -24,9 +24,9 @@ METEOALARM_ATOM_ENDPOINT = (
 class MeteoAlarmParser:
     """MeteoAlarm Atom feed parser."""
 
-    def __init__(self, country: AlertCountry, existing_alerts: set[str]) -> None:
+    def __init__(self, country: CountryID, existing_alerts: set[str]) -> None:
         """Initialize MeteoAlarm parser."""
-        self.country: AlertCountry = country
+        self.country: CountryID = country
         self.now: datetime = datetime.utcnow().replace(tzinfo=timezone.utc)
         self.existing_alert_ids: set[str] = existing_alerts
         self.obsolete_alert_ids: set[str] = set()
@@ -98,16 +98,16 @@ class MeteoAlarmParser:
         if isinstance(translations, list):
             for translation in translations:
                 try:
-                    lang = AlertLanguage(translation.get('language')[:2])
+                    lang = LanguageID(translation.get('language')[:2])
                 except ValueError:
                     continue
                 self.parse_alert_info(alert, translation)
                 self.parse_alert_translations(alert, lang, translation)
         else:
             try:
-                lang = AlertLanguage(translation.get('language')[:2])
+                lang = LanguageID(translation.get('language')[:2])
             except ValueError:
-                lang = AlertLanguage.English
+                lang = LanguageID.English
             translation = translations
             self.parse_alert_info(alert, translation)
             self.parse_alert_translations(alert, lang, translation)
@@ -138,7 +138,7 @@ class MeteoAlarmParser:
         alert.response_type = AlertResponseType(data.get('responseType', '').lower())
 
     def parse_alert_translations(
-        self, alert: AlertInfo, language: AlertLanguage, data: dict[str, str]
+        self, alert: AlertInfo, language: LanguageID, data: dict[str, str]
     ) -> None:
         """Parse translatable alert data."""
         alert.event[language] = data.get('event', '').strip()

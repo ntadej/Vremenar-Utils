@@ -1,6 +1,7 @@
 """Common logging setup."""
-import click
 import logging
+from logging import Logger
+from click import style
 from copy import copy
 from sys import stdout
 from typer import colors
@@ -17,11 +18,11 @@ class ColourizedFormatter(logging.Formatter):
     """
 
     level_name_colors: dict[int, Callable[[Any], str]] = {
-        logging.DEBUG: lambda level_name: click.style(str(level_name), colors.CYAN),
-        logging.INFO: lambda level_name: click.style(str(level_name), colors.GREEN),
-        logging.WARNING: lambda level_name: click.style(str(level_name), colors.YELLOW),
-        logging.ERROR: lambda level_name: click.style(str(level_name), colors.RED),
-        logging.CRITICAL: lambda level_name: click.style(
+        logging.DEBUG: lambda level_name: style(str(level_name), colors.CYAN),
+        logging.INFO: lambda level_name: style(str(level_name), colors.GREEN),
+        logging.WARNING: lambda level_name: style(str(level_name), colors.YELLOW),
+        logging.ERROR: lambda level_name: style(str(level_name), colors.RED),
+        logging.CRITICAL: lambda level_name: style(
             str(level_name), fg=colors.BRIGHT_RED
         ),
     }
@@ -77,3 +78,6 @@ def setup_logger(name: Optional[str] = None) -> logging.Logger:
     logger.setLevel(logging.DEBUG)
 
     return logger
+
+
+__all__ = ['setup_logger', 'colors', 'style', 'Logger']

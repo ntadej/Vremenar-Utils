@@ -1,32 +1,9 @@
-"""MeteoAlarm comon utils."""
+"""MeteoAlarm common utils."""
 from datetime import datetime, timezone
 from enum import Enum
-from io import BytesIO, TextIOWrapper
-from json import load
-from pkgutil import get_data
-from typing import Any, Union
+from typing import Any
 
-
-class AlertCountry(Enum):
-    """Countries that have weather alerts handled by Vremenar."""
-
-    Germany = 'germany'
-    Slovenia = 'slovenia'
-
-    def country_code(self) -> str:
-        """Return country code."""
-        if self is AlertCountry.Germany:
-            return 'DE'
-        if self is AlertCountry.Slovenia:
-            return 'SI'
-
-
-class AlertLanguage(Enum):
-    """Supported languages for alerts."""
-
-    English = 'en'
-    German = 'de'
-    Slovenian = 'sl'
+from ..cli.common import LanguageID
 
 
 class AlertType(Enum):
@@ -128,17 +105,17 @@ class AlertInfo:
         self.onset: datetime
         self.expires: datetime
 
-        self.event: dict[AlertLanguage, str] = {}
-        self.headline: dict[AlertLanguage, str] = {}
-        self.description: dict[AlertLanguage, str] = {}
-        self.instructions: dict[AlertLanguage, str] = {}
-        self.sender_name: dict[AlertLanguage, str] = {}
-        self.web: dict[AlertLanguage, str] = {}
+        self.event: dict[LanguageID, str] = {}
+        self.headline: dict[LanguageID, str] = {}
+        self.description: dict[LanguageID, str] = {}
+        self.instructions: dict[LanguageID, str] = {}
+        self.sender_name: dict[LanguageID, str] = {}
+        self.web: dict[LanguageID, str] = {}
 
     def __repr__(self) -> str:
         """Get string representation of an alert."""
         return (
-            f'{self.id}: {self.event[AlertLanguage.English]}'
+            f'{self.id}: {self.event[LanguageID.English]}'
             f' ({self.type}, {self.severity}, {self.urgency}, {self.response_type})'
             f' ({self.onset} - {self.expires})'
         )
@@ -156,14 +133,14 @@ class AlertInfo:
             'expires': f'{str(self.expires.timestamp())}000',
         }
 
-    def to_localised_dict(self, language: AlertLanguage) -> dict[str, str]:
+    def to_localised_dict(self, language: LanguageID) -> dict[str, str]:
         """Get dictionary with localised properties."""
         output: dict[str, str] = {}
         if self.event:
             output['event'] = (
                 self.event[language]
                 if language in self.event
-                else self.event[AlertLanguage.English]
+                else self.event[LanguageID.English]
             )
         else:
             output['event'] = ''
@@ -172,7 +149,7 @@ class AlertInfo:
             output['headline'] = (
                 self.headline[language]
                 if language in self.headline
-                else self.headline[AlertLanguage.English]
+                else self.headline[LanguageID.English]
             )
         else:
             output['headline'] = ''
@@ -181,7 +158,7 @@ class AlertInfo:
             output['description'] = (
                 self.description[language]
                 if language in self.description
-                else self.description[AlertLanguage.English]
+                else self.description[LanguageID.English]
             )
         else:
             output['description'] = ''
@@ -190,7 +167,7 @@ class AlertInfo:
             output['instructions'] = (
                 self.instructions[language]
                 if language in self.instructions
-                else self.instructions[AlertLanguage.English]
+                else self.instructions[LanguageID.English]
             )
         else:
             output['instructions'] = ''
@@ -199,7 +176,7 @@ class AlertInfo:
             output['sender_name'] = (
                 self.sender_name[language]
                 if language in self.sender_name
-                else self.sender_name[AlertLanguage.English]
+                else self.sender_name[LanguageID.English]
             )
         else:
             output['sender_name'] = ''
@@ -208,7 +185,7 @@ class AlertInfo:
             output['web'] = (
                 self.web[language]
                 if language in self.web
-                else self.web[AlertLanguage.English]
+                else self.web[LanguageID.English]
             )
         else:
             output['web'] = ''
@@ -227,20 +204,18 @@ class AlertInfo:
         alert.response_type = AlertResponseType(dictionary['response_type'])
         alert.onset = datetime.fromtimestamp(dictionary['onset'], timezone.utc)
         alert.expires = datetime.fromtimestamp(dictionary['expires'], timezone.utc)
-        alert.event = {AlertLanguage(k): v for k, v in dictionary['event'].items()}
-        alert.headline = {
-            AlertLanguage(k): v for k, v in dictionary['headline'].items()
-        }
+        alert.event = {LanguageID(k): v for k, v in dictionary['event'].items()}
+        alert.headline = {LanguageID(k): v for k, v in dictionary['headline'].items()}
         alert.description = {
-            AlertLanguage(k): v for k, v in dictionary['description'].items()
+            LanguageID(k): v for k, v in dictionary['description'].items()
         }
         alert.instructions = {
-            AlertLanguage(k): v for k, v in dictionary['instructions'].items()
+            LanguageID(k): v for k, v in dictionary['instructions'].items()
         }
         alert.sender_name = {
-            AlertLanguage(k): v for k, v in dictionary['sender_name'].items()
+            LanguageID(k): v for k, v in dictionary['sender_name'].items()
         }
-        alert.web = {AlertLanguage(k): v for k, v in dictionary['web'].items()}
+        alert.web = {LanguageID(k): v for k, v in dictionary['web'].items()}
         return alert
 
 
@@ -268,24 +243,3 @@ class AlertNotificationInfo:
         info.announce = dictionary['announce']
         info.onset = dictionary['onset']
         return info
-
-
-def load_stations(
-    country: AlertCountry,
-) -> dict[str, dict[str, Union[str, int, float]]]:
-    """Load stations for a specific country."""
-    if country is AlertCountry.Germany:
-        from ..dwd.stations import load_stations as dwd_stations
-
-        return dwd_stations()
-
-    if country is AlertCountry.Slovenia:
-        data = get_data('vremenar_utils', 'data/stations/ARSO.json')
-        if data:
-            bytes = BytesIO(data)
-            with TextIOWrapper(bytes, encoding='utf-8') as file:
-                stations = load(file)
-        output: dict[str, dict[str, Union[str, int, float]]] = {}
-        for station in stations:
-            output[station['id']] = station
-        return output
