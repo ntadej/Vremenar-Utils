@@ -284,7 +284,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "deta"
-version = "1.1.0a1"
+version = "1.1.0a2"
 description = "Python SDK for Deta Base & Deta Drive."
 category = "main"
 optional = false
@@ -1133,6 +1133,18 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
 
 [[package]]
+name = "pytest-forked"
+version = "1.4.0"
+description = "run tests in isolated forked subprocesses"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+py = "*"
+pytest = ">=3.10"
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -1444,7 +1456,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "92e104e181868c930d5e760471f1e169a247dc1b2771a95f5e7b4065c6235535"
+content-hash = "10ea401ffd7f6fe06ea111a8bc84358f2da9be1f231b6f4171f20ca34629b2aa"
 
 [metadata.files]
 aiohttp = [
@@ -1666,8 +1678,8 @@ cssselect = [
     {file = "cssselect-1.1.0.tar.gz", hash = "sha256:f95f8dedd925fd8f54edb3d2dfb44c190d9d18512377d3c1e2388d16126879bc"},
 ]
 deta = [
-    {file = "deta-1.1.0a1-py3-none-any.whl", hash = "sha256:1a0f0ab39f5a9031288a406c50a7bd85f18f7f90b8ceca9120156edbb6790f6f"},
-    {file = "deta-1.1.0a1.tar.gz", hash = "sha256:377269aaee0096d66d5e9d2bec9e02f9d82b98e297d1d1395e0729a1161ec6e9"},
+    {file = "deta-1.1.0a2-py3-none-any.whl", hash = "sha256:041bc4187dc8cf15cf41dc6dcf62df3f30e3adf6424e2b085cc0f0c50c80915b"},
+    {file = "deta-1.1.0a2.tar.gz", hash = "sha256:89ae602bb8a150071ef981a72c6df8420681ace9f55ea9eeb3ea6a1a6e24a68c"},
 ]
 distlib = [
     {file = "distlib-0.3.4-py2.py3-none-any.whl", hash = "sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b"},
@@ -2432,6 +2444,10 @@ pytest = [
 pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
+]
+pytest-forked = [
+    {file = "pytest-forked-1.4.0.tar.gz", hash = "sha256:8b67587c8f98cbbadfdd804539ed5455b6ed03802203485dd2f53c1422d7440e"},
+    {file = "pytest_forked-1.4.0-py3-none-any.whl", hash = "sha256:bbbb6717efc886b9d64537b41fb1497cfaf3c9601276be8da2cccfea5a3c8ad8"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},

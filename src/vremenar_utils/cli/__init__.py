@@ -4,10 +4,11 @@ import typer
 from typing import Optional
 
 from .common import CountryID
-from .logging import setup_logger
+from .logging import colors, setup_logger, style
 
 from .. import __version__
 from ..arso.database import store_stations as arso_store_stations
+from ..database.redis import database_info
 from ..dwd.database import store_stations as dwd_store_stations
 from ..dwd.forecast import (
     process_mosmix as dwd_process_mosmix,
@@ -47,6 +48,14 @@ def stations_store(
 ) -> None:
     """Load stations into the database."""
     logger = setup_logger()
+
+    message = 'Storing stations into database for country %s'
+    color_message = (
+        f'Storing stations into database for country {style("%s", fg=colors.CYAN)}'
+    )
+    logger.info(message, country.label(), extra={'color_message': color_message})
+
+    database_info(logger)
 
     if country is CountryID.Germany:
         asyncio.run(dwd_store_stations(logger))

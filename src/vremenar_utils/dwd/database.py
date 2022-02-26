@@ -1,6 +1,6 @@
 """DWD database utilities."""
 from ..cli.common import CountryID
-from ..cli.logging import Logger, colors, style
+from ..cli.logging import Logger
 from ..database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
@@ -9,13 +9,6 @@ from .stations import load_stations, zoom_level_conversion
 async def store_stations(logger: Logger) -> None:
     """Store DWD stations to redis."""
     country = CountryID.Germany
-
-    message = 'Storing stations into database for country %s'
-    color_message = (
-        f'Storing stations into database for country {style("%s", fg=colors.CYAN)}'
-    )
-    logger.info(message, country.label(), extra={'color_message': color_message})
-
     stations = load_stations()
 
     for id, station in stations.items():
