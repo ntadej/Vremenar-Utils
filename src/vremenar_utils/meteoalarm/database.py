@@ -2,7 +2,7 @@
 from ..cli.common import CountryID, LanguageID
 from ..database.redis import redis
 
-from .common import AlertInfo, AlertNotificationInfo
+from .common import AlertArea, AlertInfo, AlertNotificationInfo
 
 
 async def get_alert_ids(country: CountryID) -> set[str]:
@@ -60,6 +60,33 @@ async def get_alert_area_map(country: CountryID) -> dict[str, set[str]]:
                 f'alert:{country.value}:{id}:areas'
             )
     return alert_areas
+
+
+async def store_alerts_areas(country: CountryID, areas: list[AlertArea]) -> None:
+    """Store alerts areas to redis."""
+    async with redis.client() as connection:
+        existing_areas: set[str] = await connection.smembers(
+            f'alerts_area:{country.value}'
+        )
+        area_codes: set[str] = set()
+        for area in areas:
+            async with connection.pipeline() as pipeline:
+                area_codes.add(area.code)
+                pipeline.hset(
+                    f'alerts_area:{country.value}:{area.code}:info',
+                    mapping=area.to_dict_for_database(),
+                )
+                pipeline.sadd(f'alerts_area:{country.value}', area.code)
+                await pipeline.execute()
+
+        # validate
+        for code in existing_areas:
+            if code not in area_codes:
+                async with connection.pipeline() as pipeline:
+                    pipeline.srem(f'alerts_area:{country.value}', code)
+                    pipeline.delete(f'alerts_area:{country.value}:{code}:info')
+                    pipeline.delete(f'alerts_area:{country.value}:{code}:alerts')
+                    await pipeline.execute()
 
 
 async def store_alerts_for_area(

@@ -9,6 +9,16 @@ from ..database.stations import load_stations, store_station
 from ..geo.polygons import point_in_polygon
 
 from .common import AlertArea
+from .database import store_alerts_areas
+
+SLOVENIA_NAMES = {
+    'SI006': 'Severovzhodna Slovenija',
+    'SI007': 'Severozahodna Slovenija',
+    'SI008': 'Jugozahodna Slovenija',
+    'SI009': 'Osrednja Slovenija',
+    'SI010': 'Jugovzhodna Slovenija',
+    'SI801': 'Obala Slovenije',
+}
 
 
 async def process_meteoalarm_areas(
@@ -32,9 +42,18 @@ async def process_meteoalarm_areas(
                 polygon = polygon[0]
             polygons.append(polygon)
 
-        area = AlertArea(properties['code'], properties['name'], polygons)
+        code = properties['code']
+
+        # name override
+        name = properties['name']
+        if country is CountryID.Slovenia:
+            name = SLOVENIA_NAMES.get(code, name)
+
+        area = AlertArea(code, name, polygons)
         logger.info(area)
         areas.append(area)
+
+    await store_alerts_areas(country, areas)
 
     with open(output, 'w') as f:
         dump([area.to_dict() for area in areas], f)
@@ -89,7 +108,11 @@ async def match_meteoalarm_areas(
         await store_station(country, {'id': id, 'alerts_area': matches[id]})
 
     with open(output, 'w') as f:
-        dump(matches, f, indent=2)
+        dump(
+            {k: v for k, v in sorted(matches.items(), key=lambda item: item[0])},
+            f,
+            indent=2,
+        )
 
 
 def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:

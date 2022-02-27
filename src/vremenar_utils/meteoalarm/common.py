@@ -1,6 +1,7 @@
 """MeteoAlarm common utils."""
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
+from json import dumps
 from typing import Any
 
 from ..cli.common import LanguageID
@@ -82,6 +83,10 @@ class AlertArea:
         """Get dictionary with class properties."""
         return {'code': self.code, 'name': self.name, 'polygons': self.polygons}
 
+    def to_dict_for_database(self) -> dict[str, Any]:
+        """Get dictionary with class properties for database usage."""
+        return {'code': self.code, 'name': self.name, 'polygons': dumps(self.polygons)}
+
     @classmethod
     def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertArea':
         """Read AlertArea from a dictionary."""
@@ -129,8 +134,8 @@ class AlertInfo:
             'severity': self.severity.value,
             'certainty': self.certainty.value,
             'response_type': self.response_type.value,
-            'onset': f'{str(self.onset.timestamp())}000',
-            'expires': f'{str(self.expires.timestamp())}000',
+            'onset': f'{str(int(self.onset.timestamp()))}000',
+            'expires': f'{str(int(self.expires.timestamp()))}000',
         }
 
     def to_localised_dict(self, language: LanguageID) -> dict[str, str]:
@@ -192,32 +197,6 @@ class AlertInfo:
 
         return output
 
-    @classmethod
-    def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertInfo':
-        """Read AlertInfo from a dictionary."""
-        alert = cls(dictionary['key'])
-        alert.areas = set(dictionary['areas'])
-        alert.type = AlertType(dictionary['type'])
-        alert.urgency = AlertUrgency(dictionary['urgency'])
-        alert.severity = AlertSeverity(dictionary['severity'])
-        alert.certainty = AlertCertainty(dictionary['certainty'])
-        alert.response_type = AlertResponseType(dictionary['response_type'])
-        alert.onset = datetime.fromtimestamp(dictionary['onset'], timezone.utc)
-        alert.expires = datetime.fromtimestamp(dictionary['expires'], timezone.utc)
-        alert.event = {LanguageID(k): v for k, v in dictionary['event'].items()}
-        alert.headline = {LanguageID(k): v for k, v in dictionary['headline'].items()}
-        alert.description = {
-            LanguageID(k): v for k, v in dictionary['description'].items()
-        }
-        alert.instructions = {
-            LanguageID(k): v for k, v in dictionary['instructions'].items()
-        }
-        alert.sender_name = {
-            LanguageID(k): v for k, v in dictionary['sender_name'].items()
-        }
-        alert.web = {LanguageID(k): v for k, v in dictionary['web'].items()}
-        return alert
-
 
 class AlertNotificationInfo:
     """Alert notification info."""
@@ -235,11 +214,3 @@ class AlertNotificationInfo:
     def to_dict(self) -> dict[str, Any]:
         """Get dictionary with class properties."""
         return {'announce': self.announce, 'onset': self.onset}
-
-    @classmethod
-    def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertNotificationInfo':
-        """Read alert notification info from a dictionary."""
-        info = cls(dictionary['key'])
-        info.announce = dictionary['announce']
-        info.onset = dictionary['onset']
-        return info
