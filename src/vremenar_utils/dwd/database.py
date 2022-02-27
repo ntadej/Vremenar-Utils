@@ -64,7 +64,10 @@ class BatchedMosmix(BatchedRedis):
             del record[key]
 
         # store in the DB
+        set_key = f"mosmix:{record['timestamp']}"
         key = f"mosmix:{record['timestamp']}:{record['station_id']}"
+        pipeline.sadd(set_key, key)
+        pipeline.expire(set_key, delta)
         pipeline.hset(key, mapping=record)
         pipeline.expire(key, delta)
 

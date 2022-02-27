@@ -28,7 +28,7 @@ class BatchedRedis:
     def __init__(self, connection: Redis, limit: Optional[int] = 1000) -> None:
         """Initialise with DB."""
         self.connection = connection
-        self.queue: list[dict[str, Any]] = []
+        self.queue: list[Any] = []
         self.limit = limit
 
     async def __aenter__(self) -> 'BatchedRedis':
@@ -39,14 +39,14 @@ class BatchedRedis:
         """Context manager exit."""
         await self._drain()
 
-    async def add(self, item: dict[str, Any]) -> None:
+    async def add(self, item: Any) -> None:
         """Put item to the DB (add it in the queue)."""
         if len(self.queue) == self.limit:
             await self._drain()
 
         self.queue.append(item)
 
-    def process(self, pipeline: Redis, item: dict[str, Any]) -> None:
+    def process(self, pipeline: Redis, item: Any) -> None:
         """Process items in queue."""
         raise NotImplementedError(
             'BatchedRedis needs to be subclassed and process implemented'
@@ -62,4 +62,12 @@ class BatchedRedis:
         self.queue.clear()
 
 
-__all__ = ['redis', 'Redis', 'BatchedRedis']
+class BatchedRedisDelete(BatchedRedis):
+    """Batch delete redis keys."""
+
+    def process(self, pipeline: Redis, item: str) -> None:
+        """Process items in queue."""
+        pipeline.delete(item)
+
+
+__all__ = ['redis', 'Redis', 'BatchedRedis', 'BatchedRedisDelete']
