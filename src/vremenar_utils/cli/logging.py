@@ -68,7 +68,7 @@ def setup_logger(name: Optional[str] = None) -> logging.Logger:
         file_handler.setFormatter(file_formatter)
 
     stream_formatter = ColourizedFormatter('%(levelprefix)s %(message)s')
-    stream_handler = logging.StreamHandler()
+    stream_handler = logging.StreamHandler(stream=stdout)
     stream_handler.setFormatter(stream_formatter)
 
     logger = logging.getLogger()
