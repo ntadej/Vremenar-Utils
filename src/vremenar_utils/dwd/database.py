@@ -67,3 +67,23 @@ class BatchedMosmix(BatchedRedis):
         key = f"mosmix:{record['timestamp']}:{record['station_id']}"
         pipeline.hset(key, mapping=record)
         pipeline.expire(key, delta)
+
+
+class BatchedCurrentWeather(BatchedRedis):
+    """Batched current weather save."""
+
+    def process(self, pipeline: Redis, record: dict[str, Any]) -> None:
+        """Process current weather record."""
+        country = CountryID.Germany
+        # cleanup
+        empty_keys = set()
+        for key, value in record.items():
+            if value is None:
+                empty_keys.add(key)
+        for key in empty_keys:
+            record[key] = ''
+
+        # store in the DB
+        key = f"current:{country.value}:{record['station_id']}"
+        pipeline.hset(key, mapping=record)
+        pipeline.expire(key, timedelta(hours=3))

@@ -10,6 +10,7 @@ from .logging import colors, setup_logger, style
 from .. import __version__
 from ..arso.database import store_stations as arso_store_stations
 from ..database.redis import database_info
+from ..dwd.current import current_weather as dwd_process_current
 from ..dwd.database import store_stations as dwd_store_stations
 from ..dwd.forecast import (
     process_mosmix as dwd_process_mosmix,
@@ -98,6 +99,22 @@ def dwd_mosmix(
             local_stations=local_stations,
         )
     )
+
+
+@application.command()
+def dwd_current() -> None:
+    """DWD current weather data caching."""
+    logger = setup_logger('dwd_current')
+
+    message = 'Processing current weather data for Germany'
+    color_message = (
+        f'Processing {style("current weather", fg=colors.CYAN)} data for Germany'
+    )
+    logger.info(message, extra={'color_message': color_message})
+
+    database_info(logger)
+
+    asyncio.run(dwd_process_current(logger))
 
 
 @application.command()

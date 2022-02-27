@@ -240,4 +240,5 @@ async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
         async for chunk in r.aiter_raw():
             temporary_file.write(chunk)
     temporary_file.flush()
+    await client.aclose()
     logger.info('Done!')

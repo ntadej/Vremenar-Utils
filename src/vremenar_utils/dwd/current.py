@@ -1,19 +1,43 @@
 """DWD current weather utils."""
 from brightsky.parsers import CurrentObservationsParser  # type: ignore
-from csv import reader
-from deta import Deta  # type: ignore
+from csv import reader, DictReader
+from httpx import AsyncClient
 from io import BytesIO, TextIOWrapper
-from json import dump
-from pathlib import Path
 from pkgutil import get_data
-from typing import Any, Optional
+from tempfile import NamedTemporaryFile
+from typing import Any, Generator, IO
 
-from ..database.deta import BatchedPut
+from ..cli.logging import Logger
+from ..database.redis import redis
+
+from .database import BatchedCurrentWeather
 
 DwdRecord = dict[str, Any]
-NaN = float('nan')
+DwdGenerator = Generator[DwdRecord, None, None]
 
-DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
+
+class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
+    """Custom current weather parser for low memory."""
+
+    def parse(
+        self,
+        lat: None = None,
+        lon: None = None,
+        height: None = None,
+        station_name: None = None,
+    ) -> DwdGenerator:
+        """Parse current weather."""
+        with open(self.path) as f:
+            reader = DictReader(f, delimiter=';')
+            wmo_station_id = next(reader)[self.DATE_COLUMN].rstrip('_')
+            # Skip row with German header titles
+            next(reader)
+            for row in reader:
+                yield {
+                    'station_id': wmo_station_id,
+                    **self.parse_row(row),
+                }
+                break  # only parse first row for now
 
 
 def current_stations() -> list[str]:
@@ -29,54 +53,51 @@ def current_stations() -> list[str]:
     return stations
 
 
-def current_weather(
-    disable_cache: Optional[bool] = False,
-    disable_database: Optional[bool] = False,
-    use_tmp: Optional[bool] = False,
+async def download_current_weather(
+    logger: Logger, url: str, temporary_file: IO[bytes]
 ) -> None:
+    """Download the mosmix data."""
+    logger.info(f'Downloading current weather data from {url} ...')
+    logger.info(f'Temporary file: {temporary_file.name}')
+    client = AsyncClient()
+    async with client.stream('GET', url) as r:
+        async for chunk in r.aiter_raw():
+            temporary_file.write(chunk)
+    temporary_file.flush()
+    await client.aclose()
+
+
+async def current_weather(logger: Logger) -> None:
     """Cache DWD current weather data."""
-    db = None
-    if not disable_database:
-        deta = Deta()
-        db = deta.Base('dwd_current')
-
     stations: list[str] = current_stations()
-    records: list[DwdRecord] = []
 
-    with BatchedPut(db) as batch:
-        for station_id in stations:
-            if len(station_id) == 4:
-                station_id += '_'
-            url = (
-                'https://opendata.dwd.de/weather/weather_reports/poi/'
-                f'{station_id}-BEOB.csv'
-            )
-            path = None
-            if use_tmp:
-                path = f'/tmp/{station_id}.csv'
+    async with redis.client() as db:
+        async with BatchedCurrentWeather(db) as batch:
+            for station_id in stations:
+                if len(station_id) == 4:
+                    station_id += '_'
+                url = (
+                    'https://opendata.dwd.de/weather/weather_reports/poi/'
+                    f'{station_id}-BEOB.csv'
+                )
 
-            print(url)
+                temporary_file = NamedTemporaryFile(
+                    suffix='.csv', prefix=f'DWD_CURRENT_{station_id}'
+                )
+                await download_current_weather(logger, url, temporary_file)
 
-            parser = CurrentObservationsParser(url=url, path=path)
-            parser.download()
-            for record in parser.parse(lat=NaN, lon=NaN, height=NaN, station_name=''):
-                # update timestamps
-                record['time'] = record['timestamp'].strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
-                record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
-                # cleanup
-                del record['lat']
-                del record['lon']
-                del record['height']
-                del record['station_name']
-                # store
-                if not disable_database:
-                    key: str = record['wmo_station_id']
-                    batch.put(record, key)
-                if not disable_cache:
-                    records.append(record)
-            parser.cleanup()  # If you wish to delete any downloaded files
+                try:
+                    parser = CurrentWeatherParser(path=temporary_file.name)
+                    for record in parser.parse():
+                        # update timestamps
+                        record['timestamp'] = (
+                            str(int(record['timestamp'].timestamp())) + '000'
+                        )
+                        # store
+                        await batch.add(record)
+                finally:
+                    temporary_file.close()
 
-    if not disable_cache:
-        DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        with open(DWD_CACHE_DIR / 'CURRENT.json', 'w') as file:
-            dump(records, file)
+                logger.info(
+                    'Done getting current weather data for station %s', station_id
+                )
