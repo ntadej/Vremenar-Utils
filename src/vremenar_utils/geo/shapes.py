@@ -29,4 +29,4 @@ def load_shape(country: str) -> tuple[GeoDataFrame, GeoDataFrame]:
 def inside_shape(point: Point, gdf: GeoDataFrame) -> bool:
     """Check if the point is inside the shape."""
     result = gdf.contains(point)[:]
-    return result.iloc[0]
+    return bool(result.iloc[0])
