@@ -1,9 +1,6 @@
 """DWD MOSMIX utils."""
-from datetime import datetime
-from json import dumps
-from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Optional, TextIO
+from typing import Optional
 
 from vremenar_utils.cli.common import CountryID
 
@@ -15,41 +12,14 @@ from .database import BatchedMosmix
 from .mosmix import MOSMIXParserFast, download
 from .stations import load_stations as load_local_stations
 
-DWD_TMP_DIR: Path = Path.cwd() / '.cache/tmp'
-DWD_CACHE_DIR: Path = Path.cwd() / '.cache/dwd'
-
-
-def output_name(date: datetime) -> str:
-    """Get MOSMIX cache file name."""
-    return date.strftime('MOSMIX:%Y-%m-%dT%H:%M:%S') + 'Z'
-
-
-def open_file(source: str) -> TextIO:
-    """Open cache file."""
-    file = open(DWD_TMP_DIR / f'{source}.json', 'w')
-    print('[', file=file)
-    return file
-
-
-def close_file(file: TextIO) -> None:
-    """Close cache file."""
-    print(']', file=file)
-    file.close()
-
 
 async def process_mosmix(
     logger: Logger,
     job: Optional[int] = 0,
-    disable_cache: Optional[bool] = False,
     local_source: Optional[bool] = False,
     local_stations: Optional[bool] = False,
 ) -> str:
     """Cache DWD MOSMIX data."""
-    if not disable_cache:
-        DWD_TMP_DIR.mkdir(parents=True, exist_ok=True)
-
-    data: dict[str, TextIO] = {}
-
     # load stations to use
     station_ids: list[str] = []
     if local_stations:
@@ -82,40 +52,9 @@ async def process_mosmix(
     async with redis.client() as db:
         async with BatchedMosmix(db) as batch:
             for record in parser.parse(station_ids, min_entry, max_entry):
-                source: str = output_name(record['timestamp'])
-                record['timestamp'] = str(int(record['timestamp'].timestamp())) + '000'
+                record['timestamp'] = f"{int(record['timestamp'].timestamp())}000"
                 await batch.add(record)
-                # write to the local cache
-                if not disable_cache:
-                    if source not in data:
-                        data[source] = open_file(source)
-                        data[source].write(dumps(record))
-                    else:
-                        data[source].write(f',\n{dumps(record)}')
     if temporary_file:
         temporary_file.close()
 
-    if not disable_cache:
-        for _, file in data.items():
-            close_file(file)
-
-        DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        for path in DWD_TMP_DIR.iterdir():
-            path.rename(DWD_CACHE_DIR / path.name)
-        DWD_TMP_DIR.rmdir()
-
     return message
-
-
-def cleanup_mosmix() -> None:
-    """Cleanup DWD MOSMIX data."""
-    DWD_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    now = datetime.utcnow()
-    for path in DWD_CACHE_DIR.glob('MOSMIX*.json'):
-        name = path.name.replace('MOSMIX:', '').strip('.json')
-        date = datetime.strptime(name, '%Y-%m-%dT%H:%M:%SZ')
-        delta = date - now
-
-        if delta.days < -1:
-            print(path.name)
-            path.unlink()

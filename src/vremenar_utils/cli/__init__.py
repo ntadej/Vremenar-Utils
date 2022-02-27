@@ -12,10 +12,7 @@ from ..arso.database import store_stations as arso_store_stations
 from ..database.redis import database_info
 from ..dwd.current import current_weather as dwd_process_current
 from ..dwd.database import store_stations as dwd_store_stations
-from ..dwd.forecast import (
-    process_mosmix as dwd_process_mosmix,
-    cleanup_mosmix as dwd_cleanup_mosmix,
-)
+from ..dwd.forecast import process_mosmix as dwd_process_mosmix
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
 from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
 from ..meteoalarm.steering import get_alerts as meteoalarm_alerts_get
@@ -94,7 +91,6 @@ def dwd_mosmix(
         dwd_process_mosmix(
             logger,
             job=job,
-            disable_cache=False,
             local_source=local_source,
             local_stations=local_stations,
         )
@@ -187,12 +183,6 @@ def alerts_get(
     database_info(logger)
 
     asyncio.run(meteoalarm_alerts_get(logger, country))
-
-
-@application.command()
-def cleanup() -> None:
-    """Cleanup obsolete local caches."""
-    dwd_cleanup_mosmix()
 
 
 __all__ = ['application']

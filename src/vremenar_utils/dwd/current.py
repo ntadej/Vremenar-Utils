@@ -90,9 +90,9 @@ async def current_weather(logger: Logger) -> None:
                     parser = CurrentWeatherParser(path=temporary_file.name)
                     for record in parser.parse():
                         # update timestamps
-                        record['timestamp'] = (
-                            str(int(record['timestamp'].timestamp())) + '000'
-                        )
+                        record[
+                            'timestamp'
+                        ] = f"{int(record['timestamp'].timestamp())}000"
                         # store
                         await batch.add(record)
                 finally:
