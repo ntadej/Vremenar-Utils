@@ -7,35 +7,35 @@ authors = ["Tadej Novak <tadej@tano.si>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 aioredis = {extras = ["hiredis"], version = "^2.0.1"}
-Babel = "^2.10.1"
+Babel = "^2.10.3"
 brightsky = "~1.0.13"
 firebase-admin = "^5.2.0"
-geopandas = "^0.10.2"
-httpx = "^0.22.0"
-Shapely = "^1.8.1"
-typer = "^0.4.1"
+geopandas = "^0.11.0"
+httpx = "^0.23.0"
+Shapely = "^1.8.2"
+typer = "^0.5.0"
 wheel = "^0.37.1"
-xmltodict = "^0.12.0"
+xmltodict = "^0.13.0"
 
 [tool.poetry.scripts]
 vremenar_utils = 'vremenar_utils.cli:application'
 
 [tool.poetry.dev-dependencies]
-black = "^22.3.0"
+black = "^22.6.0"
 flake8 = "^4.0.1"
-flake8-bugbear = "^22.3.23"
+flake8-bugbear = "^22.7.1"
 flake8-docstrings = "^1.6.0"
 flake8-quotes = "^3.3.0"
-mypy = "^0.942"
-pep8-naming = "^0.12.1"
-pre-commit = "^2.18.1"
-pre-commit-hooks = "^4.2.0"
-pytest = "^7.1.1"
+mypy = "^0.961"
+pep8-naming = "^0.13.0"
+pre-commit = "^2.19.0"
+pre-commit-hooks = "^4.3.0"
+pytest = "^7.1.2"
 pytest-cov = "^3.0.0"
 pytest-forked = "^1.4.0"
-pyupgrade = "^2.32.0"
+pyupgrade = "^2.34.0"
 types-babel = "^2.10.0"
-types-python-dateutil = "^2.8.12"
+types-python-dateutil = "^2.8.18"
 
 [tool.black]
 line-length = 88
