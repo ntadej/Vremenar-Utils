@@ -24,7 +24,7 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
 
     for id, url in new_alerts:
         alert = await parser.parse_cap(id, url)
-        if not alert:
+        if not alert or not alert.areas:
             continue
         await store_alert(country, alert)
         counter += 1
