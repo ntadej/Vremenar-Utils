@@ -1,6 +1,8 @@
 """MeteoAlarm database utilities."""
+from typing import Any
+
 from ..cli.common import CountryID, LanguageID
-from ..database.redis import redis
+from ..database.redis import redis, BatchedRedis, Redis
 
 from .common import AlertArea, AlertInfo, AlertNotificationInfo
 
@@ -9,6 +11,27 @@ async def get_alert_ids(country: CountryID) -> set[str]:
     """Get alert IDs from redis."""
     existing_alerts: set[str] = await redis.smembers(f'alert:{country.value}')
     return existing_alerts
+
+
+async def get_alert_info(country: CountryID, id: str) -> dict[str, dict[str, Any]]:
+    """Get alert info from ID."""
+    alert = {}
+    async with redis.client() as connection:
+        async with connection.pipeline(transaction=False) as pipeline:
+            pipeline.hgetall(f'alert:{country.value}:{id}:info')
+            pipeline.smembers(f'alert:{country.value}:{id}:areas')
+            for language in LanguageID:
+                pipeline.hgetall(
+                    f'alert:{country.value}:{id}:localised_{language.value}'
+                )
+            pipeline.hgetall(f'alert:{country.value}:{id}:notifications')
+            response = await pipeline.execute()
+    alert['info'] = response[0]
+    alert['areas'] = response[1]
+    for i, language in enumerate(LanguageID):
+        alert[language.value] = response[i + 2]
+    alert['notifications'] = response[-1]
+    return alert
 
 
 async def store_alert(country: CountryID, alert: AlertInfo) -> None:
@@ -98,3 +121,21 @@ async def store_alerts_for_area(
         if alerts:
             pipeline.sadd(f'alerts_area:{country.value}:{area}:alerts', *alerts)
         await pipeline.execute()
+
+
+class BatchedNotifyAnnounce(BatchedRedis):
+    """Batched alert announcement notifications."""
+
+    def process(self, pipeline: Redis, record: dict[str, Any]) -> None:
+        """Process alert on announcement nofitication."""
+        key = f"alert:{record['country'].value}:{record['id']}:notifications"
+        pipeline.hset(key, mapping={'announce': 1})
+
+
+class BatchedNotifyOnset(BatchedRedis):
+    """Batched alert onset notifications."""
+
+    def process(self, pipeline: Redis, record: dict[str, Any]) -> None:
+        """Process alert on onset nofitication."""
+        key = f"alert:{record['country'].value}:{record['id']}:notifications"
+        pipeline.hset(key, mapping={'onset': 1})

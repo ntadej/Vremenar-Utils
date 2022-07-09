@@ -56,6 +56,17 @@ class AlertSeverity(Enum):
     Severe = 'severe'  # red
     Extreme = 'extreme'  # violet
 
+    def topics(self) -> list[str]:
+        """Get topics based on the severity."""
+        if self is AlertSeverity.Minor:
+            return ['minor']
+        if self is AlertSeverity.Moderate:
+            return ['moderate', 'minor']
+        if self is AlertSeverity.Severe:
+            return ['severe', 'moderate', 'minor']
+        if self is AlertSeverity.Extreme:
+            return ['extreme', 'severe', 'moderate', 'minor']
+
 
 class AlertCertainty(Enum):
     """Alert certainty."""

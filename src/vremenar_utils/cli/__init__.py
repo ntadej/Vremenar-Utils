@@ -15,6 +15,10 @@ from ..dwd.database import store_stations as dwd_store_stations
 from ..dwd.forecast import process_mosmix as dwd_process_mosmix
 from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
 from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
+from ..meteoalarm.notifications import (
+    send_start_notifications as meteoalarm_notifications,
+    send_forecast_notifications as meteoalarm_forecast_notifications,
+)
 from ..meteoalarm.steering import get_alerts as meteoalarm_alerts_get
 
 if not sys.warnoptions:
@@ -183,6 +187,29 @@ def alerts_get(
     database_info(logger)
 
     asyncio.run(meteoalarm_alerts_get(logger, country))
+
+
+@application.command()
+def alerts_notify(
+    country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
+    forecast: Optional[bool] = typer.Option(  # noqa: B008
+        False, '--forecast', help='Send forecast notification.'
+    ),
+) -> None:
+    """Notify MeteoAlarm alerts."""
+    logger = setup_logger('meteoalarm_notify')
+
+    base_message = 'Processing weather alerts notifications for country'
+    message = f'{base_message} %s'
+    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
+    logger.info(message, country.label(), extra={'color_message': color_message})
+
+    database_info(logger)
+
+    if forecast:
+        asyncio.run(meteoalarm_forecast_notifications(logger, country))
+    else:
+        asyncio.run(meteoalarm_notifications(logger, country))
 
 
 __all__ = ['application']
