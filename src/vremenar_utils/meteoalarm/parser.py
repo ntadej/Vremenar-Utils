@@ -50,9 +50,9 @@ class MeteoAlarmParser:
         feed = feed_data.get('feed', [])
         entries = feed.get('entry', [])
         for entry in entries if type(entries) is list else [entries]:
-            id = entry.get('cap:identifier')
-            all_ids.add(id)
-            if id in self.existing_alert_ids:
+            cap_id = entry.get('cap:identifier')
+            all_ids.add(cap_id)
+            if cap_id in self.existing_alert_ids:
                 continue
 
             expires = self.parse_alert_datetime(entry.get('cap:expires'))
@@ -62,13 +62,13 @@ class MeteoAlarmParser:
             # Get the cap URL for additional alert data
             cap_url = None
             for link in entry.get('link'):
-                if 'hub' in link.get('@href'):
+                if link.get('@type') == 'application/cap+xml':
                     cap_url = link.get('@href')
 
             if not cap_url:
                 continue
 
-            new_ids.add((id, cap_url))
+            new_ids.add((cap_id, cap_url))
 
         # check for alerts that are no longer present
         for id in self.existing_alert_ids:
