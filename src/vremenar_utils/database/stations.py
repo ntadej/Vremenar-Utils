@@ -11,13 +11,13 @@ async def store_station(
     metadata: Optional[dict[str, Any]] = None,
 ) -> None:
     """Store a station to redis."""
-    id = station['id']
+    station_id = station['id']
 
     async with redis.pipeline() as pipeline:
-        pipeline.sadd(f'station:{country.value}', id)
-        pipeline.hset(f'station:{country.value}:{id}', mapping=station)
+        pipeline.sadd(f'station:{country.value}', station_id)
+        pipeline.hset(f'station:{country.value}:{station_id}', mapping=station)
         if metadata is not None:
-            pipeline.hset(f'station:{country.value}:{id}', mapping=metadata)
+            pipeline.hset(f'station:{country.value}:{station_id}', mapping=metadata)
         await pipeline.execute()
 
 

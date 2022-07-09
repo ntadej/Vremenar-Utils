@@ -45,8 +45,8 @@ def current_stations() -> list[str]:
     stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+        bytes_io = BytesIO(data)
+        with TextIOWrapper(bytes_io, encoding='utf-8') as csvfile:
             csv = reader(csvfile)
             for row in csv:
                 stations.append(row[0])
