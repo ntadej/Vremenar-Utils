@@ -1,11 +1,12 @@
 """DWD current weather utils."""
 from brightsky.parsers import CurrentObservationsParser  # type: ignore
+from collections.abc import Generator
 from csv import reader, DictReader
 from httpx import AsyncClient
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 from tempfile import NamedTemporaryFile
-from typing import Any, Generator, IO
+from typing import Any, IO
 
 from ..cli.logging import Logger
 from ..database.redis import redis

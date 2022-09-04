@@ -1,12 +1,14 @@
 """DWD MOSMIX utils."""
 import re
 from brightsky.parsers import Parser, wmo_id_to_dwd  # type: ignore
+from brightsky.units import synop_past_weather_code_to_condition  # type: ignore
+from collections.abc import Generator
 from csv import reader
 from datetime import datetime, timedelta, timezone
 from dateutil import parser
 from httpx import AsyncClient
 from lxml.etree import iterparse, Element, QName  # type: ignore
-from typing import Any, Generator, IO, Optional, cast
+from typing import Any, IO, Optional, cast
 from zipfile import ZipFile
 
 from ..cli.logging import Logger
@@ -222,6 +224,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
 
     def _sanitize_records(self, records: DwdGenerator) -> DwdGenerator:
         for r in records:
+            r['condition'] = synop_past_weather_code_to_condition(r['condition'])
             if r['precipitation'] and r['precipitation'] < 0:
                 self.logger.warning('Ignoring negative precipitation value: %s', r)
                 r['precipitation'] = None
