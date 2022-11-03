@@ -39,12 +39,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: ${{ runner.os }}-venv-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
-            ${{ runner.os }}-venv-${{ steps.full-python-version.outputs.version }}-
+            ${{ runner.os }}-venv-${{ matrix.python-version }}-
 
       - name: Start Redis
-        uses: shogo82148/actions-setup-redis@v1.19.0
+        uses: shogo82148/actions-setup-redis@v1.19.1
         with:
           redis-port: 6379
           redis-version: "6.x"
@@ -59,7 +59,7 @@ jobs:
           poetry run pytest
 
       - name: Report coverage with Codecov
-        if: github.event_name == 'push' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
+        if: github.event_name == 'push' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-22.04'
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
