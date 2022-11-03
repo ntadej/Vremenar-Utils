@@ -33,6 +33,8 @@ jobs:
 
       - name: Setup Poetry
         uses: abatilo/actions-poetry@v2.1.6
+        with:
+          poetry-version: 1.2.2
 
       - name: Config Poetry
         run: |
