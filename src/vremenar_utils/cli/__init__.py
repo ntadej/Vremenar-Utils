@@ -8,18 +8,7 @@ from .common import CountryID
 from .logging import colors, setup_logger, style
 
 from .. import __version__
-from ..arso.database import store_stations as arso_store_stations
 from ..database.redis import database_info
-from ..dwd.current import current_weather as dwd_process_current
-from ..dwd.database import store_stations as dwd_store_stations
-from ..dwd.forecast import process_mosmix as dwd_process_mosmix
-from ..dwd.stations import process_mosmix_stations as dws_mosmix_stations
-from ..meteoalarm.areas import process_meteoalarm_areas as meteoalarm_areas
-from ..meteoalarm.notifications import (
-    send_start_notifications as meteoalarm_notifications,
-    send_forecast_notifications as meteoalarm_forecast_notifications,
-)
-from ..meteoalarm.steering import get_alerts as meteoalarm_alerts_get
 
 if not sys.warnoptions:
     import warnings
@@ -47,7 +36,7 @@ def main(
     ),
 ) -> None:
     """Vremenar Utilities CLI app."""
-    return
+    pass
 
 
 @application.command()
@@ -65,8 +54,12 @@ def stations_store(
     database_info(logger)
 
     if country is CountryID.Germany:
+        from ..dwd.database import store_stations as dwd_store_stations
+
         asyncio.run(dwd_store_stations(logger))
     elif country is CountryID.Slovenia:
+        from ..arso.database import store_stations as arso_store_stations
+
         asyncio.run(arso_store_stations(logger))
 
 
@@ -91,8 +84,10 @@ def dwd_mosmix(
 
     database_info(logger)
 
+    from ..dwd.forecast import process_mosmix
+
     asyncio.run(
-        dwd_process_mosmix(
+        process_mosmix(
             logger,
             local_source=local_source,
             local_stations=local_stations,
@@ -113,7 +108,9 @@ def dwd_current() -> None:
 
     database_info(logger)
 
-    asyncio.run(dwd_process_current(logger))
+    from ..dwd.current import current_weather
+
+    asyncio.run(current_weather(logger))
 
 
 @application.command()
@@ -131,8 +128,10 @@ def dwd_stations(
     """DWD process stations."""
     logger = setup_logger()
 
+    from ..dwd.stations import process_mosmix_stations
+
     asyncio.run(
-        dws_mosmix_stations(
+        process_mosmix_stations(
             logger,
             output if output else 'DWD.csv',
             output_new if output_new else 'DWD.NEW.csv',
@@ -161,8 +160,10 @@ def alerts_areas(
 
     database_info(logger)
 
+    from ..meteoalarm.areas import process_meteoalarm_areas
+
     asyncio.run(
-        meteoalarm_areas(
+        process_meteoalarm_areas(
             logger,
             country,
             output if output else 'areas.json',
@@ -185,7 +186,9 @@ def alerts_get(
 
     database_info(logger)
 
-    asyncio.run(meteoalarm_alerts_get(logger, country))
+    from ..meteoalarm.steering import get_alerts
+
+    asyncio.run(get_alerts(logger, country))
 
 
 @application.command()
@@ -205,10 +208,15 @@ def alerts_notify(
 
     database_info(logger)
 
+    from ..meteoalarm.notifications import (
+        send_start_notifications,
+        send_forecast_notifications,
+    )
+
     if forecast:
-        asyncio.run(meteoalarm_forecast_notifications(logger, country))
+        asyncio.run(send_forecast_notifications(logger, country))
     else:
-        asyncio.run(meteoalarm_notifications(logger, country))
+        asyncio.run(send_start_notifications(logger, country))
 
 
 __all__ = ['application']
