@@ -87,7 +87,7 @@ def send_start_notification(
             topics = []
             for severity in alert_severity.topics():
                 topics.append(f'{language.value}_{severity}_{area_code}')
-            prepare_message(logger, message, topics=topics)
+            prepare_message(message, topics=topics, logger=logger)
             notifier.send(message)
 
 

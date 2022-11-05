@@ -47,10 +47,10 @@ def make_message(
 
 
 def prepare_message(
-    logger: Logger,
     message: messaging.Message,
     topics: Optional[list[str]] = None,
     token: Optional[str] = None,
+    logger: Optional[Logger] = None,
 ) -> None:
     """Prepare a message to send to topic subscribers or to a dedicated device token."""
     if topics is None and token is None:
@@ -60,19 +60,40 @@ def prepare_message(
         raise ValueError('Topics and a token can not be set at the same time.')
 
     if topics is not None:
-        if len(topics) > 5:
-            raise ValueError('Too many topics used at the same time')
-        elif len(topics) == 1:
-            message.topic = topics[0]
-            logger.debug(f'Sending notification with topic "{message.topic}"')
-        else:
-            message.condition = ' || '.join(
-                [f"'{topic}' in topics" for topic in topics]
-            )
-            logger.debug(f'Sending notification with condition "{message.condition}"')
+        prepare_message_for_topics(message, topics, logger)
 
     if token is not None:
-        message.token = token
+        prepare_message_for_token(message, token, logger)
+
+
+def prepare_message_for_topics(
+    message: messaging.Message, topics: list[str], logger: Optional[Logger]
+) -> None:
+    """Prepare a message to send to topic subscribers."""
+    if not topics:
+        raise ValueError('Topics should not be empty.')
+
+    if len(topics) > 5:
+        raise ValueError('Too many topics used at the same time')
+    elif len(topics) == 1:
+        message.topic = topics[0]
+        if logger:
+            logger.debug(f'Sending notification with topic "{message.topic}"')
+    else:
+        message.condition = ' || '.join([f"'{topic}' in topics" for topic in topics])
+        if logger:
+            logger.debug(f'Sending notification with condition "{message.condition}"')
+
+
+def prepare_message_for_token(
+    message: messaging.Message, token: str, logger: Optional[Logger]
+) -> None:
+    """Prepare a message to send to a dedicated device token."""
+    if not token:
+        raise ValueError('Token should not be empty.')
+
+    message.token = token
+    if logger:
         logger.debug(f'Sending notification to device with token "{message.token}"')
 
 
