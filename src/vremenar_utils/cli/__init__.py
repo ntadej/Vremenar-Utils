@@ -94,7 +94,6 @@ def dwd_mosmix(
     asyncio.run(
         dwd_process_mosmix(
             logger,
-            job=job,
             local_source=local_source,
             local_stations=local_stations,
         )

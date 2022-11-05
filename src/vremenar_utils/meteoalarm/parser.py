@@ -71,11 +71,15 @@ class MeteoAlarmParser:
             new_ids.add((cap_id, cap_url))
 
         # check for alerts that are no longer present
+        self.check_for_obsolete(all_ids)
+
+        return new_ids
+
+    def check_for_obsolete(self, all_ids: set[str]) -> None:
+        """Check for obsolete alerts."""
         for id in self.existing_alert_ids:
             if id not in all_ids:
                 self.obsolete_alert_ids.add(id)
-
-        return new_ids
 
     def parse_alert_datetime(self, string: str) -> datetime:
         """Parse alert date/time."""

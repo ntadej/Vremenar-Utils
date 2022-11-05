@@ -9,8 +9,8 @@ def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     """Load ARSO stations."""
     data = get_data('vremenar_utils', 'data/stations/ARSO.json')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as file:
+        data_bytes = BytesIO(data)
+        with TextIOWrapper(data_bytes, encoding='utf-8') as file:
             stations = load(file)
     output: dict[str, dict[str, Union[str, int, float]]] = {}
     for station in stations:

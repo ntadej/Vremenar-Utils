@@ -18,8 +18,8 @@ def load_shape(country: str) -> tuple[GeoDataFrame, GeoDataFrame]:
     """Load shape for a specific country."""
     data = get_data('vremenar_utils', f'data/shapes/{country}.json')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as file:
+        bytes_data = BytesIO(data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as file:
             gdf = read_file(file)
             gdf_buffered = gdf.to_crs('EPSG:3857').buffer(2500).to_crs(gdf.crs)
             return (gdf, gdf_buffered)

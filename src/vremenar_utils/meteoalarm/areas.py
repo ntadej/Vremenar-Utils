@@ -2,6 +2,7 @@
 from io import BytesIO, TextIOWrapper
 from json import load, dump
 from pkgutil import get_data
+from typing import Union
 
 from ..cli.common import CountryID
 from ..cli.logging import Logger
@@ -75,8 +76,8 @@ async def match_meteoalarm_areas(
         'vremenar_utils', f'data/meteoalarm/{country.value}_overrides.json'
     )
     if overrides_data:
-        bytes = BytesIO(overrides_data)
-        with TextIOWrapper(bytes, encoding='utf-8') as file:
+        bytes_data = BytesIO(overrides_data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as file:
             overrides = load(file)
 
     matches: dict[str, str] = {}
@@ -85,27 +86,9 @@ async def match_meteoalarm_areas(
         if 'country' in station and str(station['country']).lower() != country.value:
             continue
 
-        label = station['name']
-        coordinate = [float(station['longitude']), float(station['latitude'])]
-
-        found = False
-        for area in areas:
-            for polygon in area.polygons:
-                if point_in_polygon(coordinate, polygon):
-                    matches[id] = area.code
-                    found = True
-                    break
-            if found:
-                break
-
-        if not found:
-            if id in overrides:
-                matches[id] = overrides[id]
-            else:
-                raise ValueError(id, label, coordinate)
-
-        # update database
-        await store_station(country, {'id': id, 'alerts_area': matches[id]})
+        matches[id] = await process_meteoalarm_station(
+            country, id, station, areas, overrides
+        )
 
     with open(output, 'w') as f:
         dump(
@@ -115,14 +98,48 @@ async def match_meteoalarm_areas(
         )
 
 
+async def process_meteoalarm_station(
+    country: CountryID,
+    id: str,
+    station: dict[str, Union[str, int, float]],
+    areas: list[AlertArea],
+    overrides: dict[str, str],
+) -> str:
+    """Process MeteoAlarm station."""
+    label = station['name']
+    coordinate = [float(station['longitude']), float(station['latitude'])]
+
+    found = False
+    area_code = None
+    for area in areas:
+        for polygon in area.polygons:
+            if point_in_polygon(coordinate, polygon):
+                area_code = area.code
+                found = True
+                break
+        if found:
+            break
+
+    if not found and id in overrides:
+        area_code = overrides[id]
+
+    if not area_code:
+        raise ValueError(id, label, coordinate)
+
+    # update database
+    await store_station(country, {'id': id, 'alerts_area': area_code})
+
+    return area_code
+
+
 def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:
     """Load MeteoAlarm areas from file."""
     areas: list[AlertArea] = []
 
     data = get_data('vremenar_utils', f'data/meteoalarm/{country.value}.json')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as file:
+        bytes_data = BytesIO(data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as file:
             areas_dict = load(file)
 
     for area_obj in areas_dict:

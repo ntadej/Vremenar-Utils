@@ -152,59 +152,23 @@ class AlertInfo:
     def to_localised_dict(self, language: LanguageID) -> dict[str, str]:
         """Get dictionary with localised properties."""
         output: dict[str, str] = {}
-        if self.event:
-            output['event'] = (
-                self.event[language]
-                if language in self.event
-                else self.event[LanguageID.English]
-            )
-        else:
-            output['event'] = ''
+        attributes = [
+            'event',
+            'headline',
+            'description',
+            'instructions',
+            'sender_name',
+            'web',
+        ]
 
-        if self.headline:
-            output['headline'] = (
-                self.headline[language]
-                if language in self.headline
-                else self.headline[LanguageID.English]
-            )
-        else:
-            output['headline'] = ''
-
-        if self.description:
-            output['description'] = (
-                self.description[language]
-                if language in self.description
-                else self.description[LanguageID.English]
-            )
-        else:
-            output['description'] = ''
-
-        if self.instructions:
-            output['instructions'] = (
-                self.instructions[language]
-                if language in self.instructions
-                else self.instructions[LanguageID.English]
-            )
-        else:
-            output['instructions'] = ''
-
-        if self.sender_name:
-            output['sender_name'] = (
-                self.sender_name[language]
-                if language in self.sender_name
-                else self.sender_name[LanguageID.English]
-            )
-        else:
-            output['sender_name'] = ''
-
-        if self.web:
-            output['web'] = (
-                self.web[language]
-                if language in self.web
-                else self.web[LanguageID.English]
-            )
-        else:
-            output['web'] = ''
+        for attribute in attributes:
+            if hasattr(self, attribute) and getattr(self, attribute):
+                value = getattr(self, attribute)
+                output[attribute] = (
+                    value[language] if language in value else value[LanguageID.English]
+                )
+            else:
+                output[attribute] = ''
 
         return output
 

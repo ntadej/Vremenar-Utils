@@ -5,7 +5,7 @@ from brightsky.units import synop_past_weather_code_to_condition  # type: ignore
 from collections.abc import Generator
 from csv import reader
 from datetime import datetime, timedelta, timezone
-from dateutil import parser
+from dateutil import parser as dateparser
 from httpx import AsyncClient
 from lxml.etree import iterparse, Element, QName  # type: ignore
 from typing import Any, IO, Optional, cast
@@ -14,7 +14,6 @@ from zipfile import ZipFile
 from ..cli.logging import Logger
 
 DwdRecord = dict[str, Any]
-DwdGenerator = Generator[DwdRecord, None, None]
 
 DWD_OPEN_DATA: str = 'https://opendata.dwd.de'
 DWD_MOSMIX_URL: str = (
@@ -44,9 +43,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
         'ww': 'condition',
     }
 
-    def parse(
-        self, station_ids: list[str], min_entry: int, max_entry: int
-    ) -> DwdGenerator:
+    def parse(self, station_ids: list[str]) -> Generator[DwdRecord, None, None]:
         """Parse the file."""
         self.logger.info('Parsing %s', self.path)
 
@@ -67,11 +64,8 @@ class MOSMIXParserFast(Parser):  # type: ignore
                         self._clear_element(elem)
                     elif tag == 'ForecastTimeSteps':
                         timestamps = [
-                            parser.parse(r.text)
+                            dateparser.parse(r.text).replace(tzinfo=timezone.utc)
                             for r in elem.findall('dwd:TimeStep', namespaces=NS)
-                        ]
-                        timestamps = [
-                            t.replace(tzinfo=timezone.utc) for t in timestamps
                         ]
                         accepted_timestamps = self._filter_timestamps(timestamps)
                         self._clear_element(elem)
@@ -84,28 +78,20 @@ class MOSMIXParserFast(Parser):  # type: ignore
                             'Using %d timestamps' % (len(accepted_timestamps),)
                         )
                     elif tag == 'Placemark':
-                        records = None
-                        if placemark >= min_entry and (
-                            max_entry == 0 or placemark < max_entry
-                        ):
-                            records = self._parse_station(
-                                elem,
-                                station_ids,
-                                timestamps,
-                                accepted_timestamps,
-                                source,
-                            )
+                        records = self._parse_station(
+                            elem,
+                            station_ids,
+                            timestamps,
+                            accepted_timestamps,
+                            source,
+                        )
                         self._clear_element(elem)
-                        if max_entry > 0 and placemark >= max_entry:
-                            break
                         if records:
                             self.logger.info(f'Processed placemark #{placemark+1}')
                             placemark += 1
                             yield from self._sanitize_records(records)
-                        else:
-                            continue
 
-    def stations(self) -> DwdGenerator:
+    def stations(self) -> Generator[DwdRecord, None, None]:
         """Parse the file."""
         self.logger.info('Parsing %s', self.path)
 
@@ -163,10 +149,10 @@ class MOSMIXParserFast(Parser):  # type: ignore
         timestamps: list[datetime],
         accepted_timestamps: list[datetime],
         source: Optional[str] = '',
-    ) -> DwdGenerator:
+    ) -> Generator[DwdRecord, None, None]:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
         if station_ids and wmo_station_id not in station_ids:
-            return cast(DwdGenerator, [])
+            return cast(Generator[DwdRecord, None, None], [])
 
         station_name = station_elem.find('./kml:description', namespaces=NS).text
         try:
@@ -179,7 +165,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                 wmo_station_id,
                 station_name,
             )
-            return cast(DwdGenerator, [])
+            return cast(Generator[DwdRecord, None, None], [])
 
         base_record = {
             'source': source,
@@ -220,9 +206,11 @@ class MOSMIXParserFast(Parser):  # type: ignore
                     'station_name': station_name,
                 }
             )
-            return cast(DwdGenerator, [base_record])
+            return cast(Generator[DwdRecord, None, None], [base_record])
 
-    def _sanitize_records(self, records: DwdGenerator) -> DwdGenerator:
+    def _sanitize_records(
+        self, records: Generator[DwdRecord, None, None]
+    ) -> Generator[DwdRecord, None, None]:
         for r in records:
             r['condition'] = synop_past_weather_code_to_condition(r['condition'])
             if r['precipitation'] and r['precipitation'] < 0:

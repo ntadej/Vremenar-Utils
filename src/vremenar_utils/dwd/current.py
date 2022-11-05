@@ -14,7 +14,6 @@ from ..database.redis import redis
 from .database import BatchedCurrentWeather
 
 DwdRecord = dict[str, Any]
-DwdGenerator = Generator[DwdRecord, None, None]
 
 
 class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
@@ -26,7 +25,7 @@ class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
         lon: None = None,
         height: None = None,
         station_name: None = None,
-    ) -> DwdGenerator:
+    ) -> Generator[DwdRecord, None, None]:
         """Parse current weather."""
         with open(self.path) as f:
             reader = DictReader(f, delimiter=';')

@@ -1,6 +1,7 @@
 """MeteoAlarm notifications."""
 from babel.dates import format_datetime
 from datetime import datetime
+from typing import Any
 
 from ..cli.common import CountryID, LanguageID
 from ..cli.logging import Logger
@@ -8,7 +9,7 @@ from ..database.redis import redis
 from ..notifications import make_message, prepare_message, BatchNotify
 
 from .areas import load_meteoalarm_areas
-from .common import AlertSeverity
+from .common import AlertArea, AlertSeverity
 from .database import get_alert_ids, get_alert_info, BatchedNotifyOnset
 
 FORMAT = {
@@ -25,7 +26,6 @@ UNTIL = {
 
 async def send_start_notifications(logger: Logger, country: CountryID) -> None:
     """Send notifications at the start of the alerts."""
-    # TODO: alerts per area
     areas = {area.code: area for area in load_meteoalarm_areas(country)}
 
     existing_alerts: set[str] = await get_alert_ids(country)
@@ -39,7 +39,6 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
                     if int(alert['notifications']['onset']):
                         continue
 
-                    alert_severity = AlertSeverity(alert['info']['severity'])
                     alert_onset = datetime.fromtimestamp(
                         float(alert['info']['onset'][:-3])
                     )
@@ -53,32 +52,43 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
 
                     logger.debug(f'Alert ID: {id}')
 
-                    for language in LanguageID:
-                        for area_code in alert['areas']:
-                            until_string = format_datetime(
-                                alert_expires,
-                                FORMAT[language],
-                                locale=language.value,
-                            )
-                            message = make_message(
-                                alert[language.value]['event'],
-                                '',
-                                f'{areas[area_code].name},'
-                                f' {UNTIL[language]} {until_string}:'
-                                f" {alert[language.value]['description']}",
-                                important=True,
-                                expires=alert_expires,
-                                badge=1,
-                            )
-                            topics = []
-                            for severity in alert_severity.topics():
-                                topics.append(
-                                    f'{language.value}_{severity}_{area_code}'
-                                )
-                            prepare_message(logger, message, topics=topics)
-                            notifier.send(message)
+                    send_start_notification(logger, notifier, alert, areas)
 
                     await batch.add({'country': country, 'id': id})
+
+
+def send_start_notification(
+    logger: Logger,
+    notifier: BatchNotify,
+    alert: dict[str, dict[str, Any]],
+    areas: dict[str, AlertArea],
+) -> None:
+    """Send notification at the start of an alert."""
+    alert_severity = AlertSeverity(alert['info']['severity'])
+    alert_expires = datetime.fromtimestamp(float(alert['info']['expires'][:-3]))
+
+    for language in LanguageID:
+        for area_code in alert['areas']:
+            until_string = format_datetime(
+                alert_expires,
+                FORMAT[language],
+                locale=language.value,
+            )
+            message = make_message(
+                alert[language.value]['event'],
+                '',
+                f'{areas[area_code].name},'
+                f' {UNTIL[language]} {until_string}:'
+                f" {alert[language.value]['description']}",
+                important=True,
+                expires=alert_expires,
+                badge=1,
+            )
+            topics = []
+            for severity in alert_severity.topics():
+                topics.append(f'{language.value}_{severity}_{area_code}')
+            prepare_message(logger, message, topics=topics)
+            notifier.send(message)
 
 
 async def send_forecast_notifications(logger: Logger, country: CountryID) -> None:

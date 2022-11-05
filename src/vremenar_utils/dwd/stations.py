@@ -28,9 +28,9 @@ DWD_STATION_KEYS = [
 
 def zoom_level_conversion(location_type: str, admin_level: float) -> float:
     """DWD zoom level conversions."""
-    # location_type: {'city', 'town', 'village', 'suburb', 'hamlet', 'isolated',
-    #                 'airport', 'special' }
-    # admin_level: {'4', '6', '8', '9', '10'}
+    # location_type: 'city', 'town', 'village', 'suburb', 'hamlet', 'isolated',
+    #                'airport', 'special'
+    # admin_level: '4', '6', '8', '9', '10'
     if admin_level >= 10:
         return 10.35
     if admin_level >= 9:
@@ -49,8 +49,8 @@ def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     stations: dict[str, dict[str, Union[str, int, float]]] = {}
     data = get_data('vremenar_utils', 'data/stations/DWD.csv')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as csv_file:
+        bytes_data = BytesIO(data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as csv_file:
             stations = load_stations_from_csv(csv_file)
     return stations
 
@@ -80,8 +80,8 @@ def load_stations_with_reports() -> list[str]:
     stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+        bytes_data = BytesIO(data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
             csv = reader(csvfile, dialect='excel')
             for row in csv:
                 stations.append(row[0])
@@ -93,8 +93,8 @@ def load_stations_included() -> list[str]:
     stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.include.csv')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+        bytes_data = BytesIO(data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
             csv = reader(csvfile, dialect='excel')
             for row in csv:
                 stations.append(row[0])
@@ -106,8 +106,8 @@ def load_stations_ignored() -> list[str]:
     stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.ignore.csv')
     if data:
-        bytes = BytesIO(data)
-        with TextIOWrapper(bytes, encoding='utf-8') as csvfile:
+        bytes_data = BytesIO(data)
+        with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
             csv = reader(csvfile, dialect='excel')
             for row in csv:
                 stations.append(row[0])
@@ -141,10 +141,10 @@ async def process_mosmix_stations(
     for station in parser.stations():
         if 'SWIS-PUNKT' in station['station_name']:
             continue
-        id = station['station_id']
-        station['has_reports'] = int(id in stations_with_reports)
-        if id in old_stations.keys():
-            station.update({key: old_stations[id][key] for key in meta_keys})
+        station_id = station['station_id']
+        station['has_reports'] = int(station_id in stations_with_reports)
+        if station_id in old_stations.keys():
+            station.update({key: old_stations[station_id][key] for key in meta_keys})
         else:
             station.update({key: '' for key in meta_keys})
         station['dwd_station_id'] = (
@@ -156,8 +156,21 @@ async def process_mosmix_stations(
 
     # sort
     stations = sorted(stations, key=itemgetter('station_id', 'name', 'lon', 'lat'))
+    processed = _write_mosmix_stations(
+        stations, stations_ignored, stations_included, output, output_new
+    )
+
+    logger.info(f'Processed {processed} stations!')
+
+
+def _write_mosmix_stations(
+    stations: list[dict[str, Any]],
+    stations_ignored: list[str],
+    stations_included: list[str],
+    output: str,
+    output_new: str,
+) -> int:
     stations_keys: list[str] = []
-    stations_db: list[dict[str, Any]] = []
 
     shape, shape_buffered = load_shape('Germany')
     with open(output, 'w', newline='') as csvfile, open(
@@ -178,8 +191,7 @@ async def process_mosmix_stations(
             if station['name']:
                 csv.writerow([station[key] for key in DWD_STATION_KEYS])
                 stations_keys.append(station['station_id'])
-                stations_db.append({key: station[key] for key in DWD_STATION_KEYS})
             else:
                 csv_new.writerow([station[key] for key in DWD_STATION_KEYS])
 
-    logger.info(f'Processed {len(stations_db)} stations!')
+    return len(stations_keys)
