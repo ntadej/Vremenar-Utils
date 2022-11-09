@@ -54,11 +54,18 @@ class BatchedRedis:
 
     async def _drain(self) -> None:
         """Drain the queue."""
-        if self.connection and self.queue:
-            async with self.connection.pipeline() as pipeline:
-                for item in self.queue:
-                    self.process(pipeline, item)
-                await pipeline.execute()
+        if not self.connection:  # pragma: no cover
+            raise RuntimeError('Invalid redis connection')
+
+        if not self.queue:  # pragma: no cover
+            # empty queue
+            return
+
+        async with self.connection.pipeline() as pipeline:
+            for item in self.queue:
+                self.process(pipeline, item)
+            await pipeline.execute()
+
         self.queue.clear()
 
 

@@ -8,7 +8,7 @@ runner = CliRunner()
 
 @pytest.mark.forked
 def test_alerts_germany(env: dict[str, str]) -> None:
-    """Test stations store."""
+    """Test alerts for Germany."""
     from vremenar_utils.cli import application  # type: ignore
 
     result = runner.invoke(
@@ -19,7 +19,7 @@ def test_alerts_germany(env: dict[str, str]) -> None:
 
 @pytest.mark.forked
 def test_alerts_slovenia(env: dict[str, str]) -> None:
-    """Test stations store."""
+    """Test alerts for Slovenia."""
     from vremenar_utils.cli import application
 
     result = runner.invoke(

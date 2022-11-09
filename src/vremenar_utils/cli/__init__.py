@@ -10,7 +10,7 @@ from .logging import colors, setup_logger, style
 from .. import __version__
 from ..database.redis import database_info
 
-if not sys.warnoptions:
+if not sys.warnoptions:  # pragma: no cover
     import warnings
 
     warnings.simplefilter('default')
@@ -61,6 +61,8 @@ def stations_store(
         from ..arso.database import store_stations as arso_store_stations
 
         asyncio.run(arso_store_stations(logger))
+    else:  # pragma: no cover
+        raise RuntimeError('Undefined behaviour')
 
 
 @application.command()
@@ -96,7 +98,11 @@ def dwd_mosmix(
 
 
 @application.command()
-def dwd_current() -> None:
+def dwd_current(
+    test_mode: Optional[bool] = typer.Option(  # noqa: B008
+        False, '--test-mode', help='Only run as a test on a few stations.'
+    ),
+) -> None:
     """DWD current weather data caching."""
     logger = setup_logger('dwd_current')
 
@@ -110,7 +116,7 @@ def dwd_current() -> None:
 
     from ..dwd.current import current_weather
 
-    asyncio.run(current_weather(logger))
+    asyncio.run(current_weather(logger, test_mode if test_mode else False))
 
 
 @application.command()

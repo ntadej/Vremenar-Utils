@@ -134,14 +134,15 @@ async def process_meteoalarm_station(
 
 def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:
     """Load MeteoAlarm areas from file."""
-    areas: list[AlertArea] = []
-
     data = get_data('vremenar_utils', f'data/meteoalarm/{country.value}.json')
-    if data:
-        bytes_data = BytesIO(data)
-        with TextIOWrapper(bytes_data, encoding='utf-8') as file:
-            areas_dict = load(file)
+    if not data:  # pragma: no cover
+        return []
 
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding='utf-8') as file:
+        areas_dict = load(file)
+
+    areas: list[AlertArea] = []
     for area_obj in areas_dict:
         areas.append(AlertArea.from_dict(area_obj))
 

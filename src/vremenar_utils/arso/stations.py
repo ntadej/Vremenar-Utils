@@ -8,10 +8,13 @@ from typing import Union
 def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     """Load ARSO stations."""
     data = get_data('vremenar_utils', 'data/stations/ARSO.json')
-    if data:
-        data_bytes = BytesIO(data)
-        with TextIOWrapper(data_bytes, encoding='utf-8') as file:
-            stations = load(file)
+    if not data:  # pragma: no cover
+        return {}
+
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding='utf-8') as file:
+        stations = load(file)
+
     output: dict[str, dict[str, Union[str, int, float]]] = {}
     for station in stations:
         station['id'] = station['id'].strip('_')

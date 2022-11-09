@@ -16,7 +16,7 @@ async def store_station(
     async with redis.pipeline() as pipeline:
         pipeline.sadd(f'station:{country.value}', station_id)
         pipeline.hset(f'station:{country.value}:{station_id}', mapping=station)
-        if metadata is not None:
+        if metadata is not None:  # pragma: no cover
             pipeline.hset(f'station:{country.value}:{station_id}', mapping=metadata)
         await pipeline.execute()
 
@@ -30,12 +30,13 @@ async def validate_stations(country: CountryID, ids: set[str]) -> int:
         if id not in ids:
             ids_to_remove.add(id)
 
-    async with redis.client() as connection:
-        for id in ids_to_remove:
-            async with connection.pipeline() as pipeline:
-                pipeline.srem(f'station:{country.value}', id)
-                pipeline.delete(f'station:{country.value}:{id}')
-                await pipeline.execute()
+    if ids_to_remove:
+        async with redis.client() as connection:
+            for id in ids_to_remove:
+                async with connection.pipeline() as pipeline:
+                    pipeline.srem(f'station:{country.value}', id)
+                    pipeline.delete(f'station:{country.value}:{id}')
+                    await pipeline.execute()
 
     return len(ids_to_remove)
 

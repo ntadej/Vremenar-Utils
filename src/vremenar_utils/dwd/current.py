@@ -42,14 +42,16 @@ class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
 
 def current_stations() -> list[str]:
     """Get a list of supported DWD stations."""
-    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
-    if data:
-        bytes_io = BytesIO(data)
-        with TextIOWrapper(bytes_io, encoding='utf-8') as csvfile:
-            csv = reader(csvfile)
-            for row in csv:
-                stations.append(row[0])
+    if not data:  # pragma: no cover
+        return []
+
+    stations: list[str] = []
+    bytes_io = BytesIO(data)
+    with TextIOWrapper(bytes_io, encoding='utf-8') as csvfile:
+        csv = reader(csvfile)
+        for row in csv:
+            stations.append(row[0])
     return stations
 
 
@@ -67,9 +69,11 @@ async def download_current_weather(
     await client.aclose()
 
 
-async def current_weather(logger: Logger) -> None:
+async def current_weather(logger: Logger, test_mode: bool = False) -> None:
     """Cache DWD current weather data."""
     stations: list[str] = current_stations()
+    if test_mode:  # pragma: no cover
+        stations = [stations[0], stations[-1]]
 
     async with redis.client() as db:
         async with BatchedCurrentWeather(db) as batch:

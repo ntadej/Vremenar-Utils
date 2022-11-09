@@ -65,7 +65,7 @@ class MeteoAlarmParser:
                 if link.get('@type') == 'application/cap+xml':
                     cap_url = link.get('@href')
 
-            if not cap_url:
+            if not cap_url:  # pragma: no cover
                 continue
 
             new_ids.add((cap_id, cap_url))
@@ -93,12 +93,12 @@ class MeteoAlarmParser:
         async with AsyncClient() as client:
             response = await client.get(url, timeout=10)
         # can be missing
-        if response.status_code != codes.OK:
+        if response.status_code != codes.OK:  # pragma: no cover
             return None
 
         result = response.text
         # can be empty
-        if not result:
+        if not result:  # pragma: no cover
             return None
 
         result = result[: result.rfind('>') + 1]  # ignore characters after last XML tag
@@ -113,14 +113,14 @@ class MeteoAlarmParser:
             for translation in translations:
                 try:
                     lang = LanguageID(translation.get('language')[:2])
-                except ValueError:
+                except ValueError:  # pragma: no cover
                     continue
                 self.parse_alert_info(alert, translation)
                 self.parse_alert_translations(alert, lang, translation)
         else:
             try:
                 lang = LanguageID(translation.get('language')[:2])
-            except ValueError:
+            except ValueError:  # pragma: no cover
                 lang = LanguageID.English
             translation = translations
             self.parse_alert_info(alert, translation)
@@ -130,12 +130,13 @@ class MeteoAlarmParser:
         parameters = translation.get('parameter', [])
         try:
             self.parse_alert_parameters(alert, parameters)
-        except ValueError:  # if alert type is invalid, ignore alert
+        except ValueError:  # pragma: no cover
+            # if alert type is invalid, ignore alert
             return None
 
         # parse areas
         areas = translation.get('area', [])
-        if not isinstance(areas, list):
+        if not isinstance(areas, list):  # pragma: no cover
             areas = [areas]
         self.parse_alert_areas(alert, areas)
 

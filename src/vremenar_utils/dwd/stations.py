@@ -46,12 +46,14 @@ def zoom_level_conversion(location_type: str, admin_level: float) -> float:
 
 def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     """Get a dictionary of supported DWD stations."""
-    stations: dict[str, dict[str, Union[str, int, float]]] = {}
     data = get_data('vremenar_utils', 'data/stations/DWD.csv')
-    if data:
-        bytes_data = BytesIO(data)
-        with TextIOWrapper(bytes_data, encoding='utf-8') as csv_file:
-            stations = load_stations_from_csv(csv_file)
+    if not data:  # pragma: no cover
+        return {}
+
+    stations: dict[str, dict[str, Union[str, int, float]]] = {}
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding='utf-8') as csv_file:
+        stations = load_stations_from_csv(csv_file)
     return stations
 
 
@@ -77,40 +79,46 @@ def load_stations_from_csv(
 
 def load_stations_with_reports() -> list[str]:
     """Get a list of DWD stations that have current weather reports available."""
-    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.current.csv')
-    if data:
-        bytes_data = BytesIO(data)
-        with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
-            csv = reader(csvfile, dialect='excel')
-            for row in csv:
-                stations.append(row[0])
+    if not data:  # pragma: no cover
+        return []
+
+    stations: list[str] = []
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
+        csv = reader(csvfile, dialect='excel')
+        for row in csv:
+            stations.append(row[0])
     return stations
 
 
 def load_stations_included() -> list[str]:
     """Get a list of DWD stations that should always be included."""
-    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.include.csv')
-    if data:
-        bytes_data = BytesIO(data)
-        with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
-            csv = reader(csvfile, dialect='excel')
-            for row in csv:
-                stations.append(row[0])
+    if not data:  # pragma: no cover
+        return []
+
+    stations: list[str] = []
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
+        csv = reader(csvfile, dialect='excel')
+        for row in csv:
+            stations.append(row[0])
     return stations
 
 
 def load_stations_ignored() -> list[str]:
     """Get a list of DWD stations that should be ignored."""
-    stations: list[str] = []
     data = get_data('vremenar_utils', 'data/stations/DWD.ignore.csv')
-    if data:
-        bytes_data = BytesIO(data)
-        with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
-            csv = reader(csvfile, dialect='excel')
-            for row in csv:
-                stations.append(row[0])
+    if not data:  # pragma: no cover
+        return []
+
+    stations: list[str] = []
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding='utf-8') as csvfile:
+        csv = reader(csvfile, dialect='excel')
+        for row in csv:
+            stations.append(row[0])
     return stations
 
 

@@ -107,7 +107,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                         self._clear_element(elem)
                         if records:
                             yield from records
-                        else:
+                        else:  # pragma: no cover
                             continue
 
     @staticmethod
@@ -123,7 +123,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
         accepted = []
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
-        if now >= timestamps[0] and now <= timestamps[-1]:
+        if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
             accepted.append(now)
 
         daily = now + timedelta(hours=48 - now.hour)
@@ -131,13 +131,13 @@ class MOSMIXParserFast(Parser):  # type: ignore
         # 2 days hourly
         while now < daily:
             now += timedelta(hours=1)
-            if now >= timestamps[0] and now <= timestamps[-1]:
+            if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
                 accepted.append(now)
 
         # 7 days
         for i in range(28):
             time = daily + timedelta(hours=i * 6)
-            if time >= timestamps[0] and time <= timestamps[-1]:
+            if time >= timestamps[0] and time <= timestamps[-1]:  # pragma: no cover
                 accepted.append(time)
 
         return accepted
@@ -159,7 +159,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
             lon, lat, altitude = station_elem.find(
                 './kml:Point/kml:coordinates', namespaces=NS
             ).text.split(',')
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             self.logger.warning(
                 "Ignoring station without coordinates, WMO ID '%s', name '%s'",
                 wmo_station_id,
@@ -213,10 +213,10 @@ class MOSMIXParserFast(Parser):  # type: ignore
     ) -> Generator[DwdRecord, None, None]:
         for r in records:
             r['condition'] = synop_past_weather_code_to_condition(r['condition'])
-            if r['precipitation'] and r['precipitation'] < 0:
+            if r['precipitation'] and r['precipitation'] < 0:  # pragma: no cover
                 self.logger.warning('Ignoring negative precipitation value: %s', r)
                 r['precipitation'] = None
-            if r['wind_direction'] and r['wind_direction'] > 360:
+            if r['wind_direction'] and r['wind_direction'] > 360:  # pragma: no cover
                 self.logger.warning('Fixing out-of-bounds wind direction: %s', r)
                 r['wind_direction'] -= 360
             yield r

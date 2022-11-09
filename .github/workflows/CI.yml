@@ -45,6 +45,10 @@ jobs:
           redis-version: "6.x"
           auto-start: true
 
+      - name: Download DWD MOSMIX
+        run: |
+          wget https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz
+
       - name: Setup server
         run: |
           poetry install
