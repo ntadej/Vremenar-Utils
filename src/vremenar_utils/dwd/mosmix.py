@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from dateutil import parser as dateparser
 from httpx import AsyncClient
 from lxml.etree import iterparse, Element, QName  # type: ignore
-from typing import Any, IO, Optional, cast
+from typing import Any, IO, cast
 from zipfile import ZipFile
 
 from ..cli.logging import Logger
@@ -148,7 +148,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
         station_ids: list[str],
         timestamps: list[datetime],
         accepted_timestamps: list[datetime],
-        source: Optional[str] = '',
+        source: str | None = '',
     ) -> Generator[DwdRecord, None, None]:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
         if station_ids and wmo_station_id not in station_ids:

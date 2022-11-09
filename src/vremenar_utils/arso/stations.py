@@ -2,10 +2,9 @@
 from io import BytesIO, TextIOWrapper
 from json import load
 from pkgutil import get_data
-from typing import Union
 
 
-def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
+def load_stations() -> dict[str, dict[str, str | int | float]]:
     """Load ARSO stations."""
     data = get_data('vremenar_utils', 'data/stations/ARSO.json')
     if not data:  # pragma: no cover
@@ -15,7 +14,7 @@ def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
     with TextIOWrapper(bytes_data, encoding='utf-8') as file:
         stations = load(file)
 
-    output: dict[str, dict[str, Union[str, int, float]]] = {}
+    output: dict[str, dict[str, str | int | float]] = {}
     for station in stations:
         station['id'] = station['id'].strip('_')
         output[station['id']] = station

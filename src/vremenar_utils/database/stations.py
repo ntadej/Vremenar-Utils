@@ -1,5 +1,5 @@
 """Stations database helpers."""
-from typing import Any, Optional, Union
+from typing import Any
 
 from ..cli.common import CountryID
 from .redis import redis
@@ -8,7 +8,7 @@ from .redis import redis
 async def store_station(
     country: CountryID,
     station: dict[str, Any],
-    metadata: Optional[dict[str, Any]] = None,
+    metadata: dict[str, Any] | None = None,
 ) -> None:
     """Store a station to redis."""
     station_id = station['id']
@@ -43,9 +43,9 @@ async def validate_stations(country: CountryID, ids: set[str]) -> int:
 
 async def load_stations(
     country: CountryID,
-) -> dict[str, dict[str, Union[str, int, float]]]:
+) -> dict[str, dict[str, str | int | float]]:
     """Load stations from redis."""
-    stations: dict[str, dict[str, Union[str, int, float]]] = {}
+    stations: dict[str, dict[str, str | int | float]] = {}
     async with redis.client() as connection:
         ids: set[str] = await redis.smembers(f'station:{country.value}')
         async with connection.pipeline(transaction=False) as pipeline:

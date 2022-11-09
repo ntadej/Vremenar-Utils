@@ -1,7 +1,7 @@
 """Redis utilities."""
 from aioredis import Redis, from_url
 from os import getenv
-from typing import Any, Optional
+from typing import Any
 
 from ..cli.logging import Logger
 
@@ -25,7 +25,7 @@ def database_info(logger: Logger) -> None:
 class BatchedRedis:
     """Put items to redis in batches."""
 
-    def __init__(self, connection: Redis, limit: Optional[int] = 1000) -> None:
+    def __init__(self, connection: Redis, limit: int | None = 1000) -> None:
         """Initialise with DB."""
         self.connection = connection
         self.queue: list[Any] = []

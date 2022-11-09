@@ -2,7 +2,7 @@
 # Inspired and based on https://github.com/rolfberkenbosch/meteoalert-api
 from datetime import datetime, timezone
 from httpx import AsyncClient, codes
-from typing import Optional, Union, cast
+from typing import cast
 from xmltodict import parse  # type: ignore
 
 from ..cli.common import CountryID, LanguageID
@@ -85,7 +85,7 @@ class MeteoAlarmParser:
         """Parse alert date/time."""
         return datetime.strptime(string, '%Y-%m-%dT%H:%M:%S%z')
 
-    async def parse_cap(self, id: str, url: str) -> Optional[AlertInfo]:
+    async def parse_cap(self, id: str, url: str) -> AlertInfo | None:
         """Parse CAP."""
         alert = AlertInfo(id)
 
@@ -180,7 +180,7 @@ class MeteoAlarmParser:
     def parse_alert_areas(
         self,
         alert: AlertInfo,
-        areas: list[dict[str, Union[list[dict[str, str]], dict[str, str]]]],
+        areas: list[dict[str, list[dict[str, str]] | dict[str, str]]],
     ) -> None:
         """Parse alert areas."""
         for area in areas:

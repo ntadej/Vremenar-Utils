@@ -5,7 +5,8 @@ from click import style
 from copy import copy
 from sys import stdout
 from typer import colors
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Any, Literal
+from collections.abc import Callable
 
 
 class ColourizedFormatter(logging.Formatter):
@@ -29,9 +30,9 @@ class ColourizedFormatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: Optional[str] = None,
-        datefmt: Optional[str] = '%Y-%m-%d %H:%M:%S',
-        style: Union[Literal['%'], Literal['{'], Literal['$']] = '%',
+        fmt: str | None = None,
+        datefmt: str | None = '%Y-%m-%d %H:%M:%S',
+        style: Literal['%'] | Literal['{'] | Literal['$'] = '%',
     ):
         """Initialize logger."""
         self.use_colors = stdout.isatty()
@@ -58,7 +59,7 @@ class ColourizedFormatter(logging.Formatter):
         return super().formatMessage(recordcopy)
 
 
-def setup_logger(name: Optional[str] = None) -> logging.Logger:
+def setup_logger(name: str | None = None) -> logging.Logger:
     """Prepare logger and write the log file."""
     if name:
         file_formatter = logging.Formatter(

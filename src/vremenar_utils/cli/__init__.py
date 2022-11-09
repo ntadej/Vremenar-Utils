@@ -2,7 +2,6 @@
 import asyncio
 import sys
 import typer
-from typing import Optional
 
 from .common import CountryID
 from .logging import colors, setup_logger, style
@@ -27,7 +26,7 @@ def version_callback(value: bool) -> None:
 
 @application.callback()
 def main(
-    version: Optional[bool] = typer.Option(  # noqa: B008
+    version: bool = typer.Option(  # noqa: B008
         None,
         '--version',
         help='Show version and exit.',
@@ -67,14 +66,17 @@ def stations_store(
 
 @application.command()
 def dwd_mosmix(
-    job: Optional[int] = typer.Argument(  # noqa: B008
-        None, help='Job number for batched processing'
+    local_source: bool = typer.Option(  # noqa: B008
+        False,
+        '--local-source',
+        help="Use local 'MOSMIX_S_LATEST_240.kmz'.",
+        show_default=False,
     ),
-    local_source: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--local-source', help="Use local 'MOSMIX_S_LATEST_240.kmz'."
-    ),
-    local_stations: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--local-stations', help='Use local stations database.'
+    local_stations: bool = typer.Option(  # noqa: B008
+        False,
+        '--local-stations',
+        help='Use local stations database.',
+        show_default=False,
     ),
 ) -> None:
     """DWD weather MOSMIX data caching."""
@@ -99,8 +101,11 @@ def dwd_mosmix(
 
 @application.command()
 def dwd_current(
-    test_mode: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--test-mode', help='Only run as a test on a few stations.'
+    test_mode: bool = typer.Option(  # noqa: B008
+        False,
+        '--test-mode',
+        help='Only run as a test on a few stations.',
+        show_default=False,
     ),
 ) -> None:
     """DWD current weather data caching."""
@@ -121,14 +126,15 @@ def dwd_current(
 
 @application.command()
 def dwd_stations(
-    output: Optional[str] = typer.Argument(  # noqa: B008
-        default='DWD.csv', help='Output file'
-    ),
-    output_new: Optional[str] = typer.Argument(  # noqa: B008
+    output: str = typer.Argument(default='DWD.csv', help='Output file'),  # noqa: B008
+    output_new: str = typer.Argument(  # noqa: B008
         default='DWD.NEW.csv', help='Output file for new stations'
     ),
-    local_source: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--local-source', help="Use local 'MOSMIX_S_LATEST_240.kmz'."
+    local_source: bool = typer.Option(  # noqa: B008
+        False,
+        '--local-source',
+        help="Use local 'MOSMIX_S_LATEST_240.kmz'.",
+        show_default=False,
     ),
 ) -> None:
     """DWD process stations."""
@@ -149,10 +155,10 @@ def dwd_stations(
 @application.command()
 def alerts_areas(
     country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
-    output: Optional[str] = typer.Argument(  # noqa: B008
+    output: str = typer.Argument(  # noqa: B008
         default='areas.json', help='Output file'
     ),
-    output_matches: Optional[str] = typer.Argument(  # noqa: B008
+    output_matches: str = typer.Argument(  # noqa: B008
         default='matches.json', help='Output file for area-station matches'
     ),
 ) -> None:
@@ -200,8 +206,8 @@ def alerts_get(
 @application.command()
 def alerts_notify(
     country: CountryID = typer.Argument(..., help='Country'),  # noqa: B008
-    forecast: Optional[bool] = typer.Option(  # noqa: B008
-        False, '--forecast', help='Send forecast notification.'
+    forecast: bool = typer.Option(  # noqa: B008
+        False, '--forecast', help='Send forecast notification.', show_default=False
     ),
 ) -> None:
     """Notify MeteoAlarm alerts."""

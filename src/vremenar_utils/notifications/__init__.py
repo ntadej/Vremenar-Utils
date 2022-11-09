@@ -1,7 +1,7 @@
 """Notifications support."""
 from datetime import datetime
 from firebase_admin import messaging, initialize_app  # type: ignore
-from typing import Any, Optional
+from typing import Any
 
 from ..cli.logging import Logger
 
@@ -13,7 +13,7 @@ def make_message(
     subtitle: str,
     body: str,
     important: bool = False,
-    expires: Optional[datetime] = None,
+    expires: datetime | None = None,
     badge: int = 0,
 ) -> messaging.Message:
     """Make a notification message."""
@@ -48,9 +48,9 @@ def make_message(
 
 def prepare_message(
     message: messaging.Message,
-    topics: Optional[list[str]] = None,
-    token: Optional[str] = None,
-    logger: Optional[Logger] = None,
+    topics: list[str] | None = None,
+    token: str | None = None,
+    logger: Logger | None = None,
 ) -> None:
     """Prepare a message to send to topic subscribers or to a dedicated device token."""
     if topics is None and token is None:
@@ -67,7 +67,7 @@ def prepare_message(
 
 
 def prepare_message_for_topics(
-    message: messaging.Message, topics: list[str], logger: Optional[Logger]
+    message: messaging.Message, topics: list[str], logger: Logger | None
 ) -> None:
     """Prepare a message to send to topic subscribers."""
     if not topics:
@@ -86,7 +86,7 @@ def prepare_message_for_topics(
 
 
 def prepare_message_for_token(
-    message: messaging.Message, token: str, logger: Optional[Logger]
+    message: messaging.Message, token: str, logger: Logger | None
 ) -> None:
     """Prepare a message to send to a dedicated device token."""
     if not token:

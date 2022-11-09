@@ -89,7 +89,6 @@ mypy-extensions = ">=0.4.3"
 pathspec = ">=0.9.0"
 platformdirs = ">=2"
 tomli = {version = ">=1.1.0", markers = "python_full_version < \"3.11.0a7\""}
-typing-extensions = {version = ">=3.10.0.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
@@ -877,10 +876,7 @@ optional = false
 python-versions = ">=3.8"
 
 [package.dependencies]
-numpy = [
-    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
-    {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
-]
+numpy = {version = ">=1.21.0", markers = "python_version >= \"3.10\""}
 python-dateutil = ">=2.8.1"
 pytz = ">=2020.1"
 
@@ -1546,8 +1542,8 @@ python-versions = ">=3.4"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "e2d124bcfd05b61ffd93df9302aaad696f96cbc36787b215d68677907ee8e252"
+python-versions = "^3.10"
+content-hash = "5c4f5096551bf1111c0ca02da1db6cdd647266bd2b407ba3f823fdb2ab1c51d2"
 
 [metadata.files]
 aioredis = [

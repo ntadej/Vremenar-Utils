@@ -5,7 +5,7 @@ from operator import itemgetter
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 from ..cli.logging import Logger
 from ..geo.shapes import load_shape, inside_shape
@@ -44,13 +44,13 @@ def zoom_level_conversion(location_type: str, admin_level: float) -> float:
     return 7.5
 
 
-def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
+def load_stations() -> dict[str, dict[str, str | int | float]]:
     """Get a dictionary of supported DWD stations."""
     data = get_data('vremenar_utils', 'data/stations/DWD.csv')
     if not data:  # pragma: no cover
         return {}
 
-    stations: dict[str, dict[str, Union[str, int, float]]] = {}
+    stations: dict[str, dict[str, str | int | float]] = {}
     bytes_data = BytesIO(data)
     with TextIOWrapper(bytes_data, encoding='utf-8') as csv_file:
         stations = load_stations_from_csv(csv_file)
@@ -59,13 +59,13 @@ def load_stations() -> dict[str, dict[str, Union[str, int, float]]]:
 
 def load_stations_from_csv(
     csv_file: TextIO,
-) -> dict[str, dict[str, Union[str, int, float]]]:
+) -> dict[str, dict[str, str | int | float]]:
     """Get a dictionary of supported DWD stations from a CSV file."""
-    stations: dict[str, dict[str, Union[str, int, float]]] = {}
+    stations: dict[str, dict[str, str | int | float]] = {}
 
     csv = reader(csv_file, dialect='excel')
     for row in csv:
-        station: dict[str, Union[str, int, float]] = {
+        station: dict[str, str | int | float] = {
             key: row[index] for index, key in enumerate(DWD_STATION_KEYS)
         }
         station['has_reports'] = int(station['has_reports'])
@@ -126,7 +126,7 @@ async def process_mosmix_stations(
     logger: Logger,
     output: str,
     output_new: str,
-    local_source: Optional[bool] = False,
+    local_source: bool | None = False,
 ) -> None:
     """Load DWD MOSMIX stations."""
     old_stations = load_stations()

@@ -1,6 +1,5 @@
 """DWD MOSMIX utils."""
 from tempfile import NamedTemporaryFile
-from typing import Optional
 
 from vremenar_utils.cli.common import CountryID
 
@@ -15,8 +14,8 @@ from .stations import load_stations as load_local_stations
 
 async def process_mosmix(
     logger: Logger,
-    local_source: Optional[bool] = False,
-    local_stations: Optional[bool] = False,
+    local_source: bool | None = False,
+    local_stations: bool | None = False,
 ) -> str:
     """Cache DWD MOSMIX data."""
     # load stations to use

@@ -2,7 +2,6 @@
 from io import BytesIO, TextIOWrapper
 from json import load, dump
 from pkgutil import get_data
-from typing import Union
 
 from ..cli.common import CountryID
 from ..cli.logging import Logger
@@ -101,7 +100,7 @@ async def match_meteoalarm_areas(
 async def process_meteoalarm_station(
     country: CountryID,
     id: str,
-    station: dict[str, Union[str, int, float]],
+    station: dict[str, str | int | float],
     areas: list[AlertArea],
     overrides: dict[str, str],
 ) -> str:
