@@ -11,7 +11,7 @@ Babel = "^2.11.0"
 brightsky = "~1.0.20"
 firebase-admin = "^6.0.1"
 geopandas = "^0.12.1"
-httpx = "^0.23.0"
+httpx = "^0.23.1"
 Shapely = "^1.8.5"
 typer = {extras = ["all"], version = "^0.7.0"}
 wheel = "^0.38.4"
