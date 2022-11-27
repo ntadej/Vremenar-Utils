@@ -1,6 +1,9 @@
 """MeteoAlarm database utilities."""
+from collections.abc import Mapping
+from typing import cast
+
 from ..cli.common import CountryID, LanguageID
-from ..database.redis import redis, BatchedRedis, Redis
+from ..database.redis import redis, BatchedRedis, Redis, RedisPipeline
 
 from .common import AlertArea, AlertInfo, AlertNotificationInfo
 
@@ -37,17 +40,26 @@ async def store_alert(country: CountryID, alert: AlertInfo) -> None:
     async with redis.pipeline() as pipeline:
         pipeline.sadd(f'alert:{country.value}', alert.id)
         pipeline.hset(
-            f'alert:{country.value}:{alert.id}:info', mapping=alert.to_info_dict()
+            f'alert:{country.value}:{alert.id}:info',
+            mapping=cast(
+                Mapping[bytes | str, bytes | float | int | str], alert.to_info_dict()
+            ),
         )
         pipeline.sadd(f'alert:{country.value}:{alert.id}:areas', *alert.areas)
         for language in LanguageID:
             pipeline.hset(
                 f'alert:{country.value}:{alert.id}:localised_{language.value}',
-                mapping=alert.to_localised_dict(language),
+                mapping=cast(
+                    Mapping[bytes | str, bytes | float | int | str],
+                    alert.to_localised_dict(language),
+                ),
             )
         pipeline.hset(
             f'alert:{country.value}:{alert.id}:notifications',
-            mapping=AlertNotificationInfo(alert.id).to_dict(),
+            mapping=cast(
+                Mapping[bytes | str, bytes | float | int | str],
+                AlertNotificationInfo(alert.id).to_dict(),
+            ),
         )
         await pipeline.execute()
 
@@ -95,7 +107,10 @@ async def store_alerts_areas(country: CountryID, areas: list[AlertArea]) -> None
                 area_codes.add(area.code)
                 pipeline.hset(
                     f'alerts_area:{country.value}:{area.code}:info',
-                    mapping=area.to_dict_for_database(),
+                    mapping=cast(
+                        Mapping[bytes | str, bytes | float | int | str],
+                        area.to_dict_for_database(),
+                    ),
                 )
                 pipeline.sadd(f'alerts_area:{country.value}', area.code)
                 await pipeline.execute()
@@ -124,12 +139,12 @@ async def store_alerts_for_area(
 class BatchedNotifyAnnounce(BatchedRedis):
     """Batched alert announcement notifications."""
 
-    def __init__(self, connection: Redis, country: CountryID):
+    def __init__(self, connection: "Redis[str]", country: CountryID):
         """Initialise batched notify for a country."""
         self.country = country
         super().__init__(connection)
 
-    def process(self, pipeline: Redis, alert_id: str) -> None:
+    def process(self, pipeline: "RedisPipeline[str]", alert_id: str) -> None:
         """Process alert on announcement nofitication."""
         key = f'alert:{self.country.value}:{alert_id}:notifications'
         pipeline.hset(key, mapping={'announce': 1})
@@ -138,12 +153,12 @@ class BatchedNotifyAnnounce(BatchedRedis):
 class BatchedNotifyOnset(BatchedRedis):
     """Batched alert onset notifications."""
 
-    def __init__(self, connection: Redis, country: CountryID):
+    def __init__(self, connection: "Redis[str]", country: CountryID):
         """Initialise batched notify for a country."""
         self.country = country
         super().__init__(connection)
 
-    def process(self, pipeline: Redis, alert_id: str) -> None:
+    def process(self, pipeline: "RedisPipeline[str]", alert_id: str) -> None:
         """Process alert on onset nofitication."""
         key = f'alert:{self.country.value}:{alert_id}:notifications'
         pipeline.hset(key, mapping={'onset': 1})

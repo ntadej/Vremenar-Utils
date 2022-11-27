@@ -1,5 +1,6 @@
 """Redis utilities."""
-from aioredis import Redis, from_url
+from redis.asyncio import Redis, from_url
+from redis.asyncio.client import Pipeline as RedisPipeline
 from os import getenv
 from typing import Any
 
@@ -25,7 +26,7 @@ def database_info(logger: Logger) -> None:
 class BatchedRedis:
     """Put items to redis in batches."""
 
-    def __init__(self, connection: Redis, limit: int | None = 1000) -> None:
+    def __init__(self, connection: "Redis[str]", limit: int | None = 1000) -> None:
         """Initialise with DB."""
         self.connection = connection
         self.queue: list[Any] = []
@@ -46,7 +47,7 @@ class BatchedRedis:
 
         self.queue.append(item)
 
-    def process(self, pipeline: Redis, item: Any) -> None:
+    def process(self, pipeline: "RedisPipeline[str]", item: Any) -> None:
         """Process items in queue."""
         raise NotImplementedError(
             'BatchedRedis needs to be subclassed and process implemented'
@@ -72,9 +73,9 @@ class BatchedRedis:
 class BatchedRedisDelete(BatchedRedis):
     """Batch delete redis keys."""
 
-    def process(self, pipeline: Redis, item: str) -> None:
+    def process(self, pipeline: "RedisPipeline[str]", item: str) -> None:
         """Process items in queue."""
         pipeline.delete(item)
 
 
-__all__ = ['redis', 'Redis', 'BatchedRedis', 'BatchedRedisDelete']
+__all__ = ['redis', 'Redis', 'RedisPipeline', 'BatchedRedis', 'BatchedRedisDelete']

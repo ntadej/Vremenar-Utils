@@ -9,7 +9,8 @@ from typing import TextIO
 
 from ..cli.logging import Logger
 from ..geo.shapes import load_shape, inside_shape
-from .mosmix import MOSMIXParserFast, download
+from .mosmix import download
+from .parsers import MOSMIXParserFast
 
 DWD_STATION_KEYS = [
     'station_id',
@@ -142,8 +143,7 @@ async def process_mosmix_stations(
     meta_keys = ['name', 'type', 'admin', 'status']
 
     parser = MOSMIXParserFast(
-        path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
-        url=None,
+        logger, temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz'
     )
     stations: list[dict[str, str | int | float | None]] = []
     for station in parser.stations():

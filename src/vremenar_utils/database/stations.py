@@ -1,4 +1,7 @@
 """Stations database helpers."""
+from collections.abc import Mapping
+from typing import cast
+
 from ..cli.common import CountryID
 from .redis import redis
 
@@ -13,9 +16,15 @@ async def store_station(
 
     async with redis.pipeline() as pipeline:
         pipeline.sadd(f'station:{country.value}', station_id)
-        pipeline.hset(f'station:{country.value}:{station_id}', mapping=station)
+        pipeline.hset(
+            f'station:{country.value}:{station_id}',
+            mapping=cast(Mapping[bytes | str, bytes | float | int | str], station),
+        )
         if metadata is not None:  # pragma: no cover
-            pipeline.hset(f'station:{country.value}:{station_id}', mapping=metadata)
+            pipeline.hset(
+                f'station:{country.value}:{station_id}',
+                mapping=cast(Mapping[bytes | str, bytes | float | int | str], metadata),
+            )
         await pipeline.execute()
 
 

@@ -1,9 +1,11 @@
 """DWD database utilities."""
+from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
+from typing import cast
 
 from ..cli.common import CountryID
 from ..cli.logging import Logger
-from ..database.redis import Redis, BatchedRedis
+from ..database.redis import BatchedRedis, RedisPipeline
 from ..database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
@@ -45,7 +47,9 @@ class BatchedMosmix(BatchedRedis):
     """Batched MOSMIX save."""
 
     def process(
-        self, pipeline: Redis, record: dict[str, str | int | float | None]
+        self,
+        pipeline: "RedisPipeline[str]",
+        record: dict[str, str | int | float | None],
     ) -> None:
         """Process MOSMIX record."""
         if not isinstance(record['timestamp'], str):
@@ -72,7 +76,9 @@ class BatchedMosmix(BatchedRedis):
         key = f"mosmix:{record['timestamp']}:{record['station_id']}"
         pipeline.sadd(set_key, key)
         pipeline.expire(set_key, delta)
-        pipeline.hset(key, mapping=record)
+        pipeline.hset(
+            key, mapping=cast(Mapping[bytes | str, bytes | float | int | str], record)
+        )
         pipeline.expire(key, delta)
 
 
@@ -80,7 +86,9 @@ class BatchedCurrentWeather(BatchedRedis):
     """Batched current weather save."""
 
     def process(
-        self, pipeline: Redis, record: dict[str, str | int | float | None]
+        self,
+        pipeline: "RedisPipeline[str]",
+        record: dict[str, str | int | float | None],
     ) -> None:
         """Process current weather record."""
         country = CountryID.Germany
@@ -94,5 +102,7 @@ class BatchedCurrentWeather(BatchedRedis):
 
         # store in the DB
         key = f"current:{country.value}:{record['station_id']}"
-        pipeline.hset(key, mapping=record)
+        pipeline.hset(
+            key, mapping=cast(Mapping[bytes | str, bytes | float | int | str], record)
+        )
         pipeline.expire(key, timedelta(hours=3))

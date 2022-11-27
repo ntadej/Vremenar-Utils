@@ -1,44 +1,16 @@
 """DWD current weather utils."""
-from brightsky.parsers import CurrentObservationsParser  # type: ignore
-from csv import reader, DictReader
+from csv import reader
 from httpx import AsyncClient
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 from tempfile import NamedTemporaryFile
 from typing import IO
-from collections.abc import Iterable
 
 from ..cli.logging import Logger
 from ..database.redis import redis
 
 from .database import BatchedCurrentWeather
-
-
-class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
-    """Custom current weather parser for low memory."""
-
-    def parse(
-        self,
-        lat: None = None,
-        lon: None = None,
-        height: None = None,
-        station_name: None = None,
-    ) -> Iterable[dict[str, str | int | float | None]]:
-        """Parse current weather."""
-        with open(self.path) as f:
-            reader = DictReader(f, delimiter=';')
-            wmo_station_id = next(reader)[self.DATE_COLUMN].rstrip('_')
-            # Skip row with German header titles
-            next(reader)
-            for row in reader:
-                record = self.parse_row(row)
-                # update timestamps
-                record['timestamp'] = f"{int(record['timestamp'].timestamp())}000"
-                yield {
-                    'station_id': wmo_station_id,
-                    **record,
-                }
-                break  # only parse first row for now
+from .parsers import CurrentObservationsParser
 
 
 def current_stations() -> list[str]:
@@ -92,7 +64,7 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
                 await download_current_weather(logger, url, temporary_file)
 
                 try:
-                    parser = CurrentWeatherParser(path=temporary_file.name)
+                    parser = CurrentObservationsParser(logger, temporary_file.name)
                     for record in parser.parse():
                         await batch.add(record)
                 finally:

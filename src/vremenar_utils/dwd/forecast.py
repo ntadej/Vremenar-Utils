@@ -8,7 +8,8 @@ from ..database.redis import redis
 from ..database.stations import load_stations
 
 from .database import BatchedMosmix
-from .mosmix import MOSMIXParserFast, download
+from .mosmix import download
+from .parsers import MOSMIXParserFast
 from .stations import load_stations as load_local_stations
 
 
@@ -33,8 +34,7 @@ async def process_mosmix(
         await download(logger, temporary_file)
 
     parser = MOSMIXParserFast(
-        path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
-        url=None,
+        logger, temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz'
     )
     async with redis.client() as db:
         async with BatchedMosmix(db) as batch:

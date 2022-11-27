@@ -1,0 +1,406 @@
+"""Parses of DWD open data."""
+# Based on brightsky
+# Copyright (c) 2020 Jakob de Maeyer
+import httpx
+import re
+from collections.abc import Iterable
+from csv import reader, DictReader
+from datetime import datetime, timedelta, timezone
+from dateutil import parser as dateparser
+from lxml.etree import iterparse, Element, QName  # type: ignore
+from parsel import Selector, SelectorList
+from zipfile import ZipFile
+
+from .. import __version__
+from ..cli.logging import Logger
+from .units import (
+    celsius_to_kelvin,
+    current_observations_weather_code_to_condition,
+    hpa_to_pa,
+    km_to_m,
+    kmh_to_ms,
+    minutes_to_seconds,
+    synop_past_weather_code_to_condition,
+)
+
+DWD_OPEN_DATA: str = 'https://opendata.dwd.de'
+NS = {
+    'dwd': f'{DWD_OPEN_DATA}/weather/lib/pointforecast_dwd_extension_V1_0.xsd',
+    'kml': 'http://www.opengis.net/kml/2.2',
+}
+HEADERS = {
+    'user-agent': f'Vremenar-Utils/{__version__}',
+    'referer': 'https://vremenar.tano.si',
+}
+
+
+class StationIDConverter:
+    """DWD station ID converter."""
+
+    STATION_LIST_URL = (
+        'https://www.dwd.de/DE/leistungen/klimadatendeutschland/statliste/'
+        'statlex_html.html?view=nasPublication'
+    )
+    STATION_TYPES = ['SY', 'MN']
+
+    def __init__(self, logger: Logger) -> None:
+        """Initialize DWD station ID converter."""
+        self.logger = logger
+        self.dwd_to_wmo: dict[str, str] = {}
+        self.wmo_to_dwd: dict[str, str] = {}
+
+        self._update()
+
+    def _update(self) -> None:
+        self.logger.info("Updating station ID maps")
+        response = httpx.get(self.STATION_LIST_URL, headers=HEADERS)
+        self._parse_station_list(response.text)
+
+    def _parse_station_list(self, html: str) -> None:
+        sel = Selector(html)
+        station_rows: SelectorList[Selector] = SelectorList()
+        for station_type in self.STATION_TYPES:
+            station_rows.extend(sel.xpath(f'//tr[td[3][text() = "{station_type}"]]'))
+        assert station_rows, "No synoptic stations"
+        self.dwd_to_wmo.clear()
+        self.wmo_to_dwd.clear()
+        for row in station_rows:
+            values = row.css('td::text').extract()
+            dwd_id = values[1].zfill(5)
+            wmo_id = values[3]
+            self.dwd_to_wmo[dwd_id] = wmo_id
+            self.wmo_to_dwd[wmo_id] = dwd_id
+        self.logger.info("Parsed %d station ID mappings", len(station_rows))
+
+    def convert_to_wmo(self, dwd_id: str) -> str | None:
+        """Convert DWD ID to WMO."""
+        return self.dwd_to_wmo.get(dwd_id)
+
+    def convert_to_dwd(self, wmo_id: str) -> str | None:
+        """Convert WMO ID to DWD."""
+        return self.wmo_to_dwd.get(wmo_id)
+
+
+class Parser:
+    """Base parser class."""
+
+    def __init__(self, logger: Logger, path: str) -> None:
+        """Initialize the parser."""
+        self.logger = logger
+        self.path = path
+        self.station_id_converter = StationIDConverter(logger)
+
+
+class CurrentObservationsParser(Parser):
+    """Parser of DWD current observations."""
+
+    ELEMENTS = {
+        'cloud_cover_total': 'cloud_cover',
+        'dew_point_temperature_at_2_meter_above_ground': 'dew_point',
+        'dry_bulb_temperature_at_2_meter_above_ground': 'temperature',
+        'horizontal_visibility': 'visibility',
+        'maximum_wind_speed_last_hour': 'wind_gust_speed',
+        'mean_wind_direction_during_last_10 min_at_10_meters_above_ground': (
+            'wind_direction'
+        ),
+        'mean_wind_speed_during last_10_min_at_10_meters_above_ground': ('wind_speed'),
+        'precipitation_amount_last_hour': 'precipitation',
+        'present_weather': 'condition',
+        'pressure_reduced_to_mean_sea_level': 'pressure_msl',
+        'relative_humidity': 'relative_humidity',
+        'total_time_of_sunshine_during_last_hour': 'sunshine',
+    }
+    DATE_COLUMN = 'surface observations'
+    HOUR_COLUMN = 'Parameter description'
+
+    CONVERTERS = {
+        'condition': current_observations_weather_code_to_condition,
+        'dew_point': celsius_to_kelvin,
+        'pressure_msl': hpa_to_pa,
+        'sunshine': minutes_to_seconds,
+        'temperature': celsius_to_kelvin,
+        'visibility': km_to_m,
+        'wind_speed': kmh_to_ms,
+        'wind_gust_speed': kmh_to_ms,
+    }
+
+    def parse(
+        self,
+        lat: None = None,
+        lon: None = None,
+        height: None = None,
+        station_name: None = None,
+    ) -> Iterable[dict[str, str | int | float | None]]:
+        """Parse current weather."""
+        with open(self.path) as f:
+            reader = DictReader(f, delimiter=';')
+            wmo_station_id = next(reader)[self.DATE_COLUMN].rstrip('_')
+            # Skip row with German header titles
+            next(reader)
+            for row in reader:
+                record = self.parse_row(row)
+                yield {
+                    'station_id': wmo_station_id,
+                    **record,
+                }
+                break  # only parse first row for now
+
+    def parse_row(self, row: dict[str, str]) -> dict[str, str | int | float | None]:
+        """Parse a row of data."""
+        record: dict[str, str | int | float | None] = {
+            element: (
+                None if row[column] == '---' else float(row[column].replace(',', '.'))
+            )
+            for column, element in self.ELEMENTS.items()
+        }
+        time = datetime.strptime(
+            f'{row[self.DATE_COLUMN]} {row[self.HOUR_COLUMN]}', '%d.%m.%y %H:%M'
+        ).replace(tzinfo=timezone.utc)
+        record['timestamp'] = f"{int(time.timestamp())}000"
+        self._convert_units(record)
+        self._sanitize_record(record)
+        return record
+
+    def _convert_units(self, record: dict[str, str | int | float | None]) -> None:
+        for element, converter in self.CONVERTERS.items():
+            if record[element] is not None:
+                record[element] = converter(record[element])  # type: ignore
+
+    def _sanitize_record(self, record: dict[str, str | int | float | None]) -> None:
+        if 'cloud_cover' in record and record['cloud_cover']:
+            if not isinstance(record['cloud_cover'], (int, float)):
+                raise ValueError("'cloud_cover' should be a number")
+            if record['cloud_cover'] > 100:
+                self.logger.warning("Ignoring unphysical cloud cover value: %s", record)
+                record['cloud_cover'] = None
+
+        if 'relative_humidity' in record and record['relative_humidity']:
+            if not isinstance(record['relative_humidity'], (int, float)):
+                raise ValueError("'relative_humidity' should be a number")
+            if record['relative_humidity'] > 100:
+                self.logger.warning(
+                    "Ignoring unphysical relative humidity value: %s", record
+                )
+                record['relative_humidity'] = None
+
+        if 'sunshine' in record and record['sunshine']:
+            if not isinstance(record['sunshine'], (int, float)):
+                raise ValueError("'sunshine' should be a number")
+            if record['sunshine'] > 3600:
+                self.logger.warning("Ignoring unphysical sunshine value: %s", record)
+                record['sunshine'] = None
+
+
+class MOSMIXParserFast(Parser):
+    """Custom MOSMIX parser for low memory."""
+
+    ELEMENTS = {
+        'DD': 'wind_direction',
+        'FF': 'wind_speed',
+        'FX1': 'wind_gust_speed',
+        'N': 'cloud_cover',
+        'PPPP': 'pressure_msl',
+        'RR1c': 'precipitation',
+        'SunD1': 'sunshine',
+        'Td': 'dew_point',
+        'TTT': 'temperature',
+        'VV': 'visibility',
+        'ww': 'condition',
+    }
+
+    def parse(
+        self, station_ids: list[str]
+    ) -> Iterable[dict[str, str | int | float | None]]:
+        """Parse the file."""
+        self.logger.info('Parsing %s', self.path)
+
+        with ZipFile(self.path) as zip:
+            with zip.open(zip.namelist()[0]) as file:
+                timestamps: list[str] = []
+                accepted_timestamps: list[str] = []
+                placemark = 0
+                source = ''
+                for _, elem in iterparse(file):
+                    tag = QName(elem.tag).localname
+
+                    if tag == 'ProductID':
+                        source += elem.text + ':'
+                        self._clear_element(elem)
+                    elif tag == 'IssueTime':
+                        source += elem.text
+                        self._clear_element(elem)
+                    elif tag == 'ForecastTimeSteps':
+                        timestamps_raw = [
+                            dateparser.parse(r.text).replace(tzinfo=timezone.utc)
+                            for r in elem.findall('dwd:TimeStep', namespaces=NS)
+                        ]
+                        timestamps = [
+                            f"{int(t.timestamp())}000" for t in timestamps_raw
+                        ]
+                        accepted_timestamps = self._filter_timestamps(timestamps_raw)
+                        self._clear_element(elem)
+
+                        self.logger.info(
+                            'Got %d timestamps for source %s'
+                            % (len(timestamps), source)
+                        )
+                        self.logger.info(
+                            'Using %d timestamps' % (len(accepted_timestamps),)
+                        )
+                    elif tag == 'Placemark':
+                        records = self._parse_station(
+                            elem,
+                            station_ids,
+                            timestamps,
+                            accepted_timestamps,
+                            source,
+                        )
+                        self._clear_element(elem)
+                        if records:
+                            self.logger.info(f'Processed placemark #{placemark+1}')
+                            placemark += 1
+                            yield from self._sanitize_records(records)
+
+    def stations(self) -> Iterable[dict[str, str | int | float | None]]:
+        """Parse the file."""
+        self.logger.info('Parsing %s', self.path)
+
+        with ZipFile(self.path) as zip:
+            with zip.open(zip.namelist()[0]) as file:
+                for _, elem in iterparse(file):
+                    tag = QName(elem.tag).localname
+
+                    if tag in ['ProductID', 'IssueTime', 'ForecastTimeSteps']:
+                        self._clear_element(elem)
+                    elif tag == 'Placemark':
+                        records = self._parse_station(elem, [], [], [])
+                        self._clear_element(elem)
+                        if records:
+                            yield from records
+                        else:  # pragma: no cover
+                            continue
+
+    @staticmethod
+    def _clear_element(elem: Element) -> None:
+        elem.clear()
+        # Also eliminate now-empty references from the root node to elem
+        for ancestor in elem.xpath('ancestor-or-self::*'):
+            while ancestor.getprevious() is not None:
+                del ancestor.getparent()[0]
+
+    @staticmethod
+    def _filter_timestamps(timestamps: list[datetime]) -> list[str]:
+        accepted = []
+        now = datetime.now(tz=timezone.utc)
+        now = now.replace(minute=0, second=0, microsecond=0)
+        if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
+            accepted.append(f"{int(now.timestamp())}000")
+
+        daily = now + timedelta(hours=48 - now.hour)
+
+        # 2 days hourly
+        while now < daily:
+            now += timedelta(hours=1)
+            if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
+                accepted.append(f"{int(now.timestamp())}000")
+
+        # 7 days
+        for i in range(28):
+            time = daily + timedelta(hours=i * 6)
+            if time >= timestamps[0] and time <= timestamps[-1]:  # pragma: no cover
+                accepted.append(f"{int(time.timestamp())}000")
+
+        return accepted
+
+    def _parse_station(
+        self,
+        station_elem: Element,
+        station_ids: list[str],
+        timestamps: list[str],
+        accepted_timestamps: list[str],
+        source: str | None = '',
+    ) -> Iterable[dict[str, str | int | float | None]]:
+        wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
+        if station_ids and wmo_station_id not in station_ids:
+            return []
+
+        station_name = station_elem.find('./kml:description', namespaces=NS).text
+        try:
+            lon, lat, altitude = station_elem.find(
+                './kml:Point/kml:coordinates', namespaces=NS
+            ).text.split(',')
+        except AttributeError:  # pragma: no cover
+            self.logger.warning(
+                "Ignoring station without coordinates, WMO ID '%s', name '%s'",
+                wmo_station_id,
+                station_name,
+            )
+            return []
+
+        base_record = {
+            'source': source,
+            'station_id': wmo_station_id,
+        }
+
+        if timestamps:
+            records: dict[str, list[str | int | float | None] | list[str]] = {
+                'timestamp': timestamps
+            }
+            for element, column in self.ELEMENTS.items():
+                values_str = station_elem.find(
+                    f'./*/dwd:Forecast[@dwd:elementName="{element}"]/dwd:value',
+                    namespaces=NS,
+                ).text
+                converter = getattr(self, f'parse_{column}', float)
+                records[column] = [
+                    None if row[0] == '-' else converter(row[0])
+                    for row in reader(
+                        re.sub(r'\s+', '\n', values_str.strip()).splitlines()
+                    )
+                ]
+                assert len(records[column]) == len(timestamps)
+
+            # Turn dict of lists into list of dicts
+            return (
+                {**base_record, **dict(zip(records, row))}
+                for row in zip(*records.values())
+                if row[0] in accepted_timestamps
+            )
+
+        else:
+            dwd_station_id = self.station_id_converter.convert_to_dwd(wmo_station_id)
+            base_record.update(
+                {
+                    'lat': float(lat),
+                    'lon': float(lon),
+                    'altitude': float(altitude),
+                    'dwd_station_id': dwd_station_id,
+                    'station_name': station_name,
+                }
+            )
+            return [base_record]
+
+    def _sanitize_records(
+        self, records: Iterable[dict[str, str | int | float | None]]
+    ) -> Iterable[dict[str, str | int | float | None]]:
+        for r in records:
+            if 'condition' in r and r['condition'] is not None:
+                r['condition'] = synop_past_weather_code_to_condition(
+                    int(r['condition'])
+                )
+
+            if 'precipitation' in r and r['precipitation']:
+                if not isinstance(r['precipitation'], (int, float)):
+                    raise ValueError("'precipitation' should be a number")
+                if r['precipitation'] < 0:  # pragma: no cover
+                    self.logger.warning('Ignoring negative precipitation value: %s', r)
+                    r['precipitation'] = None
+
+            if 'wind_direction' in r and r['wind_direction']:
+                if not isinstance(r['wind_direction'], (int, float)):
+                    raise ValueError("'wind_direction' should be a number")
+                if r['wind_direction'] > 360:  # pragma: no cover
+                    self.logger.warning('Fixing out-of-bounds wind direction: %s', r)
+                    r['wind_direction'] -= 360
+
+            yield r
