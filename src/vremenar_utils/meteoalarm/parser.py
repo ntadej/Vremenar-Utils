@@ -2,7 +2,6 @@
 # Inspired and based on https://github.com/rolfberkenbosch/meteoalert-api
 from datetime import datetime, timezone
 from httpx import AsyncClient, codes
-from typing import cast
 from xmltodict import parse  # type: ignore
 
 from ..cli.common import CountryID, LanguageID
@@ -184,11 +183,14 @@ class MeteoAlarmParser:
     ) -> None:
         """Parse alert areas."""
         for area in areas:
-            if isinstance(area.get('geocode', []), list):
-                for geocode in cast(list[dict[str, str]], area.get('geocode', [])):
-                    if geocode.get('valueName') == 'EMMA_ID':
-                        alert.areas.add(geocode.get('value', '').strip())
-            else:
-                geocode = cast(dict[str, str], area.get('geocode', {}))
+            if 'geocode' not in area:
+                continue
+
+            geocode = area.get('geocode')
+            if isinstance(geocode, list):
+                for geoitem in geocode:
+                    if geoitem.get('valueName') == 'EMMA_ID':
+                        alert.areas.add(geoitem.get('value', '').strip())
+            elif isinstance(geocode, dict):
                 if geocode.get('valueName') == 'EMMA_ID':
                     alert.areas.add(geocode.get('value', '').strip())

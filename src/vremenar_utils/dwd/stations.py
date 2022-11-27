@@ -5,7 +5,7 @@ from operator import itemgetter
 from pkgutil import get_data
 from shapely.geometry import Point  # type: ignore
 from tempfile import NamedTemporaryFile
-from typing import Any, TextIO
+from typing import TextIO
 
 from ..cli.logging import Logger
 from ..geo.shapes import load_shape, inside_shape
@@ -145,11 +145,14 @@ async def process_mosmix_stations(
         path=temporary_file.name if temporary_file else 'MOSMIX_S_LATEST_240.kmz',
         url=None,
     )
-    stations: list[dict[str, Any]] = []
+    stations: list[dict[str, str | int | float | None]] = []
     for station in parser.stations():
-        if 'SWIS-PUNKT' in station['station_name']:
+        if (
+            isinstance(station['station_name'], str)
+            and 'SWIS-PUNKT' in station['station_name']
+        ):
             continue
-        station_id = station['station_id']
+        station_id = str(station['station_id'])
         station['has_reports'] = int(station_id in stations_with_reports)
         if station_id in old_stations.keys():
             station.update({key: old_stations[station_id][key] for key in meta_keys})
@@ -172,7 +175,7 @@ async def process_mosmix_stations(
 
 
 def _write_mosmix_stations(
-    stations: list[dict[str, Any]],
+    stations: list[dict[str, str | int | float | None]],
     stations_ignored: list[str],
     stations_included: list[str],
     output: str,
@@ -187,18 +190,19 @@ def _write_mosmix_stations(
         csv = writer(csvfile)
         csv_new = writer(csvfile_new)
         for station in stations:
+            station_id = str(station['station_id'])
             point = Point(station['lon'], station['lat'])
             valid = inside_shape(point, shape_buffered)
-            if station['station_id'] in stations_ignored:
+            if station_id in stations_ignored:
                 valid = False
-            if station['station_id'] in stations_included:
+            if station_id in stations_included:
                 valid = True
             if not valid:
                 continue
 
             if station['name']:
                 csv.writerow([station[key] for key in DWD_STATION_KEYS])
-                stations_keys.append(station['station_id'])
+                stations_keys.append(station_id)
             else:
                 csv_new.writerow([station[key] for key in DWD_STATION_KEYS])
 

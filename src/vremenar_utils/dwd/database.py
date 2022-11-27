@@ -1,6 +1,5 @@
 """DWD database utilities."""
 from datetime import datetime, timedelta, timezone
-from typing import Any
 
 from ..cli.common import CountryID
 from ..cli.logging import Logger
@@ -45,8 +44,13 @@ async def store_stations(logger: Logger) -> None:
 class BatchedMosmix(BatchedRedis):
     """Batched MOSMIX save."""
 
-    def process(self, pipeline: Redis, record: dict[str, Any]) -> None:
+    def process(
+        self, pipeline: Redis, record: dict[str, str | int | float | None]
+    ) -> None:
         """Process MOSMIX record."""
+        if not isinstance(record['timestamp'], str):
+            raise ValueError("Invalid 'timestamp' value")
+
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
         reference = now + timedelta(hours=-2)
@@ -75,7 +79,9 @@ class BatchedMosmix(BatchedRedis):
 class BatchedCurrentWeather(BatchedRedis):
     """Batched current weather save."""
 
-    def process(self, pipeline: Redis, record: dict[str, Any]) -> None:
+    def process(
+        self, pipeline: Redis, record: dict[str, str | int | float | None]
+    ) -> None:
         """Process current weather record."""
         country = CountryID.Germany
         # cleanup

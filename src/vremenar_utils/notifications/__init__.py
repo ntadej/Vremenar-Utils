@@ -1,7 +1,6 @@
 """Notifications support."""
 from datetime import datetime
 from firebase_admin import messaging, initialize_app  # type: ignore
-from typing import Any
 
 from ..cli.logging import Logger
 
@@ -120,7 +119,7 @@ class BatchNotify:
         """Context manager init."""
         return self
 
-    def __exit__(self, *args: Any) -> None:
+    def __exit__(self, *args: None) -> None:
         """Context manager exit."""
         self._drain()
 

@@ -2,7 +2,6 @@
 from datetime import datetime
 from enum import Enum
 from json import dumps
-from typing import Any
 
 from ..cli.common import LanguageID
 
@@ -90,17 +89,27 @@ class AlertArea:
         """Represent MeteoAlarm area as string."""
         return f'{self.code}: {self.name} ({len(self.polygons)} polygon(s))'
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, str | list[list[list[float]]]]:
         """Get dictionary with class properties."""
         return {'code': self.code, 'name': self.name, 'polygons': self.polygons}
 
-    def to_dict_for_database(self) -> dict[str, Any]:
+    def to_dict_for_database(self) -> dict[str, str]:
         """Get dictionary with class properties for database usage."""
         return {'code': self.code, 'name': self.name, 'polygons': dumps(self.polygons)}
 
     @classmethod
-    def from_dict(cls, dictionary: dict[str, Any]) -> 'AlertArea':
+    def from_dict(
+        cls, dictionary: dict[str, str | list[list[list[float]]]]
+    ) -> 'AlertArea':
         """Read AlertArea from a dictionary."""
+        if not isinstance(dictionary['code'], str) or not isinstance(
+            dictionary['name'], str
+        ):
+            raise ValueError("'code' and 'name' need to be strings")
+
+        if not isinstance(dictionary['polygons'], list):
+            raise ValueError("'polygons' needs to be a list of lists of floats")
+
         return cls(dictionary['code'], dictionary['name'], dictionary['polygons'])
 
 
@@ -186,6 +195,6 @@ class AlertNotificationInfo:
         """Represent alert notification info as string."""
         return f'{self.id}: {self.announce}/{self.onset}'
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, int]:
         """Get dictionary with class properties."""
         return {'announce': self.announce, 'onset': self.onset}

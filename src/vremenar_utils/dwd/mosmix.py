@@ -2,18 +2,16 @@
 import re
 from brightsky.parsers import Parser, wmo_id_to_dwd  # type: ignore
 from brightsky.units import synop_past_weather_code_to_condition  # type: ignore
-from collections.abc import Generator
 from csv import reader
 from datetime import datetime, timedelta, timezone
 from dateutil import parser as dateparser
 from httpx import AsyncClient
 from lxml.etree import iterparse, Element, QName  # type: ignore
-from typing import Any, IO, cast
+from typing import IO, cast
+from collections.abc import Iterable
 from zipfile import ZipFile
 
 from ..cli.logging import Logger
-
-DwdRecord = dict[str, Any]
 
 DWD_OPEN_DATA: str = 'https://opendata.dwd.de'
 DWD_MOSMIX_URL: str = (
@@ -43,7 +41,9 @@ class MOSMIXParserFast(Parser):  # type: ignore
         'ww': 'condition',
     }
 
-    def parse(self, station_ids: list[str]) -> Generator[DwdRecord, None, None]:
+    def parse(
+        self, station_ids: list[str]
+    ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
         self.logger.info('Parsing %s', self.path)
 
@@ -91,7 +91,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                             placemark += 1
                             yield from self._sanitize_records(records)
 
-    def stations(self) -> Generator[DwdRecord, None, None]:
+    def stations(self) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
         self.logger.info('Parsing %s', self.path)
 
@@ -103,7 +103,10 @@ class MOSMIXParserFast(Parser):  # type: ignore
                     if tag in ['ProductID', 'IssueTime', 'ForecastTimeSteps']:
                         self._clear_element(elem)
                     elif tag == 'Placemark':
-                        records = self._parse_station(elem, [], [], [])
+                        records = cast(
+                            Iterable[dict[str, str | int | float | None]],
+                            self._parse_station(elem, [], [], []),
+                        )
                         self._clear_element(elem)
                         if records:
                             yield from records
@@ -149,10 +152,10 @@ class MOSMIXParserFast(Parser):  # type: ignore
         timestamps: list[datetime],
         accepted_timestamps: list[datetime],
         source: str | None = '',
-    ) -> Generator[DwdRecord, None, None]:
+    ) -> Iterable[dict[str, str | int | float | datetime | None]]:
         wmo_station_id = station_elem.find('./kml:name', namespaces=NS).text
         if station_ids and wmo_station_id not in station_ids:
-            return cast(Generator[DwdRecord, None, None], [])
+            return []
 
         station_name = station_elem.find('./kml:description', namespaces=NS).text
         try:
@@ -165,7 +168,7 @@ class MOSMIXParserFast(Parser):  # type: ignore
                 wmo_station_id,
                 station_name,
             )
-            return cast(Generator[DwdRecord, None, None], [])
+            return []
 
         base_record = {
             'source': source,
@@ -173,7 +176,9 @@ class MOSMIXParserFast(Parser):  # type: ignore
         }
 
         if timestamps:
-            records: dict[str, Any] = {'timestamp': timestamps}
+            records: dict[str, list[str | int | float | None] | list[datetime]] = {
+                'timestamp': timestamps
+            }
             for element, column in self.ELEMENTS.items():
                 values_str = station_elem.find(
                     f'./*/dwd:Forecast[@dwd:elementName="{element}"]/dwd:value',
@@ -206,20 +211,31 @@ class MOSMIXParserFast(Parser):  # type: ignore
                     'station_name': station_name,
                 }
             )
-            return cast(Generator[DwdRecord, None, None], [base_record])
+            return [base_record]
 
     def _sanitize_records(
-        self, records: Generator[DwdRecord, None, None]
-    ) -> Generator[DwdRecord, None, None]:
+        self, records: Iterable[dict[str, str | int | float | datetime | None]]
+    ) -> Iterable[dict[str, str | int | float | None]]:
         for r in records:
             r['condition'] = synop_past_weather_code_to_condition(r['condition'])
-            if r['precipitation'] and r['precipitation'] < 0:  # pragma: no cover
-                self.logger.warning('Ignoring negative precipitation value: %s', r)
-                r['precipitation'] = None
-            if r['wind_direction'] and r['wind_direction'] > 360:  # pragma: no cover
-                self.logger.warning('Fixing out-of-bounds wind direction: %s', r)
-                r['wind_direction'] -= 360
-            yield r
+            if isinstance(r['timestamp'], datetime):
+                r['timestamp'] = f"{int(r['timestamp'].timestamp())}000"
+
+            if 'precipitation' in r and r['precipitation']:
+                if not isinstance(r['precipitation'], (int, float)):
+                    raise ValueError("'precipitation' should be a number")
+                if r['precipitation'] < 0:  # pragma: no cover
+                    self.logger.warning('Ignoring negative precipitation value: %s', r)
+                    r['precipitation'] = None
+
+            if 'wind_direction' in r and r['wind_direction']:
+                if not isinstance(r['wind_direction'], (int, float)):
+                    raise ValueError("'wind_direction' should be a number")
+                if r['wind_direction'] > 360:  # pragma: no cover
+                    self.logger.warning('Fixing out-of-bounds wind direction: %s', r)
+                    r['wind_direction'] -= 360
+
+            yield cast(dict[str, str | int | float | None], r)
 
 
 async def download(logger: Logger, temporary_file: IO[bytes]) -> None:

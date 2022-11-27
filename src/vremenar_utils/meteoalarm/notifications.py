@@ -1,7 +1,6 @@
 """MeteoAlarm notifications."""
 from babel.dates import format_datetime
 from datetime import datetime
-from typing import Any
 
 from ..cli.common import CountryID, LanguageID
 from ..cli.logging import Logger
@@ -32,10 +31,10 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
     logger.info(f'Read {len(existing_alerts)} existing alerts from the database')
 
     async with redis.client() as db:
-        async with BatchedNotifyOnset(db) as batch:
+        async with BatchedNotifyOnset(db, country) as batch:
             with BatchNotify(logger) as notifier:
-                for id in existing_alerts:
-                    alert = await get_alert_info(country, id)
+                for alert_id in existing_alerts:
+                    alert = await get_alert_info(country, alert_id)
                     if int(alert['notifications']['onset']):
                         continue
 
@@ -50,17 +49,17 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
                     if alert_expires < datetime.now():
                         continue
 
-                    logger.debug(f'Alert ID: {id}')
+                    logger.debug(f'Alert ID: {alert_id}')
 
                     send_start_notification(logger, notifier, alert, areas)
 
-                    await batch.add({'country': country, 'id': id})
+                    await batch.add(alert_id)
 
 
 def send_start_notification(
     logger: Logger,
     notifier: BatchNotify,
-    alert: dict[str, dict[str, Any]],
+    alert: dict[str, dict[str, str]],
     areas: dict[str, AlertArea],
 ) -> None:
     """Send notification at the start of an alert."""

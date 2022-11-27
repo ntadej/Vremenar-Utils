@@ -39,7 +39,6 @@ async def process_mosmix(
     async with redis.client() as db:
         async with BatchedMosmix(db) as batch:
             for record in parser.parse(station_ids):
-                record['timestamp'] = f"{int(record['timestamp'].timestamp())}000"
                 await batch.add(record)
     if temporary_file:
         temporary_file.close()

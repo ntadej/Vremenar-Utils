@@ -1,14 +1,12 @@
 """Stations database helpers."""
-from typing import Any
-
 from ..cli.common import CountryID
 from .redis import redis
 
 
 async def store_station(
     country: CountryID,
-    station: dict[str, Any],
-    metadata: dict[str, Any] | None = None,
+    station: dict[str, str | int | float],
+    metadata: dict[str, str | int | float] | None = None,
 ) -> None:
     """Store a station to redis."""
     station_id = station['id']

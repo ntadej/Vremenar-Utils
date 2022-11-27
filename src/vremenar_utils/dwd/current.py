@@ -1,19 +1,17 @@
 """DWD current weather utils."""
 from brightsky.parsers import CurrentObservationsParser  # type: ignore
-from collections.abc import Generator
 from csv import reader, DictReader
 from httpx import AsyncClient
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 from tempfile import NamedTemporaryFile
-from typing import Any, IO
+from typing import IO
+from collections.abc import Iterable
 
 from ..cli.logging import Logger
 from ..database.redis import redis
 
 from .database import BatchedCurrentWeather
-
-DwdRecord = dict[str, Any]
 
 
 class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
@@ -25,7 +23,7 @@ class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
         lon: None = None,
         height: None = None,
         station_name: None = None,
-    ) -> Generator[DwdRecord, None, None]:
+    ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse current weather."""
         with open(self.path) as f:
             reader = DictReader(f, delimiter=';')
@@ -33,9 +31,12 @@ class CurrentWeatherParser(CurrentObservationsParser):  # type: ignore
             # Skip row with German header titles
             next(reader)
             for row in reader:
+                record = self.parse_row(row)
+                # update timestamps
+                record['timestamp'] = f"{int(record['timestamp'].timestamp())}000"
                 yield {
                     'station_id': wmo_station_id,
-                    **self.parse_row(row),
+                    **record,
                 }
                 break  # only parse first row for now
 
@@ -93,11 +94,6 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
                 try:
                     parser = CurrentWeatherParser(path=temporary_file.name)
                     for record in parser.parse():
-                        # update timestamps
-                        record[
-                            'timestamp'
-                        ] = f"{int(record['timestamp'].timestamp())}000"
-                        # store
                         await batch.add(record)
                 finally:
                     temporary_file.close()
