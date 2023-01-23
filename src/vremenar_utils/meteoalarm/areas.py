@@ -20,6 +20,15 @@ SLOVENIA_NAMES = {
     'SI801': 'Obala Slovenije',
 }
 
+SLOVENIA_DESCRIPTIONS = {
+    'SI006': 'Slovenia / North-West',
+    'SI007': 'Slovenia / North-East',
+    'SI008': 'Slovenia / South-West',
+    'SI009': 'Slovenia / Central',
+    'SI010': 'Slovenia / South-East',
+    'SI801': 'Slovenia / Sea',
+}
+
 
 async def process_meteoalarm_areas(
     logger: Logger, country: CountryID, output: str, output_matches: str
@@ -46,10 +55,12 @@ async def process_meteoalarm_areas(
 
         # name override
         name = properties['name']
+        description = ''
         if country is CountryID.Slovenia:
             name = SLOVENIA_NAMES.get(code, name)
+            description = SLOVENIA_DESCRIPTIONS.get(code, description)
 
-        area = AlertArea(code, name, polygons)
+        area = AlertArea(code, name, description, polygons)
         logger.info(area)
         areas.append(area)
 

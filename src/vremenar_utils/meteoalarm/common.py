@@ -79,10 +79,13 @@ class AlertCertainty(Enum):
 class AlertArea:
     """MeteoAlarm area."""
 
-    def __init__(self, code: str, name: str, polygons: list[list[list[float]]]) -> None:
+    def __init__(
+        self, code: str, name: str, description: str, polygons: list[list[list[float]]]
+    ) -> None:
         """Initialise MeteoAlarm area."""
         self.code = code
         self.name = name
+        self.description = description
         self.polygons = polygons
 
     def __repr__(self) -> str:
@@ -91,26 +94,43 @@ class AlertArea:
 
     def to_dict(self) -> dict[str, str | list[list[list[float]]]]:
         """Get dictionary with class properties."""
-        return {'code': self.code, 'name': self.name, 'polygons': self.polygons}
+        return {
+            'code': self.code,
+            'name': self.name,
+            'description': self.description,
+            'polygons': self.polygons,
+        }
 
     def to_dict_for_database(self) -> dict[str, str]:
         """Get dictionary with class properties for database usage."""
-        return {'code': self.code, 'name': self.name, 'polygons': dumps(self.polygons)}
+        return {
+            'code': self.code,
+            'name': self.name,
+            'description': self.description,
+            'polygons': dumps(self.polygons),
+        }
 
     @classmethod
     def from_dict(
         cls, dictionary: dict[str, str | list[list[list[float]]]]
     ) -> 'AlertArea':
         """Read AlertArea from a dictionary."""
-        if not isinstance(dictionary['code'], str) or not isinstance(
-            dictionary['name'], str
+        if (
+            not isinstance(dictionary['code'], str)
+            or not isinstance(dictionary['name'], str)
+            or not isinstance(dictionary['description'], str)
         ):
             raise ValueError("'code' and 'name' need to be strings")
 
         if not isinstance(dictionary['polygons'], list):
             raise ValueError("'polygons' needs to be a list of lists of floats")
 
-        return cls(dictionary['code'], dictionary['name'], dictionary['polygons'])
+        return cls(
+            dictionary['code'],
+            dictionary['name'],
+            dictionary['description'],
+            dictionary['polygons'],
+        )
 
 
 class AlertInfo:

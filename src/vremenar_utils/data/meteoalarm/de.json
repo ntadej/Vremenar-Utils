@@ -2,6 +2,7 @@
   {
     "code": "DE053",
     "name": "Kreis Wittmund - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -62,6 +63,7 @@
   {
     "code": "DE347",
     "name": "Stadt Baden-Baden",
+    "description": "",
     "polygons": [
       [
         [
@@ -122,6 +124,7 @@
   {
     "code": "DE252",
     "name": "Stadt Remscheid",
+    "description": "",
     "polygons": [
       [
         [
@@ -174,6 +177,7 @@
   {
     "code": "DE804",
     "name": "Elbe von Hamburg bis Cuxhaven",
+    "description": "",
     "polygons": [
       [
         [
@@ -290,6 +294,7 @@
   {
     "code": "DE242",
     "name": "Kreis Oder-Spree",
+    "description": "",
     "polygons": [
       [
         [
@@ -450,6 +455,7 @@
   {
     "code": "DE370",
     "name": "Stadt Frankenthal",
+    "description": "",
     "polygons": [
       [
         [
@@ -494,6 +500,7 @@
   {
     "code": "DE258",
     "name": "St\u00e4dteRegion Aachen",
+    "description": "",
     "polygons": [
       [
         [
@@ -582,6 +589,7 @@
   {
     "code": "DE037",
     "name": "Kreis Pl\u00f6n - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -654,6 +662,7 @@
   {
     "code": "DE287",
     "name": "Stadt Speyer",
+    "description": "",
     "polygons": [
       [
         [
@@ -698,6 +707,7 @@
   {
     "code": "DE802",
     "name": "Ostfrisische K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -1026,6 +1036,7 @@
   {
     "code": "DE801",
     "name": "Nordfrisische K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -1348,6 +1359,7 @@
   {
     "code": "DE803",
     "name": "Helgoland",
+    "description": "",
     "polygons": [
       [
         [
@@ -1428,6 +1440,7 @@
   {
     "code": "DE805",
     "name": "Elbe Weserm\u00fcndung",
+    "description": "",
     "polygons": [
       [
         [
@@ -1556,6 +1569,7 @@
   {
     "code": "DE806",
     "name": "\u00d6stlich Fehmarn bis R\u00fcgen",
+    "description": "",
     "polygons": [
       [
         [
@@ -2008,6 +2022,7 @@
   {
     "code": "DE808",
     "name": "Flensburg bis Femarn",
+    "description": "",
     "polygons": [
       [
         [
@@ -2264,6 +2279,7 @@
   {
     "code": "DE807",
     "name": "\u00d6stlich R\u00fcgen",
+    "description": "",
     "polygons": [
       [
         [
@@ -2468,6 +2484,7 @@
   {
     "code": "DE058",
     "name": "Kreis Pinneberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -2548,6 +2565,7 @@
   {
     "code": "DE367",
     "name": "Rhein-Erft-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -2676,6 +2694,7 @@
   {
     "code": "DE366",
     "name": "Rheinisch-Bergischer Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -2804,6 +2823,7 @@
   {
     "code": "DE047",
     "name": "Kreis Darmstadt-Dieburg und Stadt Darmstadt",
+    "description": "",
     "polygons": [
       [
         [
@@ -2884,6 +2904,7 @@
   {
     "code": "DE211",
     "name": "Stadt Herne",
+    "description": "",
     "polygons": [
       [
         [
@@ -2924,6 +2945,7 @@
   {
     "code": "DE067",
     "name": "Kreis Rendsburg-Eckernf\u00f6rde - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -3004,6 +3026,7 @@
   {
     "code": "DE250",
     "name": "Kreis Mettmann",
+    "description": "",
     "polygons": [
       [
         [
@@ -3132,6 +3155,7 @@
   {
     "code": "DE192",
     "name": "Stadt Neum\u00fcnster",
+    "description": "",
     "polygons": [
       [
         [
@@ -3184,6 +3208,7 @@
   {
     "code": "DE256",
     "name": "Stadt Leverkusen",
+    "description": "",
     "polygons": [
       [
         [
@@ -3248,6 +3273,7 @@
   {
     "code": "DE073",
     "name": "Kreis Ostholstein - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -3332,6 +3358,7 @@
   {
     "code": "DE114",
     "name": "Stadt M\u00f6nchengladbach",
+    "description": "",
     "polygons": [
       [
         [
@@ -3392,6 +3419,7 @@
   {
     "code": "DE098",
     "name": "Kreis S\u00fcdwestpfalz und Stadt Pirmasens",
+    "description": "",
     "polygons": [
       [
         [
@@ -3496,6 +3524,7 @@
   {
     "code": "DE400",
     "name": "Kreis Stormarn",
+    "description": "",
     "polygons": [
       [
         [
@@ -3608,6 +3637,7 @@
   {
     "code": "DE104",
     "name": "Kreis Friesland - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -3672,6 +3702,7 @@
   {
     "code": "DE158",
     "name": "Kreis Steinburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -3768,6 +3799,7 @@
   {
     "code": "DE369",
     "name": "Hansestadt Bremen",
+    "description": "",
     "polygons": [
       [
         [
@@ -3836,6 +3868,7 @@
   {
     "code": "DE102",
     "name": "Kreis Aurich - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -3940,6 +3973,7 @@
   {
     "code": "DE091",
     "name": "Kreis Dithmarschen - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -4028,6 +4062,7 @@
   {
     "code": "DE237",
     "name": "Kreis Grafschaft Bentheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -4136,6 +4171,7 @@
   {
     "code": "DE024",
     "name": "Kreis und Stadt Osnabr\u00fcck",
+    "description": "",
     "polygons": [
       [
         [
@@ -4336,6 +4372,7 @@
   {
     "code": "DE355",
     "name": "Kreis Borken",
+    "description": "",
     "polygons": [
       [
         [
@@ -4496,6 +4533,7 @@
   {
     "code": "DE253",
     "name": "Kreis Wesel",
+    "description": "",
     "polygons": [
       [
         [
@@ -4632,6 +4670,7 @@
   {
     "code": "DE377",
     "name": "Stadt Krefeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -4696,6 +4735,7 @@
   {
     "code": "DE401",
     "name": "Stadt Oberhausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -4748,6 +4788,7 @@
   {
     "code": "DE337",
     "name": "Stadt Delmenhorst",
+    "description": "",
     "polygons": [
       [
         [
@@ -4800,6 +4841,7 @@
   {
     "code": "DE106",
     "name": "Kreis Nordfriesland - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -4900,6 +4942,7 @@
   {
     "code": "DE156",
     "name": "Stadt Flensburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -4948,6 +4991,7 @@
   {
     "code": "DE060",
     "name": "Kreis Schleswig-Flensburg - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -5056,6 +5100,7 @@
   {
     "code": "DE418",
     "name": "Stadt Kiel",
+    "description": "",
     "polygons": [
       [
         [
@@ -5108,6 +5153,7 @@
   {
     "code": "DE061",
     "name": "Kreis Ostholstein - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -5282,6 +5328,7 @@
   {
     "code": "DE081",
     "name": "Kreis Dithmarschen - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -5390,6 +5437,7 @@
   {
     "code": "DE062",
     "name": "Kreis Schleswig-Flensburg - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -5506,6 +5554,7 @@
   {
     "code": "DE033",
     "name": "Kreis Nordwestmecklenburg - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -5672,6 +5721,7 @@
   {
     "code": "DE173",
     "name": "Stadt Bremerhaven",
+    "description": "",
     "polygons": [
       [
         [
@@ -5736,6 +5786,7 @@
   {
     "code": "DE064",
     "name": "Kreis Wesermarsch - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -5864,6 +5915,7 @@
   {
     "code": "DE031",
     "name": "Kreis Rendsburg-Eckernf\u00f6rde - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -6016,6 +6068,7 @@
   {
     "code": "DE088",
     "name": "Kreis Pl\u00f6n - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -6100,6 +6153,7 @@
   {
     "code": "DE181",
     "name": "Kreis Segeberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -6224,6 +6278,7 @@
   {
     "code": "DE265",
     "name": "Hansestadt L\u00fcbeck",
+    "description": "",
     "polygons": [
       [
         [
@@ -6288,6 +6343,7 @@
   {
     "code": "DE045",
     "name": "Kreis Cuxhaven - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -6348,6 +6404,7 @@
   {
     "code": "DE222",
     "name": "Kreis Stade",
+    "description": "",
     "polygons": [
       [
         [
@@ -6484,6 +6541,7 @@
   {
     "code": "DE413",
     "name": "Hansestadt Hamburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -6596,6 +6654,7 @@
   {
     "code": "DE236",
     "name": "Kreis Herzogtum Lauenburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -6712,6 +6771,7 @@
   {
     "code": "DE101",
     "name": "Kreis Wesermarsch - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -6792,6 +6852,7 @@
   {
     "code": "DE124",
     "name": "Stadt Wilhelmshaven",
+    "description": "",
     "polygons": [
       [
         [
@@ -6848,6 +6909,7 @@
   {
     "code": "DE065",
     "name": "Kreis Friesland - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -6936,6 +6998,7 @@
   {
     "code": "DE186",
     "name": "Stadt Solingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -6996,6 +7059,7 @@
   {
     "code": "DE030",
     "name": "Kreis Cuxhaven - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -7136,6 +7200,7 @@
   {
     "code": "DE209",
     "name": "Kreis Osterholz",
+    "description": "",
     "polygons": [
       [
         [
@@ -7216,6 +7281,7 @@
   {
     "code": "DE142",
     "name": "Kreis Rotenburg (W\u00fcmme)",
+    "description": "",
     "polygons": [
       [
         [
@@ -7364,6 +7430,7 @@
   {
     "code": "DE170",
     "name": "Kreis Harburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -7480,6 +7547,7 @@
   {
     "code": "DE083",
     "name": "Kreis Wittmund - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -7578,6 +7646,7 @@
   {
     "code": "DE154",
     "name": "Stadt Emden",
+    "description": "",
     "polygons": [
       [
         [
@@ -7634,6 +7703,7 @@
   {
     "code": "DE200",
     "name": "Kreis Cloppenburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -7750,6 +7820,7 @@
   {
     "code": "DE221",
     "name": "Kreis Ammerland",
+    "description": "",
     "polygons": [
       [
         [
@@ -7858,6 +7929,7 @@
   {
     "code": "DE079",
     "name": "Kreis und Stadt Oldenburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -7970,6 +8042,7 @@
   {
     "code": "DE188",
     "name": "Kreis Vechta",
+    "description": "",
     "polygons": [
       [
         [
@@ -8078,6 +8151,7 @@
   {
     "code": "DE273",
     "name": "Kreis Steinfurt",
+    "description": "",
     "polygons": [
       [
         [
@@ -8222,6 +8296,7 @@
   {
     "code": "DE125",
     "name": "Kreis Coesfeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -8342,6 +8417,7 @@
   {
     "code": "DE167",
     "name": "Stadt M\u00fcnster",
+    "description": "",
     "polygons": [
       [
         [
@@ -8410,6 +8486,7 @@
   {
     "code": "DE132",
     "name": "Stadt M\u00fclheim an der Ruhr",
+    "description": "",
     "polygons": [
       [
         [
@@ -8458,6 +8535,7 @@
   {
     "code": "DE161",
     "name": "Stadt Gelsenkirchen",
+    "description": "",
     "polygons": [
       [
         [
@@ -8510,6 +8588,7 @@
   {
     "code": "DE383",
     "name": "Kreis L\u00fcneburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -8670,6 +8749,7 @@
   {
     "code": "DE103",
     "name": "Kreis Aurich - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -8782,6 +8862,7 @@
   {
     "code": "DE069",
     "name": "Kreis Leer",
+    "description": "",
     "polygons": [
       [
         [
@@ -8926,6 +9007,7 @@
   {
     "code": "DE376",
     "name": "Kreis Emsland",
+    "description": "",
     "polygons": [
       [
         [
@@ -9074,6 +9156,7 @@
   {
     "code": "DE283",
     "name": "Kreis Kleve",
+    "description": "",
     "polygons": [
       [
         [
@@ -9214,6 +9297,7 @@
   {
     "code": "DE113",
     "name": "Kreis Viersen",
+    "description": "",
     "polygons": [
       [
         [
@@ -9310,6 +9394,7 @@
   {
     "code": "DE336",
     "name": "Stadt Duisburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -9374,6 +9459,7 @@
   {
     "code": "DE295",
     "name": "Stadt Bottrop",
+    "description": "",
     "polygons": [
       [
         [
@@ -9430,6 +9516,7 @@
   {
     "code": "DE364",
     "name": "Stadt Essen",
+    "description": "",
     "polygons": [
       [
         [
@@ -9502,6 +9589,7 @@
   {
     "code": "DE396",
     "name": "Stadt Bochum",
+    "description": "",
     "polygons": [
       [
         [
@@ -9562,6 +9650,7 @@
   {
     "code": "DE164",
     "name": "Rhein-Kreis Neuss",
+    "description": "",
     "polygons": [
       [
         [
@@ -9694,6 +9783,7 @@
   {
     "code": "DE128",
     "name": "Stadt D\u00fcsseldorf",
+    "description": "",
     "polygons": [
       [
         [
@@ -9770,6 +9860,7 @@
   {
     "code": "DE207",
     "name": "Stadt Wuppertal",
+    "description": "",
     "polygons": [
       [
         [
@@ -9858,6 +9949,7 @@
   {
     "code": "DE232",
     "name": "Kreis Ahrweiler",
+    "description": "",
     "polygons": [
       [
         [
@@ -9970,6 +10062,7 @@
   {
     "code": "DE166",
     "name": "Kreis Gro\u00df-Gerau",
+    "description": "",
     "polygons": [
       [
         [
@@ -10066,6 +10159,7 @@
   {
     "code": "DE199",
     "name": "Kreis Altenkirchen",
+    "description": "",
     "polygons": [
       [
         [
@@ -10182,6 +10276,7 @@
   {
     "code": "DE230",
     "name": "Stadt Dortmund",
+    "description": "",
     "polygons": [
       [
         [
@@ -10262,6 +10357,7 @@
   {
     "code": "DE159",
     "name": "Kreis Hamm",
+    "description": "",
     "polygons": [
       [
         [
@@ -10334,6 +10430,7 @@
   {
     "code": "DE389",
     "name": "M\u00e4rkischer Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -10426,6 +10523,7 @@
   {
     "code": "DE155",
     "name": "Kreis Soest",
+    "description": "",
     "polygons": [
       [
         [
@@ -10566,6 +10664,7 @@
   {
     "code": "DE298",
     "name": "Kreis Nienburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -10686,6 +10785,7 @@
   {
     "code": "DE365",
     "name": "Kreis Herford",
+    "description": "",
     "polygons": [
       [
         [
@@ -10770,6 +10870,7 @@
   {
     "code": "DE111",
     "name": "Kreis Hameln-Pyrmont",
+    "description": "",
     "polygons": [
       [
         [
@@ -10862,6 +10963,7 @@
   {
     "code": "DE051",
     "name": "Kreis Trier-Saarburg und Stadt Trier",
+    "description": "",
     "polygons": [
       [
         [
@@ -10938,6 +11040,7 @@
   {
     "code": "DE300",
     "name": "Rhein-Lahn-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -11018,6 +11121,7 @@
   {
     "code": "DE240",
     "name": "Kreis Saarlouis",
+    "description": "",
     "polygons": [
       [
         [
@@ -11126,6 +11230,7 @@
   {
     "code": "DE238",
     "name": "Saarpfalz-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -11218,6 +11323,7 @@
   {
     "code": "DE136",
     "name": "Kreis St. Wendel",
+    "description": "",
     "polygons": [
       [
         [
@@ -11306,6 +11412,7 @@
   {
     "code": "DE157",
     "name": "Kreis Heinsberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -11406,6 +11513,7 @@
   {
     "code": "DE314",
     "name": "Kreis D\u00fcren",
+    "description": "",
     "polygons": [
       [
         [
@@ -11510,6 +11618,7 @@
   {
     "code": "DE299",
     "name": "Stadt K\u00f6ln",
+    "description": "",
     "polygons": [
       [
         [
@@ -11610,6 +11719,7 @@
   {
     "code": "DE243",
     "name": "Oberbergischer Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -11738,6 +11848,7 @@
   {
     "code": "DE198",
     "name": "Rhein-Sieg-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -11886,6 +11997,7 @@
   {
     "code": "DE134",
     "name": "Ennepe-Ruhr-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -12010,6 +12122,7 @@
   {
     "code": "DE317",
     "name": "Heidekreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -12150,6 +12263,7 @@
   {
     "code": "DE119",
     "name": "Kreis G\u00fctersloh",
+    "description": "",
     "polygons": [
       [
         [
@@ -12254,6 +12368,7 @@
   {
     "code": "DE407",
     "name": "Kreis Lippe",
+    "description": "",
     "polygons": [
       [
         [
@@ -12406,6 +12521,7 @@
   {
     "code": "DE127",
     "name": "Kreis Euskirchen",
+    "description": "",
     "polygons": [
       [
         [
@@ -12542,6 +12658,7 @@
   {
     "code": "DE289",
     "name": "Bundesstadt Bonn",
+    "description": "",
     "polygons": [
       [
         [
@@ -12598,6 +12715,7 @@
   {
     "code": "DE224",
     "name": "Kreis Recklinghausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -12762,6 +12880,7 @@
   {
     "code": "DE291",
     "name": "Stadt Hagen",
+    "description": "",
     "polygons": [
       [
         [
@@ -12822,6 +12941,7 @@
   {
     "code": "DE235",
     "name": "Kreis Unna",
+    "description": "",
     "polygons": [
       [
         [
@@ -12946,6 +13066,7 @@
   {
     "code": "DE171",
     "name": "Kreis Warendorf",
+    "description": "",
     "polygons": [
       [
         [
@@ -13090,6 +13211,7 @@
   {
     "code": "DE229",
     "name": "Kreis Olpe",
+    "description": "",
     "polygons": [
       [
         [
@@ -13194,6 +13316,7 @@
   {
     "code": "DE393",
     "name": "Kreis Verden",
+    "description": "",
     "polygons": [
       [
         [
@@ -13290,6 +13413,7 @@
   {
     "code": "DE131",
     "name": "Kreis Minden-L\u00fcbbecke",
+    "description": "",
     "polygons": [
       [
         [
@@ -13426,6 +13550,7 @@
   {
     "code": "DE160",
     "name": "Kreis Kusel",
+    "description": "",
     "polygons": [
       [
         [
@@ -13522,6 +13647,7 @@
   {
     "code": "DE324",
     "name": "Kreis Paderborn",
+    "description": "",
     "polygons": [
       [
         [
@@ -13666,6 +13792,7 @@
   {
     "code": "DE270",
     "name": "Kreis Neuwied",
+    "description": "",
     "polygons": [
       [
         [
@@ -13774,6 +13901,7 @@
   {
     "code": "DE310",
     "name": "Kreis Diepholz",
+    "description": "",
     "polygons": [
       [
         [
@@ -13914,6 +14042,7 @@
   {
     "code": "DE378",
     "name": "Stadt Bielefeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -13974,6 +14103,7 @@
   {
     "code": "DE225",
     "name": "Kreis Schaumburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -14082,6 +14212,7 @@
   {
     "code": "DE411",
     "name": "Hochsauerlandkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -14250,6 +14381,7 @@
   {
     "code": "DE351",
     "name": "Kreis Mayen-Koblenz",
+    "description": "",
     "polygons": [
       [
         [
@@ -14378,6 +14510,7 @@
   {
     "code": "DE292",
     "name": "Rhein-Hunsr\u00fcck-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -14470,6 +14603,7 @@
   {
     "code": "DE137",
     "name": "Kreis Merzig-Wadern",
+    "description": "",
     "polygons": [
       [
         [
@@ -14570,6 +14704,7 @@
   {
     "code": "DE274",
     "name": "Kreis Neunkirchen",
+    "description": "",
     "polygons": [
       [
         [
@@ -14650,6 +14785,7 @@
   {
     "code": "DE269",
     "name": "Kreis Siegen-Wittgenstein",
+    "description": "",
     "polygons": [
       [
         [
@@ -14782,6 +14918,7 @@
   {
     "code": "DE327",
     "name": "Kreis H\u00f6xter",
+    "description": "",
     "polygons": [
       [
         [
@@ -14902,6 +15039,7 @@
   {
     "code": "DE387",
     "name": "Eifelkreis Bitburg-Pr\u00fcm",
+    "description": "",
     "polygons": [
       [
         [
@@ -14970,6 +15108,7 @@
   {
     "code": "DE214",
     "name": "Kreis Cochem-Zell",
+    "description": "",
     "polygons": [
       [
         [
@@ -15042,6 +15181,7 @@
   {
     "code": "DE277",
     "name": "Stadt Koblenz",
+    "description": "",
     "polygons": [
       [
         [
@@ -15098,6 +15238,7 @@
   {
     "code": "DE153",
     "name": "Kreis Germersheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -15182,6 +15323,7 @@
   {
     "code": "DE218",
     "name": "Kreis Waldeck-Frankenberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -15334,6 +15476,7 @@
   {
     "code": "DE026",
     "name": "Kreis und Stadt Kassel",
+    "description": "",
     "polygons": [
       [
         [
@@ -15454,6 +15597,7 @@
   {
     "code": "DE356",
     "name": "Kreis Vulkaneifel",
+    "description": "",
     "polygons": [
       [
         [
@@ -15538,6 +15682,7 @@
   {
     "code": "DE190",
     "name": "Kreis Bernkastel-Wittlich",
+    "description": "",
     "polygons": [
       [
         [
@@ -15630,6 +15775,7 @@
   {
     "code": "DE189",
     "name": "Regionalverband Saarbr\u00fccken",
+    "description": "",
     "polygons": [
       [
         [
@@ -15734,6 +15880,7 @@
   {
     "code": "DE182",
     "name": "Kreis Birkenfeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -15814,6 +15961,7 @@
   {
     "code": "DE349",
     "name": "Stadt Zweibr\u00fccken",
+    "description": "",
     "polygons": [
       [
         [
@@ -15858,6 +16006,7 @@
   {
     "code": "DE368",
     "name": "Stadt Landau in der Pfalz",
+    "description": "",
     "polygons": [
       [
         [
@@ -15932,6 +16081,7 @@
   {
     "code": "DE210",
     "name": "Stadt Neustadt an der Weinstra\u00dfe",
+    "description": "",
     "polygons": [
       [
         [
@@ -15984,6 +16134,7 @@
   {
     "code": "DE405",
     "name": "Kreis S\u00fcdliche Weinstra\u00dfe",
+    "description": "",
     "polygons": [
       [
         [
@@ -16114,6 +16265,7 @@
   {
     "code": "DE068",
     "name": "Rhein-Pfalz-Kreis und Stadt Ludwigshafen",
+    "description": "",
     "polygons": [
       [
         [
@@ -16250,6 +16402,7 @@
   {
     "code": "DE084",
     "name": "Kreis und Stadt Kaiserslautern",
+    "description": "",
     "polygons": [
       [
         [
@@ -16326,6 +16479,7 @@
   {
     "code": "DE197",
     "name": "Donnersbergkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -16418,6 +16572,7 @@
   {
     "code": "DE050",
     "name": "Enzkreis und Stadt Pforzheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -16506,6 +16661,7 @@
   {
     "code": "DE390",
     "name": "Kreis Bad D\u00fcrkheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -16630,6 +16786,7 @@
   {
     "code": "DE143",
     "name": "Kreis Bad Kreuznach",
+    "description": "",
     "polygons": [
       [
         [
@@ -16726,6 +16883,7 @@
   {
     "code": "DE333",
     "name": "Stadt Worms",
+    "description": "",
     "polygons": [
       [
         [
@@ -16786,6 +16944,7 @@
   {
     "code": "DE397",
     "name": "Kreis Alzey-Worms",
+    "description": "",
     "polygons": [
       [
         [
@@ -16882,6 +17041,7 @@
   {
     "code": "DE097",
     "name": "Kreis Mainz-Bingen und Stadt Mainz",
+    "description": "",
     "polygons": [
       [
         [
@@ -16986,6 +17146,7 @@
   {
     "code": "DE268",
     "name": "Rheingau-Taunus-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -17078,6 +17239,7 @@
   {
     "code": "DE148",
     "name": "Westerwaldkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -17202,6 +17364,7 @@
   {
     "code": "DE341",
     "name": "Kreis Limburg-Weilburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -17274,6 +17437,7 @@
   {
     "code": "DE403",
     "name": "Stadt Wiesbaden",
+    "description": "",
     "polygons": [
       [
         [
@@ -17330,6 +17494,7 @@
   {
     "code": "DE412",
     "name": "Main-Taunus-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -17402,6 +17567,7 @@
   {
     "code": "DE184",
     "name": "Stadt Mannheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -17454,6 +17620,7 @@
   {
     "code": "DE361",
     "name": "Kreis Bergstra\u00dfe",
+    "description": "",
     "polygons": [
       [
         [
@@ -17594,6 +17761,7 @@
   {
     "code": "DE110",
     "name": "Rhein-Neckar-Kreis und Stadt Heidelberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -17746,6 +17914,7 @@
   {
     "code": "DE041",
     "name": "Kreis und Stadt Offenbach",
+    "description": "",
     "polygons": [
       [
         [
@@ -17802,6 +17971,7 @@
   {
     "code": "DE118",
     "name": "Main-Kinzig-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -17946,6 +18116,7 @@
   {
     "code": "DE408",
     "name": "Schwarzwald-Baar-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -18066,6 +18237,7 @@
   {
     "code": "DE281",
     "name": "Kreis Waldshut",
+    "description": "",
     "polygons": [
       [
         [
@@ -18234,6 +18406,7 @@
   {
     "code": "DE419",
     "name": "Kreis Konstanz",
+    "description": "",
     "polygons": [
       [
         [
@@ -18350,6 +18523,7 @@
   {
     "code": "DE227",
     "name": "Kreis Emmendingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -18414,6 +18588,7 @@
   {
     "code": "DE285",
     "name": "Kreis Rottweil",
+    "description": "",
     "polygons": [
       [
         [
@@ -18510,6 +18685,7 @@
   {
     "code": "DE404",
     "name": "Kreis Freudenstadt",
+    "description": "",
     "polygons": [
       [
         [
@@ -18622,6 +18798,7 @@
   {
     "code": "DE146",
     "name": "Kreis Rastatt",
+    "description": "",
     "polygons": [
       [
         [
@@ -18784,6 +18961,7 @@
   {
     "code": "DE152",
     "name": "Kreis Calw",
+    "description": "",
     "polygons": [
       [
         [
@@ -18880,6 +19058,7 @@
   {
     "code": "DE301",
     "name": "Kreis T\u00fcbingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -18948,6 +19127,7 @@
   {
     "code": "DE241",
     "name": "Kreis Ludwigsburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -19048,6 +19228,7 @@
   {
     "code": "DE352",
     "name": "Kreis Greiz",
+    "description": "",
     "polygons": [
       [
         [
@@ -19168,6 +19349,7 @@
   {
     "code": "DE133",
     "name": "Stadt Frankfurt am Main",
+    "description": "",
     "polygons": [
       [
         [
@@ -19240,6 +19422,7 @@
   {
     "code": "DE201",
     "name": "Hochtaunuskreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -19328,6 +19511,7 @@
   {
     "code": "DE360",
     "name": "Odenwaldkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -19396,6 +19580,7 @@
   {
     "code": "DE035",
     "name": "Kreis Breisgau-Hochschwarzwald und Stadt Freiburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -19520,6 +19705,7 @@
   {
     "code": "DE223",
     "name": "Kreis B\u00f6blingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -19632,6 +19818,7 @@
   {
     "code": "DE280",
     "name": "Kreis Lindau",
+    "description": "",
     "polygons": [
       [
         [
@@ -19716,6 +19903,7 @@
   {
     "code": "DE249",
     "name": "Kreis Unterallg\u00e4u",
+    "description": "",
     "polygons": [
       [
         [
@@ -19868,6 +20056,7 @@
   {
     "code": "DE195",
     "name": "Kreis Garmisch-Partenkirchen",
+    "description": "",
     "polygons": [
       [
         [
@@ -19968,6 +20157,7 @@
   {
     "code": "DE130",
     "name": "Kreis Landsberg am Lech",
+    "description": "",
     "polygons": [
       [
         [
@@ -20048,6 +20238,7 @@
   {
     "code": "DE371",
     "name": "Kreis Bad T\u00f6lz-Wolfratshausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -20164,6 +20355,7 @@
   {
     "code": "DE029",
     "name": "Kreis und Stadt Rosenheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -20268,6 +20460,7 @@
   {
     "code": "DE231",
     "name": "Wetteraukreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -20396,6 +20589,7 @@
   {
     "code": "DE057",
     "name": "Kreis und Stadt Aschaffenburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -20512,6 +20706,7 @@
   {
     "code": "DE175",
     "name": "Kreis Tuttlingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -20588,6 +20783,7 @@
   {
     "code": "DE080",
     "name": "Kreis und Stadt Heilbronn",
+    "description": "",
     "polygons": [
       [
         [
@@ -20692,6 +20888,7 @@
   {
     "code": "DE284",
     "name": "Rems-Murr-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -20808,6 +21005,7 @@
   {
     "code": "DE174",
     "name": "Stadt Memmingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -20860,6 +21058,7 @@
   {
     "code": "DE239",
     "name": "Kreis Ostallg\u00e4u",
+    "description": "",
     "polygons": [
       [
         [
@@ -21006,6 +21205,7 @@
   {
     "code": "DE342",
     "name": "Kreis Weilheim-Schongau",
+    "description": "",
     "polygons": [
       [
         [
@@ -21110,6 +21310,7 @@
   {
     "code": "DE267",
     "name": "Kreis Starnberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -21186,6 +21387,7 @@
   {
     "code": "DE293",
     "name": "Kreis Miesbach",
+    "description": "",
     "polygons": [
       [
         [
@@ -21250,6 +21452,7 @@
   {
     "code": "DE183",
     "name": "Kreis Berchtesgadener Land",
+    "description": "",
     "polygons": [
       [
         [
@@ -21378,6 +21581,7 @@
   {
     "code": "DE116",
     "name": "Kreis Alt\u00f6tting",
+    "description": "",
     "polygons": [
       [
         [
@@ -21446,6 +21650,7 @@
   {
     "code": "DE056",
     "name": "Kreis und Stadt M\u00fcnchen",
+    "description": "",
     "polygons": [
       [
         [
@@ -21554,6 +21759,7 @@
   {
     "code": "DE339",
     "name": "Kreis Erding",
+    "description": "",
     "polygons": [
       [
         [
@@ -21638,6 +21844,7 @@
   {
     "code": "DE074",
     "name": "Alb-Donau-Kreis und Stadt Ulm",
+    "description": "",
     "polygons": [
       [
         [
@@ -21790,6 +21997,7 @@
   {
     "code": "DE266",
     "name": "Kreis Miltenberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -21922,6 +22130,7 @@
   {
     "code": "DE312",
     "name": "Kreis L\u00f6rrach",
+    "description": "",
     "polygons": [
       [
         [
@@ -22006,6 +22215,7 @@
   {
     "code": "DE271",
     "name": "Bodenseekreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -22110,6 +22320,7 @@
   {
     "code": "DE329",
     "name": "Ortenaukreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -22206,6 +22417,7 @@
   {
     "code": "DE168",
     "name": "Zollernalbkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -22306,6 +22518,7 @@
   {
     "code": "DE109",
     "name": "Kreis und Stadt Karlsruhe",
+    "description": "",
     "polygons": [
       [
         [
@@ -22430,6 +22643,7 @@
   {
     "code": "DE226",
     "name": "Stadt Stuttgart",
+    "description": "",
     "polygons": [
       [
         [
@@ -22502,6 +22716,7 @@
   {
     "code": "DE150",
     "name": "Stadt N\u00fcrnberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -22566,6 +22781,7 @@
   {
     "code": "DE302",
     "name": "Kreis Esslingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -22650,6 +22866,7 @@
   {
     "code": "DE330",
     "name": "Kreis Oberallg\u00e4u",
+    "description": "",
     "polygons": [
       [
         [
@@ -22788,6 +23005,7 @@
   {
     "code": "DE381",
     "name": "Stadt Kempten (Allg\u00e4u)",
+    "description": "",
     "polygons": [
       [
         [
@@ -22828,6 +23046,7 @@
   {
     "code": "DE120",
     "name": "Stadt Kaufbeuren",
+    "description": "",
     "polygons": [
       [
         [
@@ -22864,6 +23083,7 @@
   {
     "code": "DE320",
     "name": "Kreis Sigmaringen",
+    "description": "",
     "polygons": [
       [
         [
@@ -23004,6 +23224,7 @@
   {
     "code": "DE344",
     "name": "Kreis Ravensburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -23100,6 +23321,7 @@
   {
     "code": "DE163",
     "name": "Kreis Biberach",
+    "description": "",
     "polygons": [
       [
         [
@@ -23220,6 +23442,7 @@
   {
     "code": "DE388",
     "name": "Kreis G\u00fcnzburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -23324,6 +23547,7 @@
   {
     "code": "DE162",
     "name": "Stadt Gera",
+    "description": "",
     "polygons": [
       [
         [
@@ -23372,6 +23596,7 @@
   {
     "code": "DE288",
     "name": "Kreis Traunstein",
+    "description": "",
     "polygons": [
       [
         [
@@ -23536,6 +23761,7 @@
   {
     "code": "DE260",
     "name": "Kreis Ebersberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -23600,6 +23826,7 @@
   {
     "code": "DE332",
     "name": "Kreis M\u00fchldorf a. Inn",
+    "description": "",
     "polygons": [
       [
         [
@@ -23692,6 +23919,7 @@
   {
     "code": "DE276",
     "name": "Kreis Reutlingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -23780,6 +24008,7 @@
   {
     "code": "DE348",
     "name": "Kreis Neu-Ulm",
+    "description": "",
     "polygons": [
       [
         [
@@ -23880,6 +24109,7 @@
   {
     "code": "DE215",
     "name": "Kreis G\u00f6ppingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -23960,6 +24190,7 @@
   {
     "code": "DE354",
     "name": "Kreis Dillingen a.d. Donau",
+    "description": "",
     "polygons": [
       [
         [
@@ -24056,6 +24287,7 @@
   {
     "code": "DE049",
     "name": "Kreis und Stadt Regensburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -24212,6 +24444,7 @@
   {
     "code": "DE290",
     "name": "Neckar-Odenwald-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -24328,6 +24561,7 @@
   {
     "code": "DE372",
     "name": "Kreis Neustadt a.d. Aisch - Bad Windsheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -24460,6 +24694,7 @@
   {
     "code": "DE245",
     "name": "Kreis Kulmbach",
+    "description": "",
     "polygons": [
       [
         [
@@ -24524,6 +24759,7 @@
   {
     "code": "DE362",
     "name": "Kreis Marburg-Biedenkopf",
+    "description": "",
     "polygons": [
       [
         [
@@ -24632,6 +24868,7 @@
   {
     "code": "DE315",
     "name": "Vogelsbergkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -24760,6 +24997,7 @@
   {
     "code": "DE409",
     "name": "Kreis Bad Kissingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -24880,6 +25118,7 @@
   {
     "code": "DE311",
     "name": "Kreis Heidenheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -24964,6 +25203,7 @@
   {
     "code": "DE027",
     "name": "Kreis Rostock - Binnenland S\u00fcd",
+    "description": "",
     "polygons": [
       [
         [
@@ -25088,6 +25328,7 @@
   {
     "code": "DE107",
     "name": "Kreis Ludwigslust-Parchim - West",
+    "description": "",
     "polygons": [
       [
         [
@@ -25228,6 +25469,7 @@
   {
     "code": "DE264",
     "name": "Kreis Barnim",
+    "description": "",
     "polygons": [
       [
         [
@@ -25324,6 +25566,7 @@
   {
     "code": "DE350",
     "name": "Kreis Uelzen",
+    "description": "",
     "polygons": [
       [
         [
@@ -25420,6 +25663,7 @@
   {
     "code": "DE096",
     "name": "Kreis und Stadt Augsburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -25576,6 +25820,7 @@
   {
     "code": "DE380",
     "name": "Kreis Freyung-Grafenau",
+    "description": "",
     "polygons": [
       [
         [
@@ -25660,6 +25905,7 @@
   {
     "code": "DE421",
     "name": "Kreis Rottal-Inn",
+    "description": "",
     "polygons": [
       [
         [
@@ -25792,6 +26038,7 @@
   {
     "code": "DE391",
     "name": "Kreis Regen",
+    "description": "",
     "polygons": [
       [
         [
@@ -25876,6 +26123,7 @@
   {
     "code": "DE021",
     "name": "Kreis und Stadt Landshut",
+    "description": "",
     "polygons": [
       [
         [
@@ -25996,6 +26244,7 @@
   {
     "code": "DE309",
     "name": "Kreis Cham",
+    "description": "",
     "polygons": [
       [
         [
@@ -26116,6 +26365,7 @@
   {
     "code": "DE420",
     "name": "Kreis Pfaffenhofen a.d. Ilm",
+    "description": "",
     "polygons": [
       [
         [
@@ -26228,6 +26478,7 @@
   {
     "code": "DE212",
     "name": "Hohenlohekreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -26308,6 +26559,7 @@
   {
     "code": "DE321",
     "name": "Kreis Neustadt a.d. Waldnaab",
+    "description": "",
     "polygons": [
       [
         [
@@ -26474,6 +26726,7 @@
   {
     "code": "DE042",
     "name": "Kreis und Stadt Bayreuth",
+    "description": "",
     "polygons": [
       [
         [
@@ -26622,6 +26875,7 @@
   {
     "code": "DE399",
     "name": "Kreis Kitzingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -26702,6 +26956,7 @@
   {
     "code": "DE121",
     "name": "Kreis Rh\u00f6n-Grabfeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -26818,6 +27073,7 @@
   {
     "code": "DE279",
     "name": "Werra-Meissner-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -26922,6 +27178,7 @@
   {
     "code": "DE286",
     "name": "Stadt Eisenach",
+    "description": "",
     "polygons": [
       [
         [
@@ -26982,6 +27239,7 @@
   {
     "code": "DE375",
     "name": "Kreis Aichach-Friedberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -27094,6 +27352,7 @@
   {
     "code": "DE066",
     "name": "Kreis und Stadt Passau",
+    "description": "",
     "polygons": [
       [
         [
@@ -27214,6 +27473,7 @@
   {
     "code": "DE117",
     "name": "Kreis Deggendorf",
+    "description": "",
     "polygons": [
       [
         [
@@ -27310,6 +27570,7 @@
   {
     "code": "DE251",
     "name": "Kreis Dingolfing-Landau",
+    "description": "",
     "polygons": [
       [
         [
@@ -27410,6 +27671,7 @@
   {
     "code": "DE379",
     "name": "Kreis F\u00fcrstenfeldbruck",
+    "description": "",
     "polygons": [
       [
         [
@@ -27490,6 +27752,7 @@
   {
     "code": "DE414",
     "name": "Kreis Dachau",
+    "description": "",
     "polygons": [
       [
         [
@@ -27578,6 +27841,7 @@
   {
     "code": "DE374",
     "name": "Kreis Freising",
+    "description": "",
     "polygons": [
       [
         [
@@ -27678,6 +27942,7 @@
   {
     "code": "DE165",
     "name": "Kreis Kelheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -27806,6 +28071,7 @@
   {
     "code": "DE043",
     "name": "Kreis Straubing-Bogen und Stadt Straubing",
+    "description": "",
     "polygons": [
       [
         [
@@ -27918,6 +28184,7 @@
   {
     "code": "DE402",
     "name": "Kreis Neuburg-Schrobenhausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -28002,6 +28269,7 @@
   {
     "code": "DE282",
     "name": "Stadt Ingolstadt",
+    "description": "",
     "polygons": [
       [
         [
@@ -28058,6 +28326,7 @@
   {
     "code": "DE346",
     "name": "Ostalbkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -28178,6 +28447,7 @@
   {
     "code": "DE147",
     "name": "Kreis Donau-Ries",
+    "description": "",
     "polygons": [
       [
         [
@@ -28330,6 +28600,7 @@
   {
     "code": "DE303",
     "name": "Kreis Eichst\u00e4tt",
+    "description": "",
     "polygons": [
       [
         [
@@ -28474,6 +28745,7 @@
   {
     "code": "DE297",
     "name": "Stadt Chemnitz",
+    "description": "",
     "polygons": [
       [
         [
@@ -28538,6 +28810,7 @@
   {
     "code": "DE410",
     "name": "Kreis Wei\u00dfenburg-Gunzenhausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -28630,6 +28903,7 @@
   {
     "code": "DE078",
     "name": "Kreis und Stadt Ansbach",
+    "description": "",
     "polygons": [
       [
         [
@@ -28782,6 +29056,7 @@
   {
     "code": "DE338",
     "name": "Kreis Roth",
+    "description": "",
     "polygons": [
       [
         [
@@ -28914,6 +29189,7 @@
   {
     "code": "DE205",
     "name": "Stadt Amberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -28958,6 +29234,7 @@
   {
     "code": "DE112",
     "name": "Kreis Schwandorf",
+    "description": "",
     "polygons": [
       [
         [
@@ -29070,6 +29347,7 @@
   {
     "code": "DE196",
     "name": "Kreis Erlangen-H\u00f6chstadt",
+    "description": "",
     "polygons": [
       [
         [
@@ -29198,6 +29476,7 @@
   {
     "code": "DE191",
     "name": "Kreis Forchheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -29274,6 +29553,7 @@
   {
     "code": "DE308",
     "name": "Main-Tauber-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -29450,6 +29730,7 @@
   {
     "code": "DE340",
     "name": "Kreis Schw\u00e4bisch Hall",
+    "description": "",
     "polygons": [
       [
         [
@@ -29554,6 +29835,7 @@
   {
     "code": "DE020",
     "name": "Kreis und Stadt F\u00fcrth",
+    "description": "",
     "polygons": [
       [
         [
@@ -29642,6 +29924,7 @@
   {
     "code": "DE246",
     "name": "Stadt Schwabach",
+    "description": "",
     "polygons": [
       [
         [
@@ -29686,6 +29969,7 @@
   {
     "code": "DE139",
     "name": "Stadt Erlangen",
+    "description": "",
     "polygons": [
       [
         [
@@ -29734,6 +30018,7 @@
   {
     "code": "DE316",
     "name": "Stadt Weiden in der Oberpfalz",
+    "description": "",
     "polygons": [
       [
         [
@@ -29786,6 +30071,7 @@
   {
     "code": "DE219",
     "name": "Kreis Neumarkt i.d. OPf.",
+    "description": "",
     "polygons": [
       [
         [
@@ -29922,6 +30208,7 @@
   {
     "code": "DE358",
     "name": "Kreis N\u00fcrnberger Land",
+    "description": "",
     "polygons": [
       [
         [
@@ -30034,6 +30321,7 @@
   {
     "code": "DE353",
     "name": "Kreis Amberg-Sulzbach",
+    "description": "",
     "polygons": [
       [
         [
@@ -30168,6 +30456,7 @@
   {
     "code": "DE398",
     "name": "Kreis Tirschenreuth",
+    "description": "",
     "polygons": [
       [
         [
@@ -30300,6 +30589,7 @@
   {
     "code": "DE213",
     "name": "Kreis Wunsiedel",
+    "description": "",
     "polygons": [
       [
         [
@@ -30380,6 +30670,7 @@
   {
     "code": "DE077",
     "name": "Kreis und Stadt W\u00fcrzburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -30504,6 +30795,7 @@
   {
     "code": "DE304",
     "name": "Kreis Main-Spessart",
+    "description": "",
     "polygons": [
       [
         [
@@ -30636,6 +30928,7 @@
   {
     "code": "DE046",
     "name": "Kreis und Stadt Bamberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -30752,6 +31045,7 @@
   {
     "code": "DE178",
     "name": "Kreis Lichtenfels",
+    "description": "",
     "polygons": [
       [
         [
@@ -30828,6 +31122,7 @@
   {
     "code": "DE395",
     "name": "Lahn-Dill-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -30920,6 +31215,7 @@
   {
     "code": "DE105",
     "name": "Kreis und Stadt Schweinfurt",
+    "description": "",
     "polygons": [
       [
         [
@@ -31048,6 +31344,7 @@
   {
     "code": "DE335",
     "name": "Kreis Ha\u00dfberge",
+    "description": "",
     "polygons": [
       [
         [
@@ -31148,6 +31445,7 @@
   {
     "code": "DE406",
     "name": "Kreis Eichsfeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -31232,6 +31530,7 @@
   {
     "code": "DE193",
     "name": "Kreis Gotha",
+    "description": "",
     "polygons": [
       [
         [
@@ -31324,6 +31623,7 @@
   {
     "code": "DE254",
     "name": "Ilm-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -31436,6 +31736,7 @@
   {
     "code": "DE123",
     "name": "Unstrut-Hainich-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -31536,6 +31837,7 @@
   {
     "code": "DE323",
     "name": "Kreis S\u00f6mmerda",
+    "description": "",
     "polygons": [
       [
         [
@@ -31636,6 +31938,7 @@
   {
     "code": "DE185",
     "name": "Kreis Gie\u00dfen",
+    "description": "",
     "polygons": [
       [
         [
@@ -31744,6 +32047,7 @@
   {
     "code": "DE208",
     "name": "Stadt Suhl",
+    "description": "",
     "polygons": [
       [
         [
@@ -31808,6 +32112,7 @@
   {
     "code": "DE177",
     "name": "Schwalm-Eder-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -31924,6 +32229,7 @@
   {
     "code": "DE248",
     "name": "Kreis Fulda",
+    "description": "",
     "polygons": [
       [
         [
@@ -32060,6 +32366,7 @@
   {
     "code": "DE206",
     "name": "Kreis Sonneberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -32152,6 +32459,7 @@
   {
     "code": "DE089",
     "name": "Kreis und Stadt Hof",
+    "description": "",
     "polygons": [
       [
         [
@@ -32248,6 +32556,7 @@
   {
     "code": "DE359",
     "name": "Stadt Erfurt",
+    "description": "",
     "polygons": [
       [
         [
@@ -32300,6 +32609,7 @@
   {
     "code": "DE307",
     "name": "Stadt Weimar",
+    "description": "",
     "polygons": [
       [
         [
@@ -32352,6 +32662,7 @@
   {
     "code": "DE262",
     "name": "Kyffh\u00e4userkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -32460,6 +32771,7 @@
   {
     "code": "DE194",
     "name": "Kreis Weimarer Land",
+    "description": "",
     "polygons": [
       [
         [
@@ -32614,6 +32926,7 @@
   {
     "code": "DE086",
     "name": "Kreis Bautzen - Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -32698,6 +33011,7 @@
   {
     "code": "DE075",
     "name": "Kreis G\u00f6rlitz - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -32874,6 +33188,7 @@
   {
     "code": "DE092",
     "name": "Kreis S\u00e4chsische Schweiz-Osterzgebirge - westelbisches Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -32986,6 +33301,7 @@
   {
     "code": "DE363",
     "name": "Stadt Dresden",
+    "description": "",
     "polygons": [
       [
         [
@@ -33042,6 +33358,7 @@
   {
     "code": "DE094",
     "name": "Kreis Mittelsachsen - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -33214,6 +33531,7 @@
   {
     "code": "DE394",
     "name": "Stadt Cottbus",
+    "description": "",
     "polygons": [
       [
         [
@@ -33262,6 +33580,7 @@
   {
     "code": "DE217",
     "name": "Kreis Hersfeld-Rotenburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -33354,6 +33673,7 @@
   {
     "code": "DE151",
     "name": "Kreis G\u00f6ttingen",
+    "description": "",
     "polygons": [
       [
         [
@@ -33450,6 +33770,7 @@
   {
     "code": "DE149",
     "name": "Wartburgkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -33654,6 +33975,7 @@
   {
     "code": "DE305",
     "name": "Kreis Hildburghausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -33810,6 +34132,7 @@
   {
     "code": "DE087",
     "name": "Kreis und Stadt Coburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -33934,6 +34257,7 @@
   {
     "code": "DE296",
     "name": "Kreis Kronach",
+    "description": "",
     "polygons": [
       [
         [
@@ -34046,6 +34370,7 @@
   {
     "code": "DE417",
     "name": "Stadt Jena",
+    "description": "",
     "polygons": [
       [
         [
@@ -34106,6 +34431,7 @@
   {
     "code": "DE318",
     "name": "Saale-Orla-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -34210,6 +34536,7 @@
   {
     "code": "DE108",
     "name": "Vogtlandkreis - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -34266,6 +34593,7 @@
   {
     "code": "DE040",
     "name": "Kreis Zwickau - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -34382,6 +34710,7 @@
   {
     "code": "DE038",
     "name": "Kreis S\u00e4chsische Schweiz-Osterzgebirge - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -34510,6 +34839,7 @@
   {
     "code": "DE099",
     "name": "Kreis Mittelsachsen - Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -34614,6 +34944,7 @@
   {
     "code": "DE416",
     "name": "Kreis Mei\u00dfen",
+    "description": "",
     "polygons": [
       [
         [
@@ -34710,6 +35041,7 @@
   {
     "code": "DE255",
     "name": "Kreis Altenburger Land",
+    "description": "",
     "polygons": [
       [
         [
@@ -34786,6 +35118,7 @@
   {
     "code": "DE203",
     "name": "Kreis Schmalkalden-Meiningen",
+    "description": "",
     "polygons": [
       [
         [
@@ -34938,6 +35271,7 @@
   {
     "code": "DE115",
     "name": "Kreis Saalfeld-Rudolstadt",
+    "description": "",
     "polygons": [
       [
         [
@@ -35090,6 +35424,7 @@
   {
     "code": "DE023",
     "name": "Vogtlandkreis - Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -35214,6 +35549,7 @@
   {
     "code": "DE044",
     "name": "Kreis Zwickau - Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -35294,6 +35630,7 @@
   {
     "code": "DE070",
     "name": "Kreis G\u00f6rlitz - Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -35374,6 +35711,7 @@
   {
     "code": "DE063",
     "name": "Kreis S\u00e4chsische Schweiz-Osterzgebirge - ostelbisches Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -35442,6 +35780,7 @@
   {
     "code": "DE343",
     "name": "Erzgebirgskreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -35582,6 +35921,7 @@
   {
     "code": "DE052",
     "name": "Kreis Vorpommern-R\u00fcgen - Insel R\u00fcgen",
+    "description": "",
     "polygons": [
       [
         [
@@ -35800,6 +36140,7 @@
   {
     "code": "DE090",
     "name": "Kreis Vorpommern-R\u00fcgen - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -35904,6 +36245,7 @@
   {
     "code": "DE054",
     "name": "Kreis Bautzen - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -36068,6 +36410,7 @@
   {
     "code": "DE140",
     "name": "Kreis Oberspreewald-Lausitz",
+    "description": "",
     "polygons": [
       [
         [
@@ -36160,6 +36503,7 @@
   {
     "code": "DE071",
     "name": "Kreis Nordsachsen - S\u00fcd",
+    "description": "",
     "polygons": [
       [
         [
@@ -36224,6 +36568,7 @@
   {
     "code": "DE386",
     "name": "Saale-Holzland-Kreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -36352,6 +36697,7 @@
   {
     "code": "DE135",
     "name": "Stadt Halle (Saale)",
+    "description": "",
     "polygons": [
       [
         [
@@ -36408,6 +36754,7 @@
   {
     "code": "DE126",
     "name": "Stadt Leipzig",
+    "description": "",
     "polygons": [
       [
         [
@@ -36472,6 +36819,7 @@
   {
     "code": "DE028",
     "name": "Kreis Nordsachsen - Nord",
+    "description": "",
     "polygons": [
       [
         [
@@ -36604,6 +36952,7 @@
   {
     "code": "DE373",
     "name": "Kreis Nordhausen",
+    "description": "",
     "polygons": [
       [
         [
@@ -36684,6 +37033,7 @@
   {
     "code": "DE072",
     "name": "Kreis Vorpommern-Greifswald - K\u00fcste Nord",
+    "description": "",
     "polygons": [
       [
         [
@@ -36820,6 +37170,7 @@
   {
     "code": "DE055",
     "name": "Kreis Rostock - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -36982,6 +37333,7 @@
   {
     "code": "DE036",
     "name": "Kreis Rostock - Binnenland Nord",
+    "description": "",
     "polygons": [
       [
         [
@@ -37110,6 +37462,7 @@
   {
     "code": "DE076",
     "name": "Kreis Ludwigslust-Parchim - Ost",
+    "description": "",
     "polygons": [
       [
         [
@@ -37218,6 +37571,7 @@
   {
     "code": "DE082",
     "name": "Kreis Mecklenburgische Seenplatte - S\u00fcdost",
+    "description": "",
     "polygons": [
       [
         [
@@ -37346,6 +37700,7 @@
   {
     "code": "DE272",
     "name": "Stadt Frankfurt (Oder)",
+    "description": "",
     "polygons": [
       [
         [
@@ -37402,6 +37757,7 @@
   {
     "code": "DE129",
     "name": "Kreis Spree-Nei\u00dfe",
+    "description": "",
     "polygons": [
       [
         [
@@ -37552,6 +37908,7 @@
   {
     "code": "DE261",
     "name": "Kreis Elbe-Elster",
+    "description": "",
     "polygons": [
       [
         [
@@ -37692,6 +38049,7 @@
   {
     "code": "DE179",
     "name": "Kreis Leipzig",
+    "description": "",
     "polygons": [
       [
         [
@@ -37848,6 +38206,7 @@
   {
     "code": "DE180",
     "name": "Kreis Mansfeld-S\u00fcdharz",
+    "description": "",
     "polygons": [
       [
         [
@@ -37956,6 +38315,7 @@
   {
     "code": "DE032",
     "name": "Kreis Vorpommern-R\u00fcgen - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [
@@ -38084,6 +38444,7 @@
   {
     "code": "DE313",
     "name": "Kreis Ostprignitz-Ruppin",
+    "description": "",
     "polygons": [
       [
         [
@@ -38212,6 +38573,7 @@
   {
     "code": "DE122",
     "name": "Kreis L\u00fcchow-Dannenberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -38348,6 +38710,7 @@
   {
     "code": "DE138",
     "name": "Kreis Celle",
+    "description": "",
     "polygons": [
       [
         [
@@ -38424,6 +38787,7 @@
   {
     "code": "DE326",
     "name": "Kreis Osterode am Harz",
+    "description": "",
     "polygons": [
       [
         [
@@ -38496,6 +38860,7 @@
   {
     "code": "DE145",
     "name": "Burgenlandkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -38612,6 +38977,7 @@
   {
     "code": "DE204",
     "name": "Saalekreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -38762,6 +39128,7 @@
   {
     "code": "DE228",
     "name": "Salzlandkreis",
+    "description": "",
     "polygons": [
       [
         [
@@ -38882,6 +39249,7 @@
   {
     "code": "DE100",
     "name": "Kreis Vorpommern-Greifswald - K\u00fcste S\u00fcd",
+    "description": "",
     "polygons": [
       [
         [
@@ -38942,6 +39310,7 @@
   {
     "code": "DE234",
     "name": "Hansestadt Rostock",
+    "description": "",
     "polygons": [
       [
         [
@@ -39014,6 +39383,7 @@
   {
     "code": "DE022",
     "name": "Kreis Vorpommern-Greifswald - Binnenland Nord",
+    "description": "",
     "polygons": [
       [
         [
@@ -39126,6 +39496,7 @@
   {
     "code": "DE085",
     "name": "Kreis Nordwestmecklenburg - Binnenland",
+    "description": "",
     "polygons": [
       [
         [
@@ -39274,6 +39645,7 @@
   {
     "code": "DE025",
     "name": "Kreis Mecklenburgische Seenplatte - Nord",
+    "description": "",
     "polygons": [
       [
         [
@@ -39382,6 +39754,7 @@
   {
     "code": "DE331",
     "name": "Stadt Schwerin",
+    "description": "",
     "polygons": [
       [
         [
@@ -39438,6 +39811,7 @@
   {
     "code": "DE059",
     "name": "Kreis Mecklenburgische Seenplatte - West",
+    "description": "",
     "polygons": [
       [
         [
@@ -39534,6 +39908,7 @@
   {
     "code": "DE034",
     "name": "Kreis Vorpommern-Greifswald - Binnenland S\u00fcd",
+    "description": "",
     "polygons": [
       [
         [
@@ -39642,6 +40017,7 @@
   {
     "code": "DE233",
     "name": "Kreis M\u00e4rkisch-Oderland",
+    "description": "",
     "polygons": [
       [
         [
@@ -39786,6 +40162,7 @@
   {
     "code": "DE144",
     "name": "Kreis Uckermark",
+    "description": "",
     "polygons": [
       [
         [
@@ -39942,6 +40319,7 @@
   {
     "code": "DE176",
     "name": "Kreis Holzminden",
+    "description": "",
     "polygons": [
       [
         [
@@ -40038,6 +40416,7 @@
   {
     "code": "DE328",
     "name": "Kreis Goslar",
+    "description": "",
     "polygons": [
       [
         [
@@ -40158,6 +40537,7 @@
   {
     "code": "DE384",
     "name": "Kreis Hildesheim",
+    "description": "",
     "polygons": [
       [
         [
@@ -40262,6 +40642,7 @@
   {
     "code": "DE322",
     "name": "Kreis Oberhavel",
+    "description": "",
     "polygons": [
       [
         [
@@ -40346,6 +40727,7 @@
   {
     "code": "DE247",
     "name": "Kreis Prignitz",
+    "description": "",
     "polygons": [
       [
         [
@@ -40450,6 +40832,7 @@
   {
     "code": "DE169",
     "name": "Region Hannover",
+    "description": "",
     "polygons": [
       [
         [
@@ -40570,6 +40953,7 @@
   {
     "code": "DE294",
     "name": "Kreis Northeim",
+    "description": "",
     "polygons": [
       [
         [
@@ -40674,6 +41058,7 @@
   {
     "code": "DE093",
     "name": "Kreis Harz - Bergland",
+    "description": "",
     "polygons": [
       [
         [
@@ -40762,6 +41147,7 @@
   {
     "code": "DE048",
     "name": "Kreis Harz - Tiefland",
+    "description": "",
     "polygons": [
       [
         [
@@ -40894,6 +41280,7 @@
   {
     "code": "DE334",
     "name": "Stadt Salzgitter",
+    "description": "",
     "polygons": [
       [
         [
@@ -40978,6 +41365,7 @@
   {
     "code": "DE257",
     "name": "Kreis Peine",
+    "description": "",
     "polygons": [
       [
         [
@@ -41066,6 +41454,7 @@
   {
     "code": "DE275",
     "name": "Stadt Braunschweig",
+    "description": "",
     "polygons": [
       [
         [
@@ -41130,6 +41519,7 @@
   {
     "code": "DE263",
     "name": "Kreis Wittenberg",
+    "description": "",
     "polygons": [
       [
         [
@@ -41238,6 +41628,7 @@
   {
     "code": "DE220",
     "name": "Kreis Wolfenb\u00fcttel",
+    "description": "",
     "polygons": [
       [
         [
@@ -41380,6 +41771,7 @@
   {
     "code": "DE244",
     "name": "Kreis Gifhorn",
+    "description": "",
     "polygons": [
       [
         [
@@ -41500,6 +41892,7 @@
   {
     "code": "DE319",
     "name": "Stadt Wolfsburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -41560,6 +41953,7 @@
   {
     "code": "DE415",
     "name": "Kreis Helmstedt",
+    "description": "",
     "polygons": [
       [
         [
@@ -41692,6 +42086,7 @@
   {
     "code": "DE306",
     "name": "Kreis B\u00f6rde",
+    "description": "",
     "polygons": [
       [
         [
@@ -41868,6 +42263,7 @@
   {
     "code": "DE278",
     "name": "Stadt Magdeburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -41932,6 +42328,7 @@
   {
     "code": "DE216",
     "name": "Altmarkkreis Salzwedel",
+    "description": "",
     "polygons": [
       [
         [
@@ -42072,6 +42469,7 @@
   {
     "code": "DE325",
     "name": "Kreis Stendal",
+    "description": "",
     "polygons": [
       [
         [
@@ -42232,6 +42630,7 @@
   {
     "code": "DE385",
     "name": "Stadt Potsdam",
+    "description": "",
     "polygons": [
       [
         [
@@ -42300,6 +42699,7 @@
   {
     "code": "DE172",
     "name": "Kreis Dahme-Spreewald",
+    "description": "",
     "polygons": [
       [
         [
@@ -42488,6 +42888,7 @@
   {
     "code": "DE039",
     "name": "Insel Borkum",
+    "description": "",
     "polygons": [
       [
         [
@@ -42532,6 +42933,7 @@
   {
     "code": "DE382",
     "name": "Kreis Havelland",
+    "description": "",
     "polygons": [
       [
         [
@@ -42708,6 +43110,7 @@
   {
     "code": "DE392",
     "name": "Stadt Brandenburg",
+    "description": "",
     "polygons": [
       [
         [
@@ -42768,6 +43171,7 @@
   {
     "code": "DE141",
     "name": "Kreis Jerichower Land",
+    "description": "",
     "polygons": [
       [
         [
@@ -42876,6 +43280,7 @@
   {
     "code": "DE202",
     "name": "Stadt Berlin",
+    "description": "",
     "polygons": [
       [
         [
@@ -42996,6 +43401,7 @@
   {
     "code": "DE187",
     "name": "Kreis Potsdam-Mittelmark",
+    "description": "",
     "polygons": [
       [
         [
@@ -43196,6 +43602,7 @@
   {
     "code": "DE357",
     "name": "Kreis Anhalt-Bitterfeld",
+    "description": "",
     "polygons": [
       [
         [
@@ -43344,6 +43751,7 @@
   {
     "code": "DE259",
     "name": "Stadt Dessau-Ro\u00dflau",
+    "description": "",
     "polygons": [
       [
         [
@@ -43404,6 +43812,7 @@
   {
     "code": "DE345",
     "name": "Kreis Teltow-Fl\u00e4ming",
+    "description": "",
     "polygons": [
       [
         [
@@ -43540,6 +43949,7 @@
   {
     "code": "DE095",
     "name": "Kreis Nordfriesland - K\u00fcste",
+    "description": "",
     "polygons": [
       [
         [

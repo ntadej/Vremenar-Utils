@@ -2,6 +2,7 @@
   {
     "code": "SI010",
     "name": "Jugovzhodna Slovenija",
+    "description": "Slovenia / South-East",
     "polygons": [
       [
         [
@@ -130,6 +131,7 @@
   {
     "code": "SI009",
     "name": "Osrednja Slovenija",
+    "description": "Slovenia / Central",
     "polygons": [
       [
         [
@@ -266,6 +268,7 @@
   {
     "code": "SI006",
     "name": "Severovzhodna Slovenija",
+    "description": "Slovenia / North-West",
     "polygons": [
       [
         [
@@ -478,6 +481,7 @@
   {
     "code": "SI007",
     "name": "Severozahodna Slovenija",
+    "description": "Slovenia / North-East",
     "polygons": [
       [
         [
@@ -610,6 +614,7 @@
   {
     "code": "SI008",
     "name": "Jugozahodna Slovenija",
+    "description": "Slovenia / South-West",
     "polygons": [
       [
         [
@@ -810,6 +815,7 @@
   {
     "code": "SI801",
     "name": "Obala Slovenije",
+    "description": "Slovenia / Sea",
     "polygons": [
       [
         [
