@@ -159,3 +159,12 @@ def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:
         areas.append(AlertArea.from_dict(area_obj))
 
     return areas
+
+
+def build_meteoalarm_area_description_map(areas: list[AlertArea]) -> dict[str, str]:
+    """Build MeteoAlarm areas description map."""
+    result = {}
+    for area in areas:
+        if area.description:
+            result[area.description] = area.code
+    return result

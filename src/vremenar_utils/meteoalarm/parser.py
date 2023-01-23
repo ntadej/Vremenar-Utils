@@ -84,7 +84,9 @@ class MeteoAlarmParser:
         """Parse alert date/time."""
         return datetime.strptime(string, '%Y-%m-%dT%H:%M:%S%z')
 
-    async def parse_cap(self, id: str, url: str) -> AlertInfo | None:
+    async def parse_cap(
+        self, id: str, url: str, areas_desc_map: dict[str, str]
+    ) -> AlertInfo | None:
         """Parse CAP."""
         alert = AlertInfo(id)
 
@@ -137,7 +139,7 @@ class MeteoAlarmParser:
         areas = translation.get('area', [])
         if not isinstance(areas, list):  # pragma: no cover
             areas = [areas]
-        self.parse_alert_areas(alert, areas)
+        self.parse_alert_areas(alert, areas, areas_desc_map)
 
         # log the summary
         self.logger.debug(alert)
@@ -179,11 +181,17 @@ class MeteoAlarmParser:
     def parse_alert_areas(
         self,
         alert: AlertInfo,
-        areas: list[dict[str, list[dict[str, str]] | dict[str, str]]],
+        areas: list[dict[str, list[dict[str, str]] | dict[str, str] | str]],
+        areas_desc_map: dict[str, str],
     ) -> None:
         """Parse alert areas."""
         for area in areas:
             if 'geocode' not in area:
+                if 'areaDesc' in area:
+                    self.logger.warning('Geocode not present, using description')
+                    description = area.get('areaDesc')
+                    if isinstance(description, str) and description in areas_desc_map:
+                        alert.areas.add(areas_desc_map[description])
                 continue
 
             geocode = area.get('geocode')

@@ -2,7 +2,7 @@
 from ..cli.common import CountryID
 from ..cli.logging import Logger
 
-from .areas import load_meteoalarm_areas
+from .areas import load_meteoalarm_areas, build_meteoalarm_area_description_map
 from .database import (
     delete_alert,
     get_alert_area_map,
@@ -22,8 +22,11 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
     new_alerts = await parser.get_new_alerts()
     counter = 0
 
+    areas_list = load_meteoalarm_areas(country)
+    areas_desc_map = build_meteoalarm_area_description_map(areas_list)
+
     for id, url in new_alerts:
-        alert = await parser.parse_cap(id, url)
+        alert = await parser.parse_cap(id, url, areas_desc_map)
         if not alert or not alert.areas:
             continue
         await store_alert(country, alert)
@@ -41,7 +44,6 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
     logger.info(f'Total of {len(alert_areas)} alerts are available for {country.value}')
 
     # make area-alert mappings
-    areas_list = load_meteoalarm_areas(country)
     areas_with_alerts: set[str] = set()
     area_mappings: dict[str, set[str]] = {area.code: set() for area in areas_list}
     for alert_id, areas in alert_areas.items():
