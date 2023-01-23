@@ -8,12 +8,12 @@ authors = ["Tadej Novak <tadej@tano.si>"]
 python = "^3.10"
 Babel = "^2.11.0"
 firebase-admin = "^6.0.1"
-geopandas = "^0.12.1"
-httpx = "^0.23.1"
-lxml = "^4.9.1"
+geopandas = "^0.12.2"
+httpx = "^0.23.3"
+lxml = "^4.9.2"
 parsel = "^1.7.0"
-redis = {extras = ["hiredis"], version = "^4.3.5"}
-Shapely = "^1.8.5"
+redis = {extras = ["hiredis"], version = "^4.4.2"}
+Shapely = "^2.0.0"
 typer = {extras = ["all"], version = "^0.7.0"}
 wheel = "^0.38.4"
 xmltodict = "^0.13.0"
@@ -22,23 +22,23 @@ xmltodict = "^0.13.0"
 vremenar_utils = 'vremenar_utils.cli:application'
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
-coverage = {extras = ["toml"], version = "^6.5.0"}
+black = "^22.12.0"
+coverage = {extras = ["toml"], version = "^7.0.5"}
 flake8 = "^6.0.0"
-flake8-bugbear = "^22.10.27"
+flake8-bugbear = "^23.1.20"
 flake8-docstrings = "^1.6.0"
-flake8-pyproject = "^1.2.1"
+flake8-pyproject = "^1.2.2"
 mypy = "^0.991"
-pep8-naming = "^0.13.2"
-pre-commit = "^2.20.0"
+pep8-naming = "^0.13.3"
+pre-commit = "^2.21.0"
 pre-commit-hooks = "^4.4.0"
-pytest = "^7.2.0"
+pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
 pytest-forked = "^1.4.0"
-pyupgrade = "^3.2.2"
-types-babel = "^2.11.0.7"
-types-python-dateutil = "^2.8.19.4"
-types-redis = "^4.3.21.5"
+pyupgrade = "^3.3.1"
+types-babel = "^2.11.0.9"
+types-python-dateutil = "^2.8.19.6"
+types-redis = "^4.4.0.3"
 
 [tool.black]
 line-length = 88
