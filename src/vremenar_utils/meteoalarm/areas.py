@@ -56,7 +56,8 @@ async def process_meteoalarm_areas(
     await store_alerts_areas(country, areas)
 
     with open(output, 'w') as f:
-        dump([area.to_dict() for area in areas], f)
+        dump([area.to_dict() for area in areas], f, indent=2)
+        f.write('\n')
 
     logger.info(f'Total {len(areas)} areas')
 
@@ -95,6 +96,7 @@ async def match_meteoalarm_areas(
             f,
             indent=2,
         )
+        f.write('\n')
 
 
 async def process_meteoalarm_station(
