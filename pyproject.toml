@@ -13,7 +13,7 @@ httpx = "^0.23.3"
 lxml = "^4.9.2"
 parsel = "^1.7.0"
 redis = {extras = ["hiredis"], version = "^4.4.2"}
-Shapely = "^2.0.0"
+Shapely = "^2.0.1"
 typer = {extras = ["all"], version = "^0.7.0"}
 wheel = "^0.38.4"
 xmltodict = "^0.13.0"
