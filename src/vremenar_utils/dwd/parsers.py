@@ -33,7 +33,7 @@ NS = {
 }
 HEADERS = {
     "user-agent": f"Vremenar-Utils/{__version__}",
-    "referer": "https://vremenar.tano.si",
+    "referer": "https://vremenar.app",
 }
 
 
