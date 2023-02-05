@@ -1,8 +1,9 @@
 """Notifications support."""
-from datetime import datetime
-from firebase_admin import messaging, initialize_app  # type: ignore
+from datetime import datetime, timezone
 
-from ..cli.logging import Logger
+from firebase_admin import initialize_app, messaging  # type: ignore
+
+from vremenar_utils.cli.logging import Logger
 
 firebase_app = initialize_app()
 
@@ -16,33 +17,32 @@ def make_message(
     badge: int = 0,
 ) -> messaging.Message:
     """Make a notification message."""
-    message = messaging.Message(
+    return messaging.Message(
         notification=messaging.Notification(
             title=title,
             body=body,
         ),
         android=messaging.AndroidConfig(
             notification=messaging.AndroidNotification(
-                channel_id='vremenar_alerts' if important else 'vremenar_forecast',
-                sound='default',
+                channel_id="vremenar_alerts" if important else "vremenar_forecast",
+                sound="default",
             ),
-            priority='high' if important else 'normal',
-            ttl=expires - datetime.now() if expires else None,
+            priority="high" if important else "normal",
+            ttl=expires - datetime.now(tz=timezone.utc) if expires else None,
         ),
         apns=messaging.APNSConfig(
             payload=messaging.APNSPayload(
                 aps=messaging.Aps(
                     alert=messaging.ApsAlert(subtitle=subtitle),
                     badge=badge,
-                    sound='default',
-                    custom_data={'interruption-level': 'time-sensitive'}
+                    sound="default",
+                    custom_data={"interruption-level": "time-sensitive"}
                     if important
                     else None,
                 ),
             ),
         ),
     )
-    return message
 
 
 def prepare_message(
@@ -53,10 +53,12 @@ def prepare_message(
 ) -> None:
     """Prepare a message to send to topic subscribers or to a dedicated device token."""
     if topics is None and token is None:
-        raise ValueError('Either a list of topics or a token need to be specified.')
+        err = "Either a list of topics or a token need to be specified."
+        raise ValueError(err)
 
     if topics is not None and token is not None:
-        raise ValueError('Topics and a token can not be set at the same time.')
+        err = "Topics and a token can not be set at the same time."
+        raise ValueError(err)
 
     if topics is not None:
         prepare_message_for_topics(message, topics, logger)
@@ -66,34 +68,42 @@ def prepare_message(
 
 
 def prepare_message_for_topics(
-    message: messaging.Message, topics: list[str], logger: Logger | None
+    message: messaging.Message,
+    topics: list[str],
+    logger: Logger | None,
 ) -> None:
     """Prepare a message to send to topic subscribers."""
     if not topics:
-        raise ValueError('Topics should not be empty.')
+        err = "Topics should not be empty."
+        raise ValueError(err)
 
     if len(topics) > 5:
-        raise ValueError('Too many topics used at the same time')
-    elif len(topics) == 1:
+        err = "Too many topics used at the same time"
+        raise ValueError(err)
+
+    if len(topics) == 1:
         message.topic = topics[0]
         if logger:
-            logger.debug(f'Sending notification with topic "{message.topic}"')
+            logger.debug('Sending notification with topic "%s"', message.topic)
     else:
-        message.condition = ' || '.join([f"'{topic}' in topics" for topic in topics])
+        message.condition = " || ".join([f"'{topic}' in topics" for topic in topics])
         if logger:
-            logger.debug(f'Sending notification with condition "{message.condition}"')
+            logger.debug('Sending notification with condition "%s"', message.condition)
 
 
 def prepare_message_for_token(
-    message: messaging.Message, token: str, logger: Logger | None
+    message: messaging.Message,
+    token: str,
+    logger: Logger | None,
 ) -> None:
     """Prepare a message to send to a dedicated device token."""
     if not token:
-        raise ValueError('Token should not be empty.')
+        err = "Token should not be empty."
+        raise ValueError(err)
 
     message.token = token
     if logger:
-        logger.debug(f'Sending notification to device with token "{message.token}"')
+        logger.debug('Sending notification to device with token "%s"', message.token)
 
 
 def send_message(message: messaging.Message) -> None:
@@ -115,7 +125,7 @@ class BatchNotify:
         self.queue: list[messaging.Message] = []
         self.limit = 100
 
-    def __enter__(self) -> 'BatchNotify':
+    def __enter__(self) -> "BatchNotify":
         """Context manager init."""
         return self
 

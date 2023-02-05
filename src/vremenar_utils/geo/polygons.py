@@ -6,4 +6,4 @@ def point_in_polygon(point: list[float], polygon: list[list[float]]) -> bool:
     """Check if a point is within a polygon."""
     p = Point(point)
     poly = Polygon(polygon)
-    return True if p.within(poly) else False
+    return bool(p.within(poly))

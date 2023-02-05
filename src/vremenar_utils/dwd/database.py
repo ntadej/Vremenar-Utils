@@ -3,10 +3,10 @@ from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
 from typing import cast
 
-from ..cli.common import CountryID
-from ..cli.logging import Logger
-from ..database.redis import BatchedRedis, RedisPipeline
-from ..database.stations import store_station, validate_stations
+from vremenar_utils.cli.common import CountryID
+from vremenar_utils.cli.logging import Logger
+from vremenar_utils.database.redis import BatchedRedis, RedisPipeline
+from vremenar_utils.database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
 
@@ -16,31 +16,32 @@ async def store_stations(logger: Logger) -> None:
     country = CountryID.Germany
     stations = load_stations()
 
-    for id, station in stations.items():
+    for station_id, station in stations.items():
         station_out = {
-            'id': id,
-            'name': station['name'],
-            'latitude': station['lat'],
-            'longitude': station['lon'],
-            'altitude': station['altitude'],
-            'zoom_level': zoom_level_conversion(
-                str(station['type']), float(station['admin'])
+            "id": station_id,
+            "name": station["name"],
+            "latitude": station["lat"],
+            "longitude": station["lon"],
+            "altitude": station["altitude"],
+            "zoom_level": zoom_level_conversion(
+                str(station["type"]),
+                float(station["admin"]),
             ),
-            'forecast_only': int(not station['has_reports']),
+            "forecast_only": int(not station["has_reports"]),
         }
 
         station_metadata = {
-            'status': station['status'],
-            'DWD_ID': station['dwd_station_id'],
+            "status": station["status"],
+            "DWD_ID": station["dwd_station_id"],
         }
 
         await store_station(country, station_out, station_metadata)
 
-    logger.info('%d stations stored', len(stations))
+    logger.info("%d stations stored", len(stations))
 
     removed = await validate_stations(country, set(stations.keys()))
 
-    logger.info('%d obsolete stations removed', removed)
+    logger.info("%d obsolete stations removed", removed)
 
 
 class BatchedMosmix(BatchedRedis):
@@ -52,14 +53,16 @@ class BatchedMosmix(BatchedRedis):
         record: dict[str, str | int | float | None],
     ) -> None:
         """Process MOSMIX record."""
-        if not isinstance(record['timestamp'], str):
-            raise ValueError("Invalid 'timestamp' value")
+        if not isinstance(record["timestamp"], str):
+            err = "Invalid 'timestamp' value"
+            raise ValueError(err)
 
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
         reference = now + timedelta(hours=-2)
         record_time = datetime.fromtimestamp(
-            float(record['timestamp'][:-3]), tz=timezone.utc
+            float(record["timestamp"][:-3]),
+            tz=timezone.utc,
         )
         delta = record_time - reference
 
@@ -77,7 +80,8 @@ class BatchedMosmix(BatchedRedis):
         pipeline.sadd(set_key, key)
         pipeline.expire(set_key, delta)
         pipeline.hset(
-            key, mapping=cast(Mapping[bytes | str, bytes | float | int | str], record)
+            key,
+            mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
         )
         pipeline.expire(key, delta)
 
@@ -98,11 +102,12 @@ class BatchedCurrentWeather(BatchedRedis):
             if value is None:
                 empty_keys.add(key)
         for key in empty_keys:
-            record[key] = ''
+            record[key] = ""
 
         # store in the DB
         key = f"current:{country.value}:{record['station_id']}"
         pipeline.hset(
-            key, mapping=cast(Mapping[bytes | str, bytes | float | int | str], record)
+            key,
+            mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
         )
         pipeline.expire(key, timedelta(hours=3))
