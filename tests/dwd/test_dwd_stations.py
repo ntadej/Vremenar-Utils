@@ -10,7 +10,7 @@ runner = CliRunner()
 @pytest.mark.forked
 def test_stations(env: dict[str, str]) -> None:
     """Test stations update."""
-    from vremenar_utils.cli import application  # type: ignore
+    from vremenar_utils.cli import application
 
     with NamedTemporaryFile(
         suffix='.csv', prefix='DWD_'
