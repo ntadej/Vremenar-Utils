@@ -50,7 +50,8 @@ async def process_meteoalarm_areas(
 
         coordinates = feature["geometry"]["coordinates"]
         polygons = []
-        for polygon in coordinates:
+        for polygon_source in coordinates:
+            polygon = polygon_source
             while isinstance(polygon, list) and len(polygon) == 1:
                 polygon = polygon[0]
             polygons.append(polygon)

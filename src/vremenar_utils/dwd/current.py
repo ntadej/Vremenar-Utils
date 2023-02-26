@@ -54,7 +54,8 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
 
     async with redis.client() as db:
         async with BatchedCurrentWeather(db) as batch:
-            for station_id in stations:
+            for sid in stations:
+                station_id = sid
                 if len(station_id) == 4:
                     station_id += "_"
                 url = (
