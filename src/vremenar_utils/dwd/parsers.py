@@ -127,13 +127,7 @@ class CurrentObservationsParser(Parser):
         "wind_gust_speed": kmh_to_ms,
     }
 
-    def parse(
-        self,
-        lat: None = None,
-        lon: None = None,
-        height: None = None,
-        station_name: None = None,
-    ) -> Iterable[dict[str, str | int | float | None]]:
+    def parse(self) -> Iterable[dict[str, str | int | float | None]]:
         """Parse current weather."""
         with self.path.open() as f:
             reader = DictReader(f, delimiter=";")
@@ -171,32 +165,25 @@ class CurrentObservationsParser(Parser):
                 record[element] = converter(record[element])  # type: ignore
 
     def _sanitize_record(self, record: dict[str, str | int | float | None]) -> None:
-        if "cloud_cover" in record and record["cloud_cover"]:
-            if not isinstance(record["cloud_cover"], (int, float)):
-                err = "'cloud_cover' should be a number"
-                raise ValueError(err)
-            if record["cloud_cover"] > 100:
-                self.logger.warning("Ignoring unphysical cloud cover value: %s", record)
-                record["cloud_cover"] = None
+        to_sanitize = {
+            "cloud_cover": 100,
+            "relative_humidity": 100,
+            "sunshine": 3600,
+        }
 
-        if "relative_humidity" in record and record["relative_humidity"]:
-            if not isinstance(record["relative_humidity"], (int, float)):
-                err = "'relative_humidity' should be a number"
-                raise ValueError(err)
-            if record["relative_humidity"] > 100:
-                self.logger.warning(
-                    "Ignoring unphysical relative humidity value: %s",
-                    record,
-                )
-                record["relative_humidity"] = None
-
-        if "sunshine" in record and record["sunshine"]:
-            if not isinstance(record["sunshine"], (int, float)):
-                err = "'sunshine' should be a number"
-                raise ValueError(err)
-            if record["sunshine"] > 3600:
-                self.logger.warning("Ignoring unphysical sunshine value: %s", record)
-                record["sunshine"] = None
+        for key, threshold in to_sanitize.items():
+            if key in record and record[key]:
+                value = record[key]
+                if not isinstance(value, (int, float)):
+                    err = f"'{key}' should be a number"
+                    raise ValueError(err)
+                if value > threshold:
+                    self.logger.warning(
+                        "Ignoring unphysical value for '%s': %s",
+                        key,
+                        value,
+                    )
+                    record[key] = None
 
 
 class MOSMIXParserFast(Parser):
