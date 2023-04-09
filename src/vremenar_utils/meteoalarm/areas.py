@@ -115,7 +115,7 @@ async def match_meteoalarm_areas(
 
     with output.open("w") as f:
         dump(
-            {k: v for k, v in sorted(matches.items(), key=lambda item: item[0])},
+            dict(sorted(matches.items(), key=lambda item: item[0])),
             f,
             indent=2,
         )

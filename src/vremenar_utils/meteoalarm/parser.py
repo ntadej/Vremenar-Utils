@@ -88,7 +88,7 @@ class MeteoAlarmParser:
         """Parse alert date/time."""
         return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S%z")
 
-    async def parse_cap(  # noqa: C901
+    async def parse_cap(
         self,
         alert_id: str,
         url: str,

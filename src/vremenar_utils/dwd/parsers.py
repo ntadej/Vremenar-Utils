@@ -174,7 +174,7 @@ class CurrentObservationsParser(Parser):
         for key, threshold in to_sanitize.items():
             if key in record and record[key]:
                 value = record[key]
-                if not isinstance(value, (int, float)):
+                if not isinstance(value, int | float):
                     err = f"'{key}' should be a number"
                     raise ValueError(err)
                 if value > threshold:
@@ -386,7 +386,7 @@ class MOSMIXParserFast(Parser):
                 )
 
             if "precipitation" in r and r["precipitation"]:
-                if not isinstance(r["precipitation"], (int, float)):
+                if not isinstance(r["precipitation"], int | float):
                     err = "'precipitation' should be a number"
                     raise ValueError(err)
                 if r["precipitation"] < 0:  # pragma: no cover
@@ -394,7 +394,7 @@ class MOSMIXParserFast(Parser):
                     r["precipitation"] = None
 
             if "wind_direction" in r and r["wind_direction"]:
-                if not isinstance(r["wind_direction"], (int, float)):
+                if not isinstance(r["wind_direction"], int | float):
                     err = "'wind_direction' should be a number"
                     raise ValueError(err)
                 if r["wind_direction"] > 360:  # pragma: no cover
