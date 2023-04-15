@@ -9,7 +9,7 @@ python = "^3.10"
 Babel = "^2.12.1"
 firebase-admin = "^6.1.0"
 geopandas = "^0.12.2"
-httpx = "^0.23.3"
+httpx = "^0.24.0"
 lxml = "^4.9.2"
 parsel = "^1.7.0"
 redis = {extras = ["hiredis"], version = "^4.5.4"}
