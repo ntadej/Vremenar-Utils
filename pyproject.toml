@@ -15,7 +15,7 @@ parsel = "^1.7.0"
 redis = {extras = ["hiredis"], version = "^4.5.4"}
 Shapely = "^2.0.1"
 typer = {extras = ["all"], version = "^0.7.0"}
-wheel = "^0.38.4"
+wheel = "^0.40.0"
 xmltodict = "^0.13.0"
 
 [tool.poetry.scripts]
