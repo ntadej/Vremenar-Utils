@@ -1,14 +1,18 @@
 """Notifications support."""
+from __future__ import annotations
+
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from firebase_admin import initialize_app, messaging  # type: ignore
 
-from vremenar_utils.cli.logging import Logger
+if TYPE_CHECKING:
+    from vremenar_utils.cli.logging import Logger
 
 firebase_app = initialize_app()
 
 
-def make_message(
+def make_message(  # noqa: PLR0913
     title: str,
     subtitle: str,
     body: str,
@@ -119,27 +123,27 @@ def send_messages(messages: list[messaging.Message]) -> None:
 class BatchNotify:
     """Send notifications in batches."""
 
-    def __init__(self, logger: Logger) -> None:
+    def __init__(self: BatchNotify, logger: Logger) -> None:
         """Initialise batch notifications."""
         self.logger = logger
         self.queue: list[messaging.Message] = []
         self.limit = 100
 
-    def __enter__(self) -> "BatchNotify":
+    def __enter__(self: BatchNotify) -> BatchNotify:
         """Context manager init."""
         return self
 
-    def __exit__(self, *args: None) -> None:
+    def __exit__(self: BatchNotify, *args: None) -> None:
         """Context manager exit."""
         self._drain()
 
-    def send(self, message: messaging.Message) -> None:
+    def send(self: BatchNotify, message: messaging.Message) -> None:
         """Send the notification to topic."""
         if len(self.queue) == self.limit:
             self._drain()
         self.queue.append(message)
 
-    def _drain(self) -> None:
+    def _drain(self: BatchNotify) -> None:
         """Drain the queue."""
         if self.queue:
             send_messages(self.queue)

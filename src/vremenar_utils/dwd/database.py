@@ -1,14 +1,18 @@
 """DWD database utilities."""
+from __future__ import annotations
+
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from vremenar_utils.cli.common import CountryID
-from vremenar_utils.cli.logging import Logger
 from vremenar_utils.database.redis import BatchedRedis, RedisPipeline
 from vremenar_utils.database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
+
+if TYPE_CHECKING:
+    from vremenar_utils.cli.logging import Logger
 
 
 async def store_stations(logger: Logger) -> None:
@@ -48,8 +52,8 @@ class BatchedMosmix(BatchedRedis):
     """Batched MOSMIX save."""
 
     def process(
-        self,
-        pipeline: "RedisPipeline[str]",
+        self: BatchedMosmix,
+        pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
     ) -> None:
         """Process MOSMIX record."""
@@ -90,8 +94,8 @@ class BatchedCurrentWeather(BatchedRedis):
     """Batched current weather save."""
 
     def process(
-        self,
-        pipeline: "RedisPipeline[str]",
+        self: BatchedCurrentWeather,
+        pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
     ) -> None:
         """Process current weather record."""

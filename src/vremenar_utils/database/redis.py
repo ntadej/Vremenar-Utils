@@ -1,11 +1,14 @@
 """Redis utilities."""
+from __future__ import annotations
+
 from os import getenv
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from redis.asyncio import Redis, from_url
 from redis.asyncio.client import Pipeline as RedisPipeline
 
-from vremenar_utils.cli.logging import Logger
+if TYPE_CHECKING:
+    from vremenar_utils.cli.logging import Logger
 
 db_env: str = getenv("VREMENAR_DATABASE", "staging")
 database: int = {
@@ -14,7 +17,7 @@ database: int = {
     "test": 2,
 }.get(db_env, 0)
 
-redis: "Redis[str]" = from_url(f"redis://localhost/{database}", decode_responses=True)
+redis: Redis[str] = from_url(f"redis://localhost/{database}", decode_responses=True)
 
 
 def database_info(logger: Logger) -> None:
@@ -25,21 +28,25 @@ def database_info(logger: Logger) -> None:
 class BatchedRedis:
     """Put items to redis in batches."""
 
-    def __init__(self, connection: "Redis[str]", limit: int | None = 1000) -> None:
+    def __init__(
+        self: BatchedRedis,
+        connection: Redis[str],
+        limit: int | None = 1000,
+    ) -> None:
         """Initialise with DB."""
         self.connection = connection
         self.queue: list[Any] = []
         self.limit = limit
 
-    async def __aenter__(self) -> "BatchedRedis":
+    async def __aenter__(self: BatchedRedis) -> BatchedRedis:
         """Context manager init."""
         return self
 
-    async def __aexit__(self, *args: Any) -> None:  # noqa: ANN401
+    async def __aexit__(self: BatchedRedis, *args: Any) -> None:  # noqa: ANN401
         """Context manager exit."""
         await self._drain()
 
-    async def add(self, item: Any) -> None:  # noqa: ANN401
+    async def add(self: BatchedRedis, item: Any) -> None:  # noqa: ANN401
         """Put item to the DB (add it in the queue)."""
         if len(self.queue) == self.limit:
             await self._drain()
@@ -47,15 +54,15 @@ class BatchedRedis:
         self.queue.append(item)
 
     def process(
-        self,
-        pipeline: "RedisPipeline[str]",  # noqa: ARG002
+        self: BatchedRedis,
+        pipeline: RedisPipeline[str],  # noqa: ARG002
         item: Any,  # noqa: ANN401, ARG002
     ) -> None:
         """Process items in queue."""
         err = "BatchedRedis needs to be subclassed and process implemented"
         raise NotImplementedError(err)
 
-    async def _drain(self) -> None:
+    async def _drain(self: BatchedRedis) -> None:
         """Drain the queue."""
         if not self.connection:  # pragma: no cover
             err = "Invalid redis connection"
@@ -76,7 +83,11 @@ class BatchedRedis:
 class BatchedRedisDelete(BatchedRedis):
     """Batch delete redis keys."""
 
-    def process(self, pipeline: "RedisPipeline[str]", item: str) -> None:
+    def process(
+        self: BatchedRedisDelete,
+        pipeline: RedisPipeline[str],
+        item: str,
+    ) -> None:
         """Process items in queue."""
         pipeline.delete(item)
 

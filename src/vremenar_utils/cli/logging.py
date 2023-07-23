@@ -1,13 +1,17 @@
 """Common logging setup."""
+from __future__ import annotations
+
 import logging
-from collections.abc import Callable
 from copy import copy
 from logging import Logger
 from sys import stdout
-from typing import Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from click import style
 from typer import colors
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class ColourizedFormatter(logging.Formatter):
@@ -31,7 +35,7 @@ class ColourizedFormatter(logging.Formatter):
     }
 
     def __init__(
-        self,
+        self: ColourizedFormatter,
         fmt: str | None = None,
         datefmt: str | None = "%Y-%m-%d %H:%M:%S",
         style: Literal["%"] | Literal["{"] | Literal["$"] = "%",
@@ -40,14 +44,21 @@ class ColourizedFormatter(logging.Formatter):
         self.use_colors = stdout.isatty()
         super().__init__(fmt=fmt, datefmt=datefmt, style=style)
 
-    def _color_level_name(self, level_name: str, level_no: int) -> str:
+    def _color_level_name(
+        self: ColourizedFormatter,
+        level_name: str,
+        level_no: int,
+    ) -> str:
         def default(level_name: str) -> str:
             return str(level_name)  # pragma: no cover
 
         func = self.level_name_colors.get(level_no, default)
         return func(level_name)
 
-    def formatMessage(self, record: logging.LogRecord) -> str:  # noqa: N802
+    def formatMessage(  # noqa: N802
+        self: ColourizedFormatter,
+        record: logging.LogRecord,
+    ) -> str:
         """Format the message."""
         recordcopy = copy(record)
         levelname = recordcopy.levelname

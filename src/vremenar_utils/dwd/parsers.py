@@ -1,12 +1,12 @@
 """Parses of DWD open data."""
 # Based on brightsky
 # Copyright (c) 2020 Jakob de Maeyer
+from __future__ import annotations
+
 import re
-from collections.abc import Callable, Iterable
 from csv import DictReader, reader
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 from zipfile import ZipFile
 
 import httpx
@@ -15,7 +15,6 @@ from lxml.etree import Element, QName, iterparse  # type: ignore
 from parsel import Selector, SelectorList
 
 from vremenar_utils import __version__
-from vremenar_utils.cli.logging import Logger
 
 from .units import (
     celsius_to_kelvin,
@@ -26,6 +25,12 @@ from .units import (
     minutes_to_seconds,
     synop_past_weather_code_to_condition,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+    from pathlib import Path
+
+    from vremenar_utils.cli.logging import Logger
 
 DWD_OPEN_DATA: str = "https://opendata.dwd.de"
 NS = {
@@ -47,7 +52,7 @@ class StationIDConverter:
     )
     STATION_TYPES: ClassVar[list[str]] = ["SY", "MN"]
 
-    def __init__(self, logger: Logger) -> None:
+    def __init__(self: StationIDConverter, logger: Logger) -> None:
         """Initialize DWD station ID converter."""
         self.logger = logger
         self.dwd_to_wmo: dict[str, str] = {}
@@ -55,12 +60,12 @@ class StationIDConverter:
 
         self._update()
 
-    def _update(self) -> None:
+    def _update(self: StationIDConverter) -> None:
         self.logger.info("Updating station ID maps")
         response = httpx.get(self.STATION_LIST_URL, headers=HEADERS)
         self._parse_station_list(response.text)
 
-    def _parse_station_list(self, html: str) -> None:
+    def _parse_station_list(self: StationIDConverter, html: str) -> None:
         sel = Selector(html)
         station_rows: SelectorList[Selector] = SelectorList()
         for station_type in self.STATION_TYPES:
@@ -76,11 +81,11 @@ class StationIDConverter:
             self.wmo_to_dwd[wmo_id] = dwd_id
         self.logger.info("Parsed %d station ID mappings", len(station_rows))
 
-    def convert_to_wmo(self, dwd_id: str) -> str | None:
+    def convert_to_wmo(self: StationIDConverter, dwd_id: str) -> str | None:
         """Convert DWD ID to WMO."""
         return self.dwd_to_wmo.get(dwd_id)
 
-    def convert_to_dwd(self, wmo_id: str) -> str | None:
+    def convert_to_dwd(self: StationIDConverter, wmo_id: str) -> str | None:
         """Convert WMO ID to DWD."""
         return self.wmo_to_dwd.get(wmo_id)
 
@@ -89,7 +94,7 @@ class Parser:
     """Base parser class."""
 
     def __init__(
-        self,
+        self: Parser,
         logger: Logger,
         path: Path,
         without_station_id_converter: bool = False,
@@ -135,7 +140,9 @@ class CurrentObservationsParser(Parser):
         "wind_gust_speed": kmh_to_ms,
     }
 
-    def parse(self) -> Iterable[dict[str, str | int | float | None]]:
+    def parse(
+        self: CurrentObservationsParser,
+    ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse current weather."""
         with self.path.open() as f:
             reader = DictReader(f, delimiter=";")
@@ -150,7 +157,10 @@ class CurrentObservationsParser(Parser):
                 }
                 break  # only parse first row for now
 
-    def parse_row(self, row: dict[str, str]) -> dict[str, str | int | float | None]:
+    def parse_row(
+        self: CurrentObservationsParser,
+        row: dict[str, str],
+    ) -> dict[str, str | int | float | None]:
         """Parse a row of data."""
         record: dict[str, str | int | float | None] = {
             element: (
@@ -167,12 +177,18 @@ class CurrentObservationsParser(Parser):
         self._sanitize_record(record)
         return record
 
-    def _convert_units(self, record: dict[str, str | int | float | None]) -> None:
+    def _convert_units(
+        self: CurrentObservationsParser,
+        record: dict[str, str | int | float | None],
+    ) -> None:
         for element, converter in self.CONVERTERS.items():
             if record[element] is not None:
                 record[element] = converter(record[element])
 
-    def _sanitize_record(self, record: dict[str, str | int | float | None]) -> None:
+    def _sanitize_record(
+        self: CurrentObservationsParser,
+        record: dict[str, str | int | float | None],
+    ) -> None:
         to_sanitize = {
             "cloud_cover": 100,
             "relative_humidity": 100,
@@ -212,7 +228,7 @@ class MOSMIXParserFast(Parser):
     }
 
     def parse(
-        self,
+        self: MOSMIXParserFast,
         station_ids: list[str],
     ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
@@ -263,7 +279,9 @@ class MOSMIXParserFast(Parser):
                         placemark += 1
                         yield from self._sanitize_records(records)
 
-    def stations(self) -> Iterable[dict[str, str | int | float | None]]:
+    def stations(
+        self: MOSMIXParserFast,
+    ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
         self.logger.info("Parsing %s", self.path)
 
@@ -315,8 +333,8 @@ class MOSMIXParserFast(Parser):
 
         return accepted
 
-    def _parse_station(
-        self,
+    def _parse_station(  # noqa: PLR0913
+        self: MOSMIXParserFast,
         station_elem: Element,
         station_ids: list[str],
         timestamps: list[str],
@@ -386,7 +404,7 @@ class MOSMIXParserFast(Parser):
         return [base_record]
 
     def _sanitize_records(
-        self,
+        self: MOSMIXParserFast,
         records: Iterable[dict[str, str | int | float | None]],
     ) -> Iterable[dict[str, str | int | float | None]]:
         for r in records:

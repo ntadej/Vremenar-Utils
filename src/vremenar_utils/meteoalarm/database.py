@@ -1,4 +1,6 @@
 """MeteoAlarm database utilities."""
+from __future__ import annotations
+
 from collections.abc import Mapping
 from typing import cast
 
@@ -146,12 +148,20 @@ async def store_alerts_for_area(
 class BatchedNotifyAnnounce(BatchedRedis):
     """Batched alert announcement notifications."""
 
-    def __init__(self, connection: "Redis[str]", country: CountryID) -> None:
+    def __init__(
+        self: BatchedNotifyAnnounce,
+        connection: Redis[str],
+        country: CountryID,
+    ) -> None:
         """Initialise batched notify for a country."""
         self.country = country
         super().__init__(connection)
 
-    def process(self, pipeline: "RedisPipeline[str]", alert_id: str) -> None:
+    def process(
+        self: BatchedNotifyAnnounce,
+        pipeline: RedisPipeline[str],
+        alert_id: str,
+    ) -> None:
         """Process alert on announcement nofitication."""
         key = f"alert:{self.country.value}:{alert_id}:notifications"
         pipeline.hset(key, mapping={"announce": 1})
@@ -160,12 +170,20 @@ class BatchedNotifyAnnounce(BatchedRedis):
 class BatchedNotifyOnset(BatchedRedis):
     """Batched alert onset notifications."""
 
-    def __init__(self, connection: "Redis[str]", country: CountryID) -> None:
+    def __init__(
+        self: BatchedNotifyOnset,
+        connection: Redis[str],
+        country: CountryID,
+    ) -> None:
         """Initialise batched notify for a country."""
         self.country = country
         super().__init__(connection)
 
-    def process(self, pipeline: "RedisPipeline[str]", alert_id: str) -> None:
+    def process(
+        self: BatchedNotifyOnset,
+        pipeline: RedisPipeline[str],
+        alert_id: str,
+    ) -> None:
         """Process alert on onset nofitication."""
         key = f"alert:{self.country.value}:{alert_id}:notifications"
         pipeline.hset(key, mapping={"onset": 1})
