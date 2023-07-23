@@ -180,7 +180,7 @@ def _write_mosmix_stations(
 ) -> int:
     stations_keys: list[str] = []
 
-    shape, shape_buffered = load_shape("Germany")
+    _, shape_buffered = load_shape("Germany")
     with output.open("w", newline="") as csvfile, output_new.open(
         "w",
         newline="",
