@@ -2,10 +2,11 @@
 # Based on brightsky
 # Copyright (c) 2020 Jakob de Maeyer
 import re
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from csv import DictReader, reader
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import ClassVar
 from zipfile import ZipFile
 
 import httpx
@@ -44,7 +45,7 @@ class StationIDConverter:
         "https://www.dwd.de/DE/leistungen/klimadatendeutschland/statliste/"
         "statlex_html.html?view=nasPublication"
     )
-    STATION_TYPES = ["SY", "MN"]
+    STATION_TYPES: ClassVar[list[str]] = ["SY", "MN"]
 
     def __init__(self, logger: Logger) -> None:
         """Initialize DWD station ID converter."""
@@ -87,17 +88,24 @@ class StationIDConverter:
 class Parser:
     """Base parser class."""
 
-    def __init__(self, logger: Logger, path: Path) -> None:
+    def __init__(
+        self,
+        logger: Logger,
+        path: Path,
+        without_station_id_converter: bool = False,
+    ) -> None:
         """Initialize the parser."""
         self.logger = logger
         self.path = path
-        self.station_id_converter = StationIDConverter(logger)
+        self.station_id_converter = (
+            StationIDConverter(logger) if not without_station_id_converter else None
+        )
 
 
 class CurrentObservationsParser(Parser):
     """Parser of DWD current observations."""
 
-    ELEMENTS = {
+    ELEMENTS: ClassVar[dict[str, str]] = {
         "cloud_cover_total": "cloud_cover",
         "dew_point_temperature_at_2_meter_above_ground": "dew_point",
         "dry_bulb_temperature_at_2_meter_above_ground": "temperature",
@@ -116,7 +124,7 @@ class CurrentObservationsParser(Parser):
     DATE_COLUMN = "surface observations"
     HOUR_COLUMN = "Parameter description"
 
-    CONVERTERS = {
+    CONVERTERS: ClassVar[dict[str, Callable[..., float | str | None]]] = {
         "condition": current_observations_weather_code_to_condition,
         "dew_point": celsius_to_kelvin,
         "pressure_msl": hpa_to_pa,
@@ -162,7 +170,7 @@ class CurrentObservationsParser(Parser):
     def _convert_units(self, record: dict[str, str | int | float | None]) -> None:
         for element, converter in self.CONVERTERS.items():
             if record[element] is not None:
-                record[element] = converter(record[element])  # type: ignore
+                record[element] = converter(record[element])
 
     def _sanitize_record(self, record: dict[str, str | int | float | None]) -> None:
         to_sanitize = {
@@ -189,7 +197,7 @@ class CurrentObservationsParser(Parser):
 class MOSMIXParserFast(Parser):
     """Custom MOSMIX parser for low memory."""
 
-    ELEMENTS = {
+    ELEMENTS: ClassVar[dict[str, str]] = {
         "DD": "wind_direction",
         "FF": "wind_speed",
         "FX1": "wind_gust_speed",
@@ -363,7 +371,9 @@ class MOSMIXParserFast(Parser):
                 if row[0] in accepted_timestamps
             )
 
-        dwd_station_id = self.station_id_converter.convert_to_dwd(wmo_station_id)
+        dwd_station_id = None
+        if self.station_id_converter:
+            self.station_id_converter.convert_to_dwd(wmo_station_id)
         base_record.update(
             {
                 "lat": float(lat),

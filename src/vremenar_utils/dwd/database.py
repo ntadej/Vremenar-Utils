@@ -55,7 +55,7 @@ class BatchedMosmix(BatchedRedis):
         """Process MOSMIX record."""
         if not isinstance(record["timestamp"], str):
             err = "Invalid 'timestamp' value"
-            raise ValueError(err)
+            raise TypeError(err)
 
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)

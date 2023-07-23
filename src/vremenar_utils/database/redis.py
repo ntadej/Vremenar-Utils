@@ -48,8 +48,8 @@ class BatchedRedis:
 
     def process(
         self,
-        pipeline: "RedisPipeline[str]",
-        item: Any,  # noqa: ANN401
+        pipeline: "RedisPipeline[str]",  # noqa: ARG002
+        item: Any,  # noqa: ANN401, ARG002
     ) -> None:
         """Process items in queue."""
         err = "BatchedRedis needs to be subclassed and process implemented"

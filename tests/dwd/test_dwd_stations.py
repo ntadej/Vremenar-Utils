@@ -19,8 +19,6 @@ def test_stations(env: dict[str, str]) -> None:
         suffix=".csv",
         prefix="NEW_DWD_",
     ) as temporary_file_new:
-        print(temporary_file.name)
-        print(temporary_file_new.name)
         result = runner.invoke(
             application,
             ["dwd-stations", temporary_file.name, temporary_file_new.name],
@@ -42,8 +40,6 @@ def test_stations_local(env: dict[str, str]) -> None:
         suffix=".csv",
         prefix="NEW_DWD_",
     ) as temporary_file_new:
-        print(temporary_file.name)
-        print(temporary_file_new.name)
         result = runner.invoke(
             application,
             [
@@ -69,6 +65,4 @@ def test_stations_store(env: dict[str, str]) -> None:
         env=env,
         catch_exceptions=False,
     )
-    print(result.stdout)
-    print(result.exception)
     assert result.exit_code == 0

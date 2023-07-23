@@ -21,13 +21,10 @@ def current_stations() -> list[str]:
     if not data:  # pragma: no cover
         return []
 
-    stations: list[str] = []
     bytes_io = BytesIO(data)
     with TextIOWrapper(bytes_io, encoding="utf-8") as csvfile:
         csv = reader(csvfile)
-        for row in csv:
-            stations.append(row[0])
-    return stations
+        return [row[0] for row in csv]
 
 
 async def download_current_weather(
@@ -52,34 +49,34 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
     if test_mode:  # pragma: no cover
         stations = [stations[0], stations[-1]]
 
-    async with redis.client() as db:
-        async with BatchedCurrentWeather(db) as batch:
-            for sid in stations:
-                station_id = sid
-                if len(station_id) == 4:
-                    station_id += "_"
-                url = (
-                    "https://opendata.dwd.de/weather/weather_reports/poi/"
-                    f"{station_id}-BEOB.csv"
-                )
+    async with redis.client() as db, BatchedCurrentWeather(db) as batch:
+        for sid in stations:
+            station_id = sid
+            if len(station_id) == 4:
+                station_id += "_"
+            url = (
+                "https://opendata.dwd.de/weather/weather_reports/poi/"
+                f"{station_id}-BEOB.csv"
+            )
 
-                temporary_file = NamedTemporaryFile(
-                    suffix=".csv",
-                    prefix=f"DWD_CURRENT_{station_id}",
-                )
-                await download_current_weather(logger, url, temporary_file)
+            temporary_file = NamedTemporaryFile(
+                suffix=".csv",
+                prefix=f"DWD_CURRENT_{station_id}",
+            )
+            await download_current_weather(logger, url, temporary_file)
 
-                try:
-                    parser = CurrentObservationsParser(
-                        logger,
-                        Path(temporary_file.name),
-                    )
-                    for record in parser.parse():
-                        await batch.add(record)
-                finally:
-                    temporary_file.close()
-
-                logger.info(
-                    "Done getting current weather data for station %s",
-                    station_id,
+            try:
+                parser = CurrentObservationsParser(
+                    logger,
+                    Path(temporary_file.name),
+                    without_station_id_converter=True,
                 )
+                for record in parser.parse():
+                    await batch.add(record)
+            finally:
+                temporary_file.close()
+
+            logger.info(
+                "Done getting current weather data for station %s",
+                station_id,
+            )

@@ -121,7 +121,7 @@ class MeteoAlarmParser:
             for translation in translations:
                 try:
                     lang = LanguageID(translation.get("language")[:2])
-                except ValueError:  # pragma: no cover
+                except ValueError:  # pragma: no cover # noqa: PERF203
                     continue
                 self.parse_alert_info(alert, translation)
                 self.parse_alert_translations(alert, lang, translation)

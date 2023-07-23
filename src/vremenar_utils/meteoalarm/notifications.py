@@ -31,32 +31,31 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
     existing_alerts: set[str] = await get_alert_ids(country)
     logger.info("Read %d existing alerts from the database", len(existing_alerts))
 
-    async with redis.client() as db:
-        async with BatchedNotifyOnset(db, country) as batch:
-            with BatchNotify(logger) as notifier:
-                for alert_id in existing_alerts:
-                    alert = await get_alert_info(country, alert_id)
-                    if int(alert["notifications"]["onset"]):
-                        continue
+    async with redis.client() as db, BatchedNotifyOnset(db, country) as batch:
+        with BatchNotify(logger) as notifier:
+            for alert_id in existing_alerts:
+                alert = await get_alert_info(country, alert_id)
+                if int(alert["notifications"]["onset"]):
+                    continue
 
-                    alert_onset = datetime.fromtimestamp(
-                        float(alert["info"]["onset"][:-3]),
-                        tz=timezone.utc,
-                    )
-                    alert_expires = datetime.fromtimestamp(
-                        float(alert["info"]["expires"][:-3]),
-                        tz=timezone.utc,
-                    )
-                    if alert_onset > datetime.now(tz=timezone.utc):
-                        continue
-                    if alert_expires < datetime.now(tz=timezone.utc):
-                        continue
+                alert_onset = datetime.fromtimestamp(
+                    float(alert["info"]["onset"][:-3]),
+                    tz=timezone.utc,
+                )
+                alert_expires = datetime.fromtimestamp(
+                    float(alert["info"]["expires"][:-3]),
+                    tz=timezone.utc,
+                )
+                if alert_onset > datetime.now(tz=timezone.utc):
+                    continue
+                if alert_expires < datetime.now(tz=timezone.utc):
+                    continue
 
-                    logger.debug("Alert ID: %s", alert_id)
+                logger.debug("Alert ID: %s", alert_id)
 
-                    send_start_notification(logger, notifier, alert, areas)
+                send_start_notification(logger, notifier, alert, areas)
 
-                    await batch.add(alert_id)
+                await batch.add(alert_id)
 
 
 def send_start_notification(
@@ -89,13 +88,13 @@ def send_start_notification(
                 expires=alert_expires,
                 badge=1,
             )
-            topics = []
-            for severity in alert_severity.topics():
-                topics.append(f"{language.value}_{severity}_{area_code}")
+            topics = [
+                f"{language.value}_{severity}_{area_code}"
+                for severity in alert_severity.topics()
+            ]
             prepare_message(message, topics=topics, logger=logger)
             notifier.send(message)
 
 
-async def send_forecast_notifications(logger: Logger, country: CountryID) -> None:
-    """Send notifications with daily alert forecasts."""
-    pass
+# async def send_forecast_notifications(logger: Logger, country: CountryID) -> None:
+#     """Send notifications with daily alert forecasts."""

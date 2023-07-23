@@ -85,13 +85,10 @@ def load_stations_with_reports() -> list[str]:
     if not data:  # pragma: no cover
         return []
 
-    stations: list[str] = []
     bytes_data = BytesIO(data)
     with TextIOWrapper(bytes_data, encoding="utf-8") as csvfile:
         csv = reader(csvfile, dialect="excel")
-        for row in csv:
-            stations.append(row[0])
-    return stations
+        return [row[0] for row in csv]
 
 
 def load_stations_included() -> list[str]:
@@ -100,13 +97,10 @@ def load_stations_included() -> list[str]:
     if not data:  # pragma: no cover
         return []
 
-    stations: list[str] = []
     bytes_data = BytesIO(data)
     with TextIOWrapper(bytes_data, encoding="utf-8") as csvfile:
         csv = reader(csvfile, dialect="excel")
-        for row in csv:
-            stations.append(row[0])
-    return stations
+        return [row[0] for row in csv]
 
 
 def load_stations_ignored() -> list[str]:
@@ -115,13 +109,10 @@ def load_stations_ignored() -> list[str]:
     if not data:  # pragma: no cover
         return []
 
-    stations: list[str] = []
     bytes_data = BytesIO(data)
     with TextIOWrapper(bytes_data, encoding="utf-8") as csvfile:
         csv = reader(csvfile, dialect="excel")
-        for row in csv:
-            stations.append(row[0])
-    return stations
+        return [row[0] for row in csv]
 
 
 async def process_mosmix_stations(

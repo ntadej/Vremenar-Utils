@@ -20,16 +20,17 @@ async def get_alert_info(
 ) -> dict[str, dict[str, str]]:
     """Get alert info from ID."""
     alert = {}
-    async with redis.client() as connection:
-        async with connection.pipeline(transaction=False) as pipeline:
-            pipeline.hgetall(f"alert:{country.value}:{alert_id}:info")
-            pipeline.smembers(f"alert:{country.value}:{alert_id}:areas")
-            for language in LanguageID:
-                pipeline.hgetall(
-                    f"alert:{country.value}:{alert_id}:localised_{language.value}",
-                )
-            pipeline.hgetall(f"alert:{country.value}:{alert_id}:notifications")
-            response = await pipeline.execute()
+    async with redis.client() as connection, connection.pipeline(
+        transaction=False,
+    ) as pipeline:
+        pipeline.hgetall(f"alert:{country.value}:{alert_id}:info")
+        pipeline.smembers(f"alert:{country.value}:{alert_id}:areas")
+        for language in LanguageID:
+            pipeline.hgetall(
+                f"alert:{country.value}:{alert_id}:localised_{language.value}",
+            )
+        pipeline.hgetall(f"alert:{country.value}:{alert_id}:notifications")
+        response = await pipeline.execute()
     alert["info"] = response[0]
     alert["areas"] = response[1]
     for i, language in enumerate(LanguageID):

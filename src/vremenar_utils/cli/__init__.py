@@ -2,6 +2,7 @@
 import asyncio
 import sys
 from pathlib import Path
+from typing import Annotated
 
 import typer
 
@@ -28,21 +29,22 @@ def version_callback(value: bool) -> None:
 
 @application.callback()
 def main(
-    version: bool = typer.Option(  # noqa: B008
-        None,
-        "--version",
-        help="Show version and exit.",
-        callback=version_callback,
-        is_eager=True,
-    ),
+    version: Annotated[  # noqa: ARG001
+        bool,
+        typer.Option(
+            "--version",
+            help="Show version and exit.",
+            callback=version_callback,
+            is_eager=True,
+        ),
+    ] = False,
 ) -> None:
     """Vremenar Utilities CLI app."""
-    pass
 
 
 @application.command()
 def stations_store(
-    country: CountryID = typer.Argument(..., help="Country"),  # noqa: B008
+    country: Annotated[CountryID, typer.Argument(..., help="Country")],
 ) -> None:
     """Load stations into the database."""
     logger = setup_logger()
@@ -68,18 +70,14 @@ def stations_store(
 
 @application.command()
 def dwd_mosmix(
-    local_source: bool = typer.Option(  # noqa: B008
-        False,
-        "--local-source",
-        help="Use local 'MOSMIX_S_LATEST_240.kmz'.",
-        show_default=False,
-    ),
-    local_stations: bool = typer.Option(  # noqa: B008
-        False,
-        "--local-stations",
-        help="Use local stations database.",
-        show_default=False,
-    ),
+    local_source: Annotated[
+        bool,
+        typer.Option("--local-source", help="Use local 'MOSMIX_S_LATEST_240.kmz'."),
+    ] = False,
+    local_stations: Annotated[
+        bool,
+        typer.Option("--local-stations", help="Use local stations database."),
+    ] = False,
 ) -> None:
     """DWD weather MOSMIX data caching."""
     logger = setup_logger("dwd_mosmix")
@@ -103,12 +101,10 @@ def dwd_mosmix(
 
 @application.command()
 def dwd_current(
-    test_mode: bool = typer.Option(  # noqa: B008
-        False,
-        "--test-mode",
-        help="Only run as a test on a few stations.",
-        show_default=False,
-    ),
+    test_mode: Annotated[
+        bool,
+        typer.Option("--test-mode", help="Only run as a test on a few stations."),
+    ] = False,
 ) -> None:
     """DWD current weather data caching."""
     logger = setup_logger("dwd_current")
@@ -128,17 +124,15 @@ def dwd_current(
 
 @application.command()
 def dwd_stations(
-    output: Path = typer.Argument(default="DWD.csv", help="Output file"),  # noqa: B008
-    output_new: Path = typer.Argument(  # noqa: B008
-        default="DWD.NEW.csv",
-        help="Output file for new stations",
-    ),
-    local_source: bool = typer.Option(  # noqa: B008
-        False,
-        "--local-source",
-        help="Use local 'MOSMIX_S_LATEST_240.kmz'.",
-        show_default=False,
-    ),
+    output: Annotated[Path, typer.Argument(help="Output file")] = Path("DWD.csv"),
+    output_new: Annotated[
+        Path,
+        typer.Argument(help="Output file for new stations"),
+    ] = Path("DWD.NEW.csv"),
+    local_source: Annotated[
+        bool,
+        typer.Option("--local-source", help="Use local 'MOSMIX_S_LATEST_240.kmz'."),
+    ] = False,
 ) -> None:
     """DWD process stations."""
     logger = setup_logger()
@@ -152,15 +146,12 @@ def dwd_stations(
 
 @application.command()
 def alerts_areas(
-    country: CountryID = typer.Argument(..., help="Country"),  # noqa: B008
-    output: Path = typer.Argument(  # noqa: B008
-        default="areas.json",
-        help="Output file",
-    ),
-    output_matches: Path = typer.Argument(  # noqa: B008
-        default="matches.json",
-        help="Output file for area-station matches",
-    ),
+    country: Annotated[CountryID, typer.Argument(..., help="Country")],
+    output: Annotated[Path, typer.Argument(help="Output file")] = Path("areas.json"),
+    output_matches: Annotated[
+        Path,
+        typer.Argument(help="Output file for area-station matches"),
+    ] = Path("matches.json"),
 ) -> None:
     """Load MeteoAlarm areas."""
     logger = setup_logger()
@@ -181,7 +172,7 @@ def alerts_areas(
 
 @application.command()
 def alerts_get(
-    country: CountryID = typer.Argument(..., help="Country"),  # noqa: B008
+    country: Annotated[CountryID, typer.Argument(..., help="Country")],
 ) -> None:
     """Load MeteoAlarm alerts."""
     logger = setup_logger("meteoalarm")
@@ -200,13 +191,11 @@ def alerts_get(
 
 @application.command()
 def alerts_notify(
-    country: CountryID = typer.Argument(..., help="Country"),  # noqa: B008
-    forecast: bool = typer.Option(  # noqa: B008
-        False,
-        "--forecast",
-        help="Send forecast notification.",
-        show_default=False,
-    ),
+    country: Annotated[CountryID, typer.Argument(..., help="Country")],
+    forecast: Annotated[
+        bool,
+        typer.Option("--forecast", help="Send forecast notification."),
+    ] = False,
 ) -> None:
     """Notify MeteoAlarm alerts."""
     logger = setup_logger("meteoalarm_notify")
@@ -219,12 +208,13 @@ def alerts_notify(
     database_info(logger)
 
     from vremenar_utils.meteoalarm.notifications import (
-        send_forecast_notifications,
+        # send_forecast_notifications,
         send_start_notifications,
     )
 
     if forecast:
-        asyncio.run(send_forecast_notifications(logger, country))
+        # asyncio.run(send_forecast_notifications(logger, country))
+        pass
     else:
         asyncio.run(send_start_notifications(logger, country))
 

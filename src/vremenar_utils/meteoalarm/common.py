@@ -1,9 +1,12 @@
 """MeteoAlarm common utils."""
-from datetime import datetime
 from enum import Enum
 from json import dumps
+from typing import TYPE_CHECKING
 
 from vremenar_utils.cli.common import LanguageID
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class AlertType(Enum):
@@ -126,11 +129,11 @@ class AlertArea:
             or not isinstance(dictionary["description"], str)
         ):
             err = "'code' and 'name' need to be strings"
-            raise ValueError(err)
+            raise TypeError(err)
 
         if not isinstance(dictionary["polygons"], list):
             err = "'polygons' needs to be a list of lists of floats"
-            raise ValueError(err)
+            raise TypeError(err)
 
         return cls(
             dictionary["code"],
@@ -181,8 +184,8 @@ class AlertInfo:
             "severity": self.severity.value,
             "certainty": self.certainty.value,
             "response_type": self.response_type.value,
-            "onset": f"{str(int(self.onset.timestamp()))}000",
-            "expires": f"{str(int(self.expires.timestamp()))}000",
+            "onset": f"{int(self.onset.timestamp())!s}000",
+            "expires": f"{int(self.expires.timestamp())!s}000",
         }
 
     def to_localised_dict(self, language: LanguageID) -> dict[str, str]:

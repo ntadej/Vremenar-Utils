@@ -166,11 +166,7 @@ def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:
     with TextIOWrapper(bytes_data, encoding="utf-8") as file:
         areas_dict = load(file)
 
-    areas: list[AlertArea] = []
-    for area_obj in areas_dict:
-        areas.append(AlertArea.from_dict(area_obj))
-
-    return areas
+    return [AlertArea.from_dict(area_obj) for area_obj in areas_dict]
 
 
 def build_meteoalarm_area_description_map(areas: list[AlertArea]) -> dict[str, str]:

@@ -4,7 +4,7 @@ from collections.abc import Callable
 from copy import copy
 from logging import Logger
 from sys import stdout
-from typing import Any, Literal
+from typing import Any, ClassVar, Literal
 
 from click import style
 from typer import colors
@@ -19,7 +19,7 @@ class ColourizedFormatter(logging.Formatter):
       for formatting the output, instead of the plain text message.
     """
 
-    level_name_colors: dict[int, Callable[[Any], str]] = {
+    level_name_colors: ClassVar[dict[int, Callable[[Any], str]]] = {
         logging.DEBUG: lambda level_name: style(str(level_name), colors.CYAN),
         logging.INFO: lambda level_name: style(str(level_name), colors.GREEN),
         logging.WARNING: lambda level_name: style(str(level_name), colors.YELLOW),
