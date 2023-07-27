@@ -69,6 +69,35 @@ def stations_store(
 
 
 @application.command()
+def arso_weather(
+    local_stations: Annotated[
+        bool,
+        typer.Option("--local-stations", help="Use local stations database."),
+    ] = False,
+) -> None:
+    """ARSO weather conditions data caching."""
+    logger = setup_logger("arso_weather")
+
+    message = "Processing ARSO weather conditions data for Slovenia"
+    color_message = (
+        f'Processing {style("ARSO weather conditions", fg=colors.CYAN)}'
+        'data for Slovenia'
+    )
+    logger.info(message, extra={"color_message": color_message})
+
+    database_info(logger)
+
+    from vremenar_utils.arso.weather import process_weather_data
+
+    asyncio.run(
+        process_weather_data(
+            logger,
+            local_stations=local_stations,
+        ),
+    )
+
+
+@application.command()
 def dwd_mosmix(
     local_source: Annotated[
         bool,
