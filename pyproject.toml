@@ -5,16 +5,16 @@ description = ""
 authors = ["Tadej Novak <tadej@tano.si>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 Babel = "^2.12.1"
 firebase-admin = "^6.2.0"
 geopandas = "^0.13.2"
 httpx = "^0.24.1"
 lxml = "^4.9.3"
 parsel = "^1.8.1"
-redis = {extras = ["hiredis"], version = "^4.6.0"}
+redis = { extras = ["hiredis"], version = "^4.6.0" }
 Shapely = "^2.0.1"
-typer = {extras = ["all"], version = "^0.9.0"}
+typer = { extras = ["all"], version = "^0.9.0" }
 wheel = "^0.41.0"
 xmltodict = "^0.13.0"
 
@@ -23,7 +23,7 @@ vremenar_utils = 'vremenar_utils.cli:application'
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
-coverage = {extras = ["toml"], version = "^7.2.7"}
+coverage = { extras = ["toml"], version = "^7.2.7" }
 mypy = "^1.4.1"
 pre-commit = "^3.3.3"
 pre-commit-hooks = "^4.4.0"
@@ -37,7 +37,7 @@ types-redis = "^4.6.0.3"
 
 [tool.black]
 line-length = 88
-target-version = ['py310', 'py311']
+target-version = ['py311']
 include = '\.pyi?$'
 skip-string-normalization = true
 exclude = '''
@@ -62,10 +62,7 @@ exclude_lines = [
   "if __name__ == .__main__.:",
 ]
 ignore_errors = true
-omit = [
-  "src/vremenar_utils/tests/*",
-  "tests/*",
-]
+omit = ["src/vremenar_utils/tests/*", "tests/*"]
 
 [tool.ruff]
 select = [
@@ -143,9 +140,7 @@ warn_unused_ignores = true
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--ignore=src/vremenar/tests/ --cov=vremenar_utils --cov-config=.coveragerc --cov-report=term-missing:skip-covered --cov-report xml --cov-report html:coverage"
-testpaths = [
-  "tests",
-]
+testpaths = ["tests"]
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]

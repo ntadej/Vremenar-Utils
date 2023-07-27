@@ -661,13 +661,13 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0.dev0)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.94.0"
+version = "2.95.0"
 description = "Google API Client Library for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-api-python-client-2.94.0.tar.gz", hash = "sha256:4ff598b7b83d5c0c5582927e74947286070b5b21a13e1bb64409fd92e45bfb26"},
-    {file = "google_api_python_client-2.94.0-py2.py3-none-any.whl", hash = "sha256:28b2f0c2c6380a119e2efd7ecd28fa9d313becf37d71f00bfa49332428e071b4"},
+    {file = "google-api-python-client-2.95.0.tar.gz", hash = "sha256:d2731ede12f79e53fbe11fdb913dfe986440b44c0a28431c78a8ec275f4c1541"},
+    {file = "google_api_python_client-2.95.0-py2.py3-none-any.whl", hash = "sha256:a8aab2da678f42a01f2f52108f787fef4310f23f9dd917c4e64664c3f0c885ba"},
 ]
 
 [package.dependencies]
@@ -2382,23 +2382,23 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.24.1"
+version = "20.24.2"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "virtualenv-20.24.1-py3-none-any.whl", hash = "sha256:01aacf8decd346cf9a865ae85c0cdc7f64c8caa07ff0d8b1dfc1733d10677442"},
-    {file = "virtualenv-20.24.1.tar.gz", hash = "sha256:2ef6a237c31629da6442b0bcaa3999748108c7166318d1f55cc9f8d7294e97bd"},
+    {file = "virtualenv-20.24.2-py3-none-any.whl", hash = "sha256:43a3052be36080548bdee0b42919c88072037d50d56c28bd3f853cbe92b953ff"},
+    {file = "virtualenv-20.24.2.tar.gz", hash = "sha256:fd8a78f46f6b99a67b7ec5cf73f92357891a7b3a40fd97637c27f854aae3b9e0"},
 ]
 
 [package.dependencies]
-distlib = ">=0.3.6,<1"
-filelock = ">=3.12,<4"
-platformdirs = ">=3.5.1,<4"
+distlib = ">=0.3.7,<1"
+filelock = ">=3.12.2,<4"
+platformdirs = ">=3.9.1,<4"
 
 [package.extras]
 docs = ["furo (>=2023.5.20)", "proselint (>=0.13)", "sphinx (>=7.0.1)", "sphinx-argparse (>=0.4)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=23.6)"]
-test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.3.1)", "pytest-env (>=0.8.1)", "pytest-freezer (>=0.4.6)", "pytest-mock (>=3.10)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "setuptools (>=67.8)", "time-machine (>=2.9)"]
+test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.4)", "pytest-env (>=0.8.2)", "pytest-freezer (>=0.4.8)", "pytest-mock (>=3.11.1)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "setuptools (>=68)", "time-machine (>=2.10)"]
 
 [[package]]
 name = "w3lib"
