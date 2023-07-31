@@ -2,14 +2,22 @@
 import asyncio
 import sys
 from pathlib import Path
-from typing import Annotated
+from sys import argv
+from typing import Annotated, Optional
 
 import typer
 
 from vremenar_utils import __version__
-from vremenar_utils.database.redis import database_info
+from vremenar_utils.database.redis import DatabaseType, init_database
 
 from .common import CountryID
+from .config import (
+    TyperState,
+    config_missing,
+    generate_empty_config,
+    init_config,
+    print_config_file,
+)
 from .logging import colors, setup_logger, style
 
 if not sys.warnoptions:  # pragma: no cover
@@ -17,7 +25,10 @@ if not sys.warnoptions:  # pragma: no cover
 
     warnings.simplefilter("default")
 
+DatabaseAnnotatedType = Optional[DatabaseType]  # noqa: UP007
+
 application = typer.Typer()
+state = TyperState()
 
 
 def version_callback(value: bool) -> None:
@@ -29,6 +40,33 @@ def version_callback(value: bool) -> None:
 
 @application.callback()
 def main(
+    ctx: typer.Context,
+    config: Annotated[
+        Path,
+        typer.Option(
+            "-c",
+            "--config",
+            envvar="VREMENAR_UTILS_CONFIG",
+            help="Configuration file.",
+        ),
+    ] = Path(
+        "config.yml",
+    ),
+    database: Annotated[
+        DatabaseAnnotatedType,
+        typer.Option(
+            "--database",
+            envvar="VREMENAR_DATABASE",
+            help="Choose which database to use.",
+        ),
+    ] = None,
+    debug: Annotated[
+        bool,
+        typer.Option(
+            "--debug",
+            help="Run with debug printouts.",
+        ),
+    ] = False,
     version: Annotated[  # noqa: ARG001
         bool,
         typer.Option(
@@ -40,6 +78,29 @@ def main(
     ] = False,
 ) -> None:
     """Vremenar Utilities CLI app."""
+    if ctx.invoked_subcommand != "config" and not config.exists():
+        if "--help" in argv:
+            return
+        config_missing(config)
+
+    state.config_file = config
+    state.debug = debug
+    state.database_type = database
+
+
+@application.command()
+def config(
+    generate: Annotated[
+        bool,
+        typer.Option("--generate", help="Generate empty configuration."),
+    ] = False,
+) -> None:
+    """Print or generate configuration."""
+    if generate:
+        generate_empty_config(state.config_file)
+    else:
+        print_config_file(state.config_file)
+        init_config(state)
 
 
 @application.command()
@@ -47,14 +108,15 @@ def stations_store(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
 ) -> None:
     """Load stations into the database."""
-    logger = setup_logger()
+    config = init_config(state)
+    logger = setup_logger(config)
 
     base_message = "Storing stations into database for country"
     message = f"{base_message} %s"
     color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
     logger.info(message, country.label(), extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     if country is CountryID.Germany:
         from vremenar_utils.dwd.database import store_stations as dwd_store_stations
@@ -76,7 +138,8 @@ def arso_weather(
     ] = False,
 ) -> None:
     """ARSO weather conditions data caching."""
-    logger = setup_logger("arso_weather")
+    config = init_config(state)
+    logger = setup_logger(config, "arso_weather")
 
     message = "Processing ARSO weather conditions data for Slovenia"
     color_message = (
@@ -85,7 +148,7 @@ def arso_weather(
     )
     logger.info(message, extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     from vremenar_utils.arso.weather import process_weather_data
 
@@ -109,13 +172,14 @@ def dwd_mosmix(
     ] = False,
 ) -> None:
     """DWD weather MOSMIX data caching."""
-    logger = setup_logger("dwd_mosmix")
+    config = init_config(state)
+    logger = setup_logger(config, "dwd_mosmix")
 
     message = "Processing MOSMIX data for Germany"
     color_message = f'Processing {style("MOSMIX", fg=colors.CYAN)} data for Germany'
     logger.info(message, extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     from vremenar_utils.dwd.forecast import process_mosmix
 
@@ -136,7 +200,8 @@ def dwd_current(
     ] = False,
 ) -> None:
     """DWD current weather data caching."""
-    logger = setup_logger("dwd_current")
+    config = init_config(state)
+    logger = setup_logger(config, "dwd_current")
 
     message = "Processing current weather data for Germany"
     color_message = (
@@ -144,7 +209,7 @@ def dwd_current(
     )
     logger.info(message, extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     from vremenar_utils.dwd.current import current_weather
 
@@ -164,7 +229,8 @@ def dwd_stations(
     ] = False,
 ) -> None:
     """DWD process stations."""
-    logger = setup_logger()
+    config = init_config(state)
+    logger = setup_logger(config)
 
     from vremenar_utils.dwd.stations import process_mosmix_stations
 
@@ -183,14 +249,15 @@ def alerts_areas(
     ] = Path("matches.json"),
 ) -> None:
     """Load MeteoAlarm areas."""
-    logger = setup_logger()
+    config = init_config(state)
+    logger = setup_logger(config)
 
     base_message = "Processing weather alerts areas for country"
     message = f"{base_message} %s"
     color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
     logger.info(message, country.label(), extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     from vremenar_utils.meteoalarm.areas import process_meteoalarm_areas
 
@@ -204,14 +271,15 @@ def alerts_get(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
 ) -> None:
     """Load MeteoAlarm alerts."""
-    logger = setup_logger("meteoalarm")
+    config = init_config(state)
+    logger = setup_logger(config, "meteoalarm")
 
     base_message = "Processing weather alerts for country"
     message = f"{base_message} %s"
     color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
     logger.info(message, country.label(), extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     from vremenar_utils.meteoalarm.steering import get_alerts
 
@@ -227,14 +295,15 @@ def alerts_notify(
     ] = False,
 ) -> None:
     """Notify MeteoAlarm alerts."""
-    logger = setup_logger("meteoalarm_notify")
+    config = init_config(state)
+    logger = setup_logger(config, "meteoalarm_notify")
 
     base_message = "Processing weather alerts notifications for country"
     message = f"{base_message} %s"
     color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
     logger.info(message, country.label(), extra={"color_message": color_message})
 
-    database_info(logger)
+    init_database(logger, config)
 
     from vremenar_utils.meteoalarm.notifications import (
         # send_forecast_notifications,

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from babel.dates import format_datetime
 
 from vremenar_utils.cli.common import CountryID, LanguageID
-from vremenar_utils.cli.logging import Logger
+from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import redis
 from vremenar_utils.notifications import BatchNotify, make_message, prepare_message
 
@@ -32,7 +32,8 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
     logger.info("Read %d existing alerts from the database", len(existing_alerts))
 
     async with redis.client() as db, BatchedNotifyOnset(db, country) as batch:
-        with BatchNotify(logger) as notifier:
+        with BatchNotify(logger) as notifier, progress_bar(transient=True) as progress:
+            task = progress.add_task("Processing", total=len(existing_alerts))
             for alert_id in existing_alerts:
                 alert = await get_alert_info(country, alert_id)
                 if int(alert["notifications"]["onset"]):
@@ -51,11 +52,13 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
                 if alert_expires < datetime.now(tz=timezone.utc):
                     continue
 
-                logger.debug("Alert ID: %s", alert_id)
+                logger.info("Alert ID: %s", alert_id)
 
                 send_start_notification(logger, notifier, alert, areas)
 
                 await batch.add(alert_id)
+
+                progress.update(task, advance=1)
 
 
 def send_start_notification(

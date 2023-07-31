@@ -1,6 +1,6 @@
 """MeteoAlarm steering code."""
 from vremenar_utils.cli.common import CountryID
-from vremenar_utils.cli.logging import Logger
+from vremenar_utils.cli.logging import Logger, progress_bar
 
 from .areas import build_meteoalarm_area_description_map, load_meteoalarm_areas
 from .database import (
@@ -25,12 +25,15 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
     areas_list = load_meteoalarm_areas(country)
     areas_desc_map = build_meteoalarm_area_description_map(areas_list)
 
-    for alert_id, alert_url in new_alerts:
-        alert = await parser.parse_cap(alert_id, alert_url, areas_desc_map)
-        if not alert or not alert.areas:
-            continue
-        await store_alert(country, alert)
-        counter += 1
+    with progress_bar(transient=True) as progress:
+        task = progress.add_task("Processing", total=len(new_alerts))
+        for alert_id, alert_url in new_alerts:
+            alert = await parser.parse_cap(alert_id, alert_url, areas_desc_map)
+            if not alert or not alert.areas:
+                continue
+            await store_alert(country, alert)
+            counter += 1
+            progress.update(task, advance=1)
 
     logger.info("Added %d new alerts", counter)
 

@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger
 
 firebase_app = initialize_app()
+# check for valid config
+firebase_app.credential.get_credential()
 
 
 def make_message(  # noqa: PLR0913

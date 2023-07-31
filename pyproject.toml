@@ -12,7 +12,10 @@ geopandas = "^0.13.2"
 httpx = "^0.24.1"
 lxml = "^4.9.3"
 parsel = "^1.8.1"
+python-crontab = "^3.0.0"
+pyyaml = "^6.0.1"
 redis = { extras = ["hiredis"], version = "^4.6.0" }
+rich = "^13.5.1"
 Shapely = "^2.0.1"
 typer = { extras = ["all"], version = "^0.9.0" }
 wheel = "^0.41.0"
@@ -33,6 +36,7 @@ pytest-forked = "^1.6.0"
 pyupgrade = "^3.9.0"
 ruff = "~0.0.280"
 types-python-dateutil = "^2.8.19.14"
+types-pyyaml = "^6.0.12.11"
 types-redis = "^4.6.0.3"
 
 [tool.black]

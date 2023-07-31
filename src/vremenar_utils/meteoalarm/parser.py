@@ -154,6 +154,7 @@ class MeteoAlarmParser:
         self.parse_alert_areas(alert, areas, areas_desc_map)
 
         # log the summary
+        self.logger.info("Parsed alert: %s", alert.id)
         self.logger.debug(alert)
         self.logger.debug(alert.areas)
         return alert

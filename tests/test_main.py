@@ -21,3 +21,26 @@ def test_version(env: dict[str, str]) -> None:
 
     result = runner.invoke(application, ["--version"], env=env, catch_exceptions=False)
     assert result.exit_code == 0
+
+
+@pytest.mark.forked()
+def test_config_generate(env: dict[str, str]) -> None:
+    """Test config generation."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(
+        application,
+        ["config", "--generate"],
+        env=env,
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0
+
+
+@pytest.mark.forked()
+def test_config(env: dict[str, str]) -> None:
+    """Test config."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(application, ["config"], env=env, catch_exceptions=False)
+    assert result.exit_code == 0

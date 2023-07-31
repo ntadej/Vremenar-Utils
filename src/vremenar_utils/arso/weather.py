@@ -5,13 +5,37 @@ from typing import Any
 from httpx import AsyncClient
 
 from vremenar_utils.cli.common import CountryID
-from vremenar_utils.cli.logging import Logger
+from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import BatchedRedis, redis
 from vremenar_utils.database.stations import load_stations
 
 from . import BASEURL
 from .database import BatchedWeather
 from .stations import load_stations as load_local_stations
+
+data_ids = [
+    "current",
+    "d1h00",
+    "d1h06",
+    "d1h12",
+    "d1h18",
+    "d2h00",
+    "d2h06",
+    "d2h12",
+    "d2h18",
+    "d3h00",
+    "d3h06",
+    "d3h12",
+    "d3h18",
+    "d4h00",
+    "d4",
+    "d5",
+    "d6",
+    "d7",
+    "d8",
+    "d9",
+    "d10",
+]
 
 
 def weather_data_url(data_id: str) -> str:
@@ -63,6 +87,8 @@ def parse_feature(
         temperature: float = float(timeline["txsyn"])
         temperature_low: float | None = float(timeline["tnsyn"])
     else:
+        if timeline["t"] == "":
+            return None
         temperature = float(timeline["t"])
         temperature_low = None
     humidity: float | None = float(timeline["rh"]) if timeline["rh"] else None
@@ -92,7 +118,7 @@ async def get_weather_data(
     """Get weather conditions data from ID."""
     url: str = weather_data_url(data_id)
 
-    logger.debug("ARSO URL: %s", url)
+    logger.info("ARSO URL for %s: %s", data_id, url)
 
     async with AsyncClient() as client:
         response = await client.get(url)
@@ -118,7 +144,7 @@ async def get_weather_data(
 async def process_weather_data(
     logger: Logger,
     local_stations: bool | None = False,
-) -> str:
+) -> None:
     """Cache ARSO weather condition data."""
     # load stations to use
     station_ids: list[str] = []
@@ -130,29 +156,10 @@ async def process_weather_data(
         station_ids = list(stations_dict.keys())
 
     async with redis.client() as db, BatchedWeather(db) as batch:
-        for data_id in [
-            "current",
-            "d1h00",
-            "d1h06",
-            "d1h12",
-            "d1h18",
-            "d2h00",
-            "d2h06",
-            "d2h12",
-            "d2h18",
-            "d3h00",
-            "d3h06",
-            "d3h12",
-            "d3h18",
-            "d4h00",
-            "d4",
-            "d5",
-            "d6",
-            "d7",
-            "d8",
-            "d9",
-            "d10",
-        ]:
-            await get_weather_data(logger, batch, station_ids, data_id)
+        with progress_bar(transient=True) as progress:
+            task = progress.add_task("Processing", total=len(data_ids))
+            for data_id in data_ids:
+                await get_weather_data(logger, batch, station_ids, data_id)
+                progress.update(task, advance=1)
 
-    return "Processed all data"
+    logger.info("Processed all data")

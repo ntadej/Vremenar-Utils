@@ -1,28 +1,38 @@
 """Redis utilities."""
 from __future__ import annotations
 
-from os import getenv
+from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 from redis.asyncio import Redis, from_url
 from redis.asyncio.client import Pipeline as RedisPipeline
 
 if TYPE_CHECKING:
+    from vremenar_utils.cli.config import Configuration
     from vremenar_utils.cli.logging import Logger
 
-db_env: str = getenv("VREMENAR_DATABASE", "staging")
-database: int = {
-    "staging": 0,
-    "production": 1,
-    "test": 2,
-}.get(db_env, 0)
-
-redis: Redis[str] = from_url(f"redis://localhost/{database}", decode_responses=True)
+redis: Redis[str]
 
 
-def database_info(logger: Logger) -> None:
-    """Log the database info."""
-    logger.debug("Using %s database with ID %d", db_env, database)
+class DatabaseType(str, Enum):
+    Staging = "staging"
+    Production = "production"
+    Test = "test"
+
+
+def init_database(logger: Logger, config: Configuration) -> None:
+    """Initialize database."""
+    global redis  # noqa: PLW0603
+
+    database: int = {
+        DatabaseType.Staging: 0,
+        DatabaseType.Production: 1,
+        DatabaseType.Test: 2,
+    }.get(config.database_type, 0)
+
+    logger.info("Using %s database with ID %d", config.database_type.value, database)
+
+    redis = from_url(f"redis://localhost/{database}", decode_responses=True)
 
 
 class BatchedRedis:

@@ -15,6 +15,7 @@ from lxml.etree import Element, QName, iterparse  # type: ignore
 from parsel import Selector, SelectorList
 
 from vremenar_utils import __version__
+from vremenar_utils.cli.logging import progress_bar
 
 from .units import (
     celsius_to_kelvin,
@@ -232,11 +233,13 @@ class MOSMIXParserFast(Parser):
         station_ids: list[str],
     ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
-        self.logger.info("Parsing %s", self.path)
+        self.logger.debug("Parsing %s", self.path)
 
         with ZipFile(self.path) as zip_file, zip_file.open(
             zip_file.namelist()[0],
-        ) as file:
+        ) as file, progress_bar(transient=True) as progress:
+            task = progress.add_task("Processing", total=len(station_ids))
+
             timestamps: list[str] = []
             accepted_timestamps: list[str] = []
             placemark = 0
@@ -275,15 +278,16 @@ class MOSMIXParserFast(Parser):
                     )
                     self._clear_element(elem)
                     if records:
-                        self.logger.info("Processed placemark #%s", placemark + 1)
+                        self.logger.debug("Processed placemark #%s", placemark + 1)
                         placemark += 1
+                        progress.update(task, advance=1)
                         yield from self._sanitize_records(records)
 
     def stations(
         self: MOSMIXParserFast,
     ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
-        self.logger.info("Parsing %s", self.path)
+        self.logger.debug("Parsing %s", self.path)
 
         with ZipFile(self.path) as zip_file, zip_file.open(
             zip_file.namelist()[0],
@@ -391,7 +395,7 @@ class MOSMIXParserFast(Parser):
 
         dwd_station_id = None
         if self.station_id_converter:
-            self.station_id_converter.convert_to_dwd(wmo_station_id)
+            dwd_station_id = self.station_id_converter.convert_to_dwd(wmo_station_id)
         base_record.update(
             {
                 "lat": float(lat),

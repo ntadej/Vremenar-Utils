@@ -16,6 +16,7 @@ repos:
           - rich
           - typer
           - types-python-dateutil
+          - types-pyyaml
           - types-redis
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.9.0

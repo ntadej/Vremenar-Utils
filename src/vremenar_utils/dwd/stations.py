@@ -168,7 +168,7 @@ async def process_mosmix_stations(
         output_new,
     )
 
-    logger.info("Processed %d stations!", processed)
+    logger.info("Processed %d stations", processed)
 
 
 def _write_mosmix_stations(

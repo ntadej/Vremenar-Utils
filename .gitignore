@@ -13,5 +13,6 @@ __pycache__
 /coverage
 /coverage.xml
 /playground
+/run
 /version.json
 /tmp

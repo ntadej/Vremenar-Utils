@@ -8,7 +8,7 @@ from typing import IO
 
 from httpx import AsyncClient
 
-from vremenar_utils.cli.logging import Logger
+from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import redis
 
 from .database import BatchedCurrentWeather
@@ -34,7 +34,7 @@ async def download_current_weather(
 ) -> None:
     """Download the mosmix data."""
     logger.info("Downloading current weather data from %s ...", url)
-    logger.info("Temporary file: %s", temporary_file.name)
+    logger.debug("Temporary file: %s", temporary_file.name)
     client = AsyncClient()
     async with client.stream("GET", url) as r:
         async for chunk in r.aiter_raw():
@@ -50,33 +50,39 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
         stations = [stations[0], stations[-1]]
 
     async with redis.client() as db, BatchedCurrentWeather(db) as batch:
-        for sid in stations:
-            station_id = sid
-            if len(station_id) == 4:
-                station_id += "_"
-            url = (
-                "https://opendata.dwd.de/weather/weather_reports/poi/"
-                f"{station_id}-BEOB.csv"
-            )
-
-            temporary_file = NamedTemporaryFile(
-                suffix=".csv",
-                prefix=f"DWD_CURRENT_{station_id}",
-            )
-            await download_current_weather(logger, url, temporary_file)
-
-            try:
-                parser = CurrentObservationsParser(
-                    logger,
-                    Path(temporary_file.name),
-                    without_station_id_converter=True,
+        with progress_bar(transient=True) as progress:
+            task = progress.add_task("Processing", total=len(stations))
+            for sid in stations:
+                station_id = sid
+                if len(station_id) == 4:
+                    station_id += "_"
+                url = (
+                    "https://opendata.dwd.de/weather/weather_reports/poi/"
+                    f"{station_id}-BEOB.csv"
                 )
-                for record in parser.parse():
-                    await batch.add(record)
-            finally:
-                temporary_file.close()
 
-            logger.info(
-                "Done getting current weather data for station %s",
-                station_id,
-            )
+                temporary_file = NamedTemporaryFile(
+                    suffix=".csv",
+                    prefix=f"DWD_CURRENT_{station_id}",
+                )
+                await download_current_weather(logger, url, temporary_file)
+
+                try:
+                    parser = CurrentObservationsParser(
+                        logger,
+                        Path(temporary_file.name),
+                        without_station_id_converter=True,
+                    )
+                    for record in parser.parse():
+                        await batch.add(record)
+                finally:
+                    temporary_file.close()
+
+                logger.info(
+                    "Done getting current weather data for station %s",
+                    station_id,
+                )
+
+                progress.update(task, advance=1)
+
+    logger.info("Processed all data")

@@ -17,7 +17,7 @@ async def process_mosmix(
     logger: Logger,
     local_source: bool | None = False,
     local_stations: bool | None = False,
-) -> str:
+) -> None:
     """Cache DWD MOSMIX data."""
     # load stations to use
     station_ids: list[str] = []
@@ -43,4 +43,4 @@ async def process_mosmix(
     if temporary_file:
         temporary_file.close()
 
-    return "Processed all placemarks"
+    logger.info("Processed all placemarks")
