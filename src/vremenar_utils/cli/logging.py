@@ -1,8 +1,8 @@
 """Common logging setup."""
 from __future__ import annotations
 
-import logging
-from logging import Logger
+from logging import DEBUG, INFO, WARNING, Formatter, Logger, getLogger
+from logging.handlers import RotatingFileHandler
 from typing import TYPE_CHECKING, Any
 
 from click import style
@@ -74,15 +74,20 @@ def download_bar(**kwargs: Any) -> Progress:  # noqa: ANN401
     )
 
 
-def setup_logger(config: Configuration, name: str | None = None) -> logging.Logger:
+def setup_logger(config: Configuration, name: str | None = None) -> Logger:
     """Prepare logger and write the log file."""
     if name:
-        file_formatter = logging.Formatter(
+        file_formatter = Formatter(
             "%(asctime)s %(levelname)-8s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
-        file_path = config.log_path / f"{name}.log"
-        file_handler = logging.FileHandler(file_path, mode="a")
+        file_path = config.log_path / f"{config.mode}_{name}.log"
+        file_handler = RotatingFileHandler(
+            file_path,
+            mode="a",
+            maxBytes=10 * 1024 * 1024,
+            backupCount=3,
+        )
         file_handler.setFormatter(file_formatter)
 
     stream_handler = RichHandler(
@@ -90,16 +95,16 @@ def setup_logger(config: Configuration, name: str | None = None) -> logging.Logg
         log_time_format="%Y-%m-%d %H:%M:%S",
     )
 
-    logger = logging.getLogger()
+    logger = getLogger()
     if name:
         logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
     if config.debug:
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(DEBUG)
     else:
-        logger.setLevel(logging.INFO)
+        logger.setLevel(INFO)
         # Disable logging from other modules
-        logging.getLogger("httpx").setLevel(logging.WARNING)
+        getLogger("httpx").setLevel(WARNING)
 
     return logger
 
