@@ -33,3 +33,11 @@ class LanguageID(str, Enum):
     English = "en"
     German = "de"
     Slovenian = "sl"
+
+
+class DatabaseType(str, Enum):
+    """Database type enum."""
+
+    Staging = "staging"
+    Production = "production"
+    Test = "test"

@@ -7,8 +7,7 @@ from typing import Any
 
 import yaml
 
-from vremenar_utils.database.redis import DatabaseType
-
+from .common import DatabaseType
 from .logging import error_panel, info_panel
 
 
@@ -34,7 +33,7 @@ class Configuration:
         self.database_type: DatabaseType = DatabaseType.Staging
         self.firebase_credentials: Path = Path()
 
-        self.commands: dict[str, dict[str, str]] = {}
+        self.commands: dict[str, dict[str, str | dict[str, str]]] = {}
         self.runitor_enabled: bool = False
         self.runitor_ping_url: str = ""
 
@@ -89,9 +88,11 @@ def generate_empty_config(config_file: Path) -> None:
             "production": "",
         },
         "commands": {
-            "arso-weather": "",
-            "dwd-current": "",
-            "dwd-mosmix": "",
+            "staging": {
+                "arso-weather": "",
+                "dwd-current": "",
+                "dwd-mosmix": "",
+            },
         },
         "runitor": {
             "enabled": False,

@@ -8,9 +8,9 @@ from typing import Annotated, Optional
 import typer
 
 from vremenar_utils import __version__
-from vremenar_utils.database.redis import DatabaseType, init_database
+from vremenar_utils.database.redis import init_database
 
-from .common import CountryID
+from .common import CountryID, DatabaseType
 from .config import (
     TyperState,
     config_missing,

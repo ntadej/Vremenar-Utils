@@ -1,23 +1,18 @@
 """Redis utilities."""
 from __future__ import annotations
 
-from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 from redis.asyncio import Redis, from_url
 from redis.asyncio.client import Pipeline as RedisPipeline
+
+from vremenar_utils.cli.common import DatabaseType
 
 if TYPE_CHECKING:
     from vremenar_utils.cli.config import Configuration
     from vremenar_utils.cli.logging import Logger
 
 redis: Redis[str]
-
-
-class DatabaseType(str, Enum):
-    Staging = "staging"
-    Production = "production"
-    Test = "test"
 
 
 def init_database(logger: Logger, config: Configuration) -> None:

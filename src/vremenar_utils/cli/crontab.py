@@ -5,12 +5,12 @@ from crontab import CronItem, CronTab
 from rich import print
 from rich.prompt import Confirm
 
-from vremenar_utils.database.redis import DatabaseType
-
+from .common import CountryID, DatabaseType
 from .config import Configuration
 from .logging import Logger
 
 COMMAND_LIST: list[str] = ["alerts-update", "arso-weather", "dwd-current", "dwd-mosmix"]
+COMMAND_LIST_PER_COUNTRY: list[str] = ["alerts-update"]
 
 
 def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) -> None:
@@ -32,6 +32,30 @@ def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) 
     else:
         error = f"Unknown command: {command}"
         raise ValueError(error)
+
+
+def setup_command(  # noqa: PLR0913
+    config: Configuration,
+    utils_path: Path,
+    db_type: DatabaseType,
+    command: str,
+    uuid: str,
+    arguments: str = "",
+) -> str:
+    """Prepare crontab command."""
+    runitor_command = ""
+    if config.runitor_enabled:
+        runitor_command = f"runitor -api-url {config.runitor_ping_url} -uuid {uuid} --"
+
+    poetry_command = f"poetry -C {utils_path} run vremenar_utils"
+    command_config = (
+        f"--config {config.path} --database {db_type.value} {command} {arguments}"
+    )
+
+    command_final = f"{runitor_command} nice {poetry_command} {command_config}"
+    command_final = command_final.strip()
+    command_final += " >/dev/null 2>&1"
+    return command_final.strip()
 
 
 def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901, PLR0912
@@ -56,7 +80,7 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
     for db_type_entry, commands_dict in config.commands.items():
         try:
             db_type = DatabaseType(db_type_entry)
-        except ValueError:  # noqa: PERF203
+        except ValueError:
             logger.warning("Unknown database type: %s", db_type_entry)
             continue
 
@@ -70,38 +94,56 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
                 logger.warning("Unknown command: %s", command)
                 continue
 
-            runitor_command = ""
-            if config.runitor_enabled:
-                if not uuid:
-                    logger.warning(
-                        "Command %s does not have UUID set but runitor enabled",
-                        command,
-                    )
+            if command in COMMAND_LIST_PER_COUNTRY:
+                if not isinstance(uuid, dict):
                     continue
 
-                runitor_command = (
-                    f"runitor -api-url {config.runitor_ping_url} -uuid {uuid} --"
-                )
+                for country in CountryID:
+                    if country.value not in uuid:
+                        continue
 
-            poetry_command = f"poetry -C {utils_path} run vremenar_utils"
-            command_config = (
-                f"--config {config.path} --database {db_type.value} {command}"
-            )
+                    command_string = setup_command(
+                        config,
+                        utils_path,
+                        db_type,
+                        command,
+                        uuid[country.value],
+                        country.value,
+                    )
 
-            command_final = (
-                f"{runitor_command} nice {poetry_command} {command_config}".strip()
-            )
+                    if first:
+                        job = cron.new(
+                            command=command_string,
+                            comment=f"Vremenar Utils: {db_type.value}",
+                            pre_comment=True,
+                        )
+                        first = False
+                    else:
+                        job = cron.new(command=command_string)
+                    set_cron_item_interval(job, command, db_type)
 
-            if first:
-                job = cron.new(
-                    command=command_final,
-                    comment=f"Vremenar Utils: {db_type.value}",
-                    pre_comment=True,
-                )
-                first = False
             else:
-                job = cron.new(command=command_final)
-            set_cron_item_interval(job, command, db_type)
+                if not isinstance(uuid, str):
+                    continue
+
+                command_string = setup_command(
+                    config,
+                    utils_path,
+                    db_type,
+                    command,
+                    uuid,
+                )
+
+                if first:
+                    job = cron.new(
+                        command=command_string,
+                        comment=f"Vremenar Utils: {db_type.value}",
+                        pre_comment=True,
+                    )
+                    first = False
+                else:
+                    job = cron.new(command=command_string)
+                set_cron_item_interval(job, command, db_type)
 
     assert cron.crons
     assert cron.lines
