@@ -10,13 +10,25 @@ from vremenar_utils.database.redis import DatabaseType
 from .config import Configuration
 from .logging import Logger
 
+COMMAND_LIST: list[str] = ["alerts-update", "arso-weather", "dwd-current", "dwd-mosmix"]
 
-def set_cron_item_interval(cron: CronItem, command: str) -> None:
+
+def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) -> None:
     """Set cron item interval for a specific command."""
-    if command in ["arso-weather", "dwd-current"]:
-        cron.minute.every(15)  # type: ignore
+    if command in ["alerts-update"]:
+        cron.minute.every(  # type: ignore
+            2 if db_type == DatabaseType.Production else 5,
+        )
+    elif command in ["arso-weather", "dwd-current"]:
+        if db_type == DatabaseType.Production:
+            cron.minute.every(15)  # type: ignore
+        else:
+            cron.minute.on(45)  # type: ignore
     elif command == "dwd-mosmix":
-        cron.minute.on(35)  # type: ignore
+        if db_type == DatabaseType.Production:
+            cron.minute.on(35)  # type: ignore
+        else:
+            cron.minute.on(40)  # type: ignore
     else:
         error = f"Unknown command: {command}"
         raise ValueError(error)
@@ -30,12 +42,15 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
     logger.info("Vremenar Utils path: %s", utils_path)
 
     # remove existing
-    commands_list = ["arso-weather", "dwd-current", "dwd-mosmix"]
     if cron.crons:
-        for job in cron.crons:
-            for command in commands_list:
-                if job.command and command in job.command:
-                    cron.remove(job)
+        to_remove = [
+            job
+            for job in cron.crons
+            for command in COMMAND_LIST
+            if job.command and command in job.command
+        ]
+        for job in to_remove:
+            cron.remove(job)
 
     # add missing jobs
     for db_type_entry, commands_dict in config.commands.items():
@@ -45,8 +60,13 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
             logger.warning("Unknown database type: %s", db_type_entry)
             continue
 
+        if not commands_dict:
+            continue
+
+        first = True
+
         for command, uuid in commands_dict.items():
-            if command not in commands_list:
+            if command not in COMMAND_LIST:
                 logger.warning("Unknown command: %s", command)
                 continue
 
@@ -72,14 +92,24 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
                 f"{runitor_command} nice {poetry_command} {command_config}".strip()
             )
 
-            job = cron.new(command=command_final)
-            set_cron_item_interval(job, command)
+            if first:
+                job = cron.new(
+                    command=command_final,
+                    comment=f"Vremenar Utils: {db_type.value}",
+                    pre_comment=True,
+                )
+                first = False
+            else:
+                job = cron.new(command=command_final)
+            set_cron_item_interval(job, command, db_type)
 
     assert cron.crons
+    assert cron.lines
 
     # print new status
-    for job in cron.crons:
-        logger.info("Crontab job: %s", job)
+    logger.info("Crontab to write:")
+    for line in cron.lines:
+        logger.info("%s", line)
 
     # ask to write changes
     print()
@@ -88,3 +118,4 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
     if confirmation:
         print()
         logger.info("Saving crontab...")
+        cron.write()
