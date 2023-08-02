@@ -2287,6 +2287,17 @@ files = [
 cryptography = ">=35.0.0"
 
 [[package]]
+name = "types-python-crontab"
+version = "3.0.0.1"
+description = "Typing stubs for python-crontab"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-python-crontab-3.0.0.1.tar.gz", hash = "sha256:fb0cb8deea41bb7dcbba8854504c6619e94bffd8291cff02a8d9ca23b0ae9808"},
+    {file = "types_python_crontab-3.0.0.1-py3-none-any.whl", hash = "sha256:09eb8d2e2d7fcaaf3687a3716431ff9113f8840e842712c4f78d5e8fbb66dfbb"},
+]
+
+[[package]]
 name = "types-python-dateutil"
 version = "2.8.19.14"
 description = "Typing stubs for python-dateutil"
@@ -2431,4 +2442,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "726198c07cd4287e798270454ac2480034a62a4e0410749a8964a74ea5b0809d"
+content-hash = "7daa55c0d89b34502ca31982bf35fe057f07d691294319a61b9b97df32f4c134"

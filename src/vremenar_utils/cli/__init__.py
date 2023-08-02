@@ -104,6 +104,17 @@ def config(
 
 
 @application.command()
+def update_crontab() -> None:
+    """Update crontab."""
+    config = init_config(state)
+    logger = setup_logger(config)
+
+    from vremenar_utils.cli.crontab import setup_crontab
+
+    setup_crontab(logger, config)
+
+
+@application.command()
 def stations_store(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
 ) -> None:

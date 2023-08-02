@@ -25,13 +25,18 @@ class TyperState:
 class Configuration:
     """Configuration helper."""
 
-    def __init__(self: Configuration) -> None:
+    def __init__(self: Configuration, path: Path) -> None:
         """Initialize configuration helper."""
         self.mode: str = "staging"
         self.debug: bool = False
+        self.path: Path = path
         self.log_path: Path = Path()
         self.database_type: DatabaseType = DatabaseType.Staging
         self.firebase_credentials: Path = Path()
+
+        self.commands: dict[str, dict[str, str]] = {}
+        self.runitor_enabled: bool = False
+        self.runitor_ping_url: str = ""
 
     def to_object(self: Configuration) -> dict[str, Any]:
         """Convert configuration to object."""
@@ -83,7 +88,15 @@ def generate_empty_config(config_file: Path) -> None:
             "staging": "",
             "production": "",
         },
-        "use_runitor": False,
+        "commands": {
+            "arso-weather": "",
+            "dwd-current": "",
+            "dwd-mosmix": "",
+        },
+        "runitor": {
+            "enabled": False,
+            "ping": "",
+        },
     }
 
     with config_file.open("w") as f:
@@ -106,7 +119,7 @@ def print_config_file(config_file: Path) -> None:
     )
 
 
-def init_config(state: TyperState) -> Configuration:
+def init_config(state: TyperState) -> Configuration:  # noqa: C901
     """Initialise configuration from CLI state."""
     if not state.config_file.exists():
         config_missing(state.config_file)
@@ -114,17 +127,33 @@ def init_config(state: TyperState) -> Configuration:
     with state.config_file.open() as f:
         config = yaml.safe_load(f)
 
-    configuration = Configuration()
-    if config["logging"] and config["logging"]["path"]:
+    configuration = Configuration(state.config_file)
+    if (
+        "logging" in config
+        and "path" in config["logging"]
+        and config["logging"]["path"]
+    ):
         configuration.log_path = Path(config["logging"]["path"])
-    if config["default_mode"]:
+    if "default_mode" in config:
         configuration.database_type = DatabaseType(config["default_mode"])
     configuration.mode = configuration.database_type.value
-    if config["firebase"] and config["firebase"][configuration.mode]:
+    if (
+        "firebase" in config
+        and configuration.mode in config["firebase"]
+        and config["firebase"][configuration.mode]
+    ):
         path = Path(config["firebase"][configuration.mode])
         if path.exists():
             configuration.firebase_credentials = path
             environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(path)
+
+    if "commands" in config:
+        configuration.commands = config["commands"]
+    if "runitor" in config:
+        if "enabled" in config["runitor"]:
+            configuration.runitor_enabled = config["runitor"]["enabled"]
+        if "ping" in config["runitor"]:
+            configuration.runitor_ping_url = config["runitor"]["ping"]
 
     if state:
         configuration.debug = state.debug
