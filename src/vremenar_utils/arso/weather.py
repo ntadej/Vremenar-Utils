@@ -9,7 +9,7 @@ from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import BatchedRedis, redis
 from vremenar_utils.database.stations import load_stations
 
-from . import BASEURL
+from . import BASEURL, TIMEOUT
 from .database import BatchedWeather
 from .stations import load_stations as load_local_stations
 
@@ -121,7 +121,7 @@ async def get_weather_data(
     logger.info("ARSO URL for %s: %s", data_id, url)
 
     async with AsyncClient() as client:
-        response = await client.get(url)
+        response = await client.get(url, timeout=TIMEOUT)
 
     if response.status_code == 404:  # pragma: no cover
         return
