@@ -328,4 +328,28 @@ def alerts_notify(
         asyncio.run(send_start_notifications(logger, country))
 
 
+@application.command()
+def alerts_update(
+    country: Annotated[CountryID, typer.Argument(..., help="Country")],
+    forecast: Annotated[
+        bool,
+        typer.Option("--forecast", help="Send forecast notification."),
+    ] = False,
+) -> None:
+    """Load and notify MeteoAlarm alerts."""
+    config = init_config(state)
+    logger = setup_logger(config, "meteoalarm")
+
+    base_message = "Processing weather alerts and notifying for country"
+    message = f"{base_message} %s"
+    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
+    logger.info(message, country.label(), extra={"color_message": color_message})
+
+    init_database(logger, config)
+
+    from vremenar_utils.meteoalarm.steering import get_alerts_and_notify
+
+    asyncio.run(get_alerts_and_notify(logger, country, forecast))
+
+
 __all__ = ["application"]

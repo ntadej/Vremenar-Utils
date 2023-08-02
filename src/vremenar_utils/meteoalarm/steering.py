@@ -10,6 +10,10 @@ from .database import (
     store_alert,
     store_alerts_for_area,
 )
+from .notifications import (
+    # send_forecast_notifications,
+    send_start_notifications,
+)
 from .parser import MeteoAlarmParser
 
 
@@ -62,3 +66,20 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
         await store_alerts_for_area(country, area, alerts)
 
     logger.info("Areas with alerts: %d", len(areas_with_alerts))
+
+
+async def get_alerts_and_notify(
+    logger: Logger,
+    country: CountryID,
+    forecast: bool = False,
+) -> None:
+    """Get alerts and notify for a specific country."""
+    await get_alerts(logger, country)
+
+    logger.info("Notifying...")
+
+    await send_start_notifications(logger, country)
+
+    if forecast:
+        # asyncio.run(send_forecast_notifications(logger, country))
+        pass
