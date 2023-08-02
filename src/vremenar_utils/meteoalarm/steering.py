@@ -10,10 +10,6 @@ from .database import (
     store_alert,
     store_alerts_for_area,
 )
-from .notifications import (
-    # send_forecast_notifications,
-    send_start_notifications,
-)
 from .parser import MeteoAlarmParser
 
 
@@ -74,6 +70,11 @@ async def get_alerts_and_notify(
     forecast: bool = False,
 ) -> None:
     """Get alerts and notify for a specific country."""
+    from .notifications import (
+        # send_forecast_notifications,
+        send_start_notifications,
+    )
+
     await get_alerts(logger, country)
 
     logger.info("Notifying...")
