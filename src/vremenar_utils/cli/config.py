@@ -137,7 +137,7 @@ def init_config(state: TyperState) -> Configuration:  # noqa: C901
         configuration.log_path = Path(config["logging"]["path"])
     if "default_mode" in config:
         configuration.database_type = DatabaseType(config["default_mode"])
-    configuration.mode = configuration.database_type.value
+
     if (
         "firebase" in config
         and configuration.mode in config["firebase"]
@@ -160,6 +160,8 @@ def init_config(state: TyperState) -> Configuration:  # noqa: C901
         configuration.debug = state.debug
         if state.database_type:
             configuration.database_type = state.database_type
+
+    configuration.mode = configuration.database_type.value
 
     info_panel(
         yaml.dump(
