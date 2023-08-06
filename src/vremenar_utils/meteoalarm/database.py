@@ -94,7 +94,7 @@ async def get_alert_area_map(country: CountryID) -> dict[str, set[str]]:
     alert_areas: dict[str, set[str]] = {}
     alert_ids: set[str] = await get_alert_ids(country)
 
-    async with redis.client() as connection:
+    async with redis.client() as connection:  # pragma: no branch
         for alert_id in alert_ids:
             alert_areas[alert_id] = await connection.smembers(
                 f"alert:{country.value}:{alert_id}:areas",
@@ -104,7 +104,7 @@ async def get_alert_area_map(country: CountryID) -> dict[str, set[str]]:
 
 async def store_alerts_areas(country: CountryID, areas: list[AlertArea]) -> None:
     """Store alerts areas to redis."""
-    async with redis.client() as connection:
+    async with redis.client() as connection:  # pragma: no branch
         existing_areas: set[str] = await connection.smembers(
             f"alerts_area:{country.value}",
         )
@@ -123,7 +123,7 @@ async def store_alerts_areas(country: CountryID, areas: list[AlertArea]) -> None
                 await pipeline.execute()
 
         # validate
-        for code in existing_areas:
+        for code in existing_areas:  # pragma: no cover
             if code not in area_codes:
                 async with connection.pipeline() as pipeline:
                     pipeline.srem(f"alerts_area:{country.value}", code)

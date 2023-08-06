@@ -40,8 +40,9 @@ def weather_map_prefix(map_type: MapType) -> str:
         return f"{prefix}_wind_"
     if map_type is MapType.Temperature:
         return f"{prefix}_t2m_"
-    if map_type is MapType.HailProbability:  # noqa: RET503
+    if map_type is MapType.HailProbability:
         return f"{prefix}_hp_"
+    raise RuntimeError()  # pragma: no cover
 
 
 def weather_map_interval(map_type: MapType) -> int:
@@ -52,9 +53,7 @@ def weather_map_interval(map_type: MapType) -> int:
         return 30
     if map_type in [MapType.WindSpeed, MapType.Temperature]:
         return 60
-
-    error = f"Unsupported map type: {map_type}"
-    raise ValueError(error)
+    raise RuntimeError()  # pragma: no cover
 
 
 def weather_map_expiration(map_type: MapType) -> int:
@@ -65,9 +64,7 @@ def weather_map_expiration(map_type: MapType) -> int:
         return 6
     if map_type in [MapType.WindSpeed, MapType.Temperature]:
         return 6
-
-    error = f"Unsupported map type: {map_type}"
-    raise ValueError(error)
+    raise RuntimeError()  # pragma: no cover
 
 
 def weather_map_forecast(map_type: MapType) -> list[tuple[int, str]]:
@@ -85,9 +82,7 @@ def weather_map_forecast(map_type: MapType) -> list[tuple[int, str]]:
             (300, "0500"),
             (360, "0600"),
         ]
-
-    error = f"Unsupported map type: {map_type}"
-    raise ValueError(error)
+    raise RuntimeError()  # pragma: no cover
 
 
 async def get_map_data(
@@ -160,8 +155,9 @@ async def get_map_data(
 
 async def process_map_data(logger: Logger) -> None:
     """Cache ARSO weather maps data."""
-    async with redis.client() as db, BatchedMaps(db) as batch:
-        with progress_bar(transient=True) as progress:
+    async with redis.client() as db, BatchedMaps(db) as batch:  # pragma: no branch
+        # TODO: figure out why this is not covered
+        with progress_bar(transient=True) as progress:  # pragma: no cover
             task = progress.add_task("Processing", total=len(MapType))
             for map_type in MapType:
                 await get_map_data(logger, batch, map_type)

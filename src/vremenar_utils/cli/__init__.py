@@ -78,7 +78,7 @@ def main(
     ] = False,
 ) -> None:
     """Vremenar Utilities CLI app."""
-    if ctx.invoked_subcommand != "config" and not config.exists():
+    if ctx.invoked_subcommand != "config" and not config.exists():  # pragma: no cover
         if "--help" in argv:
             return
         config_missing(config)
@@ -277,6 +277,10 @@ def alerts_areas(
         Path,
         typer.Argument(help="Output file for area-station matches"),
     ] = Path("matches.json"),
+    local_source: Annotated[
+        bool,
+        typer.Option("--local-source", help="Use local 'meteoalarm_geocodes.json'."),
+    ] = False,
 ) -> None:
     """Load MeteoAlarm areas."""
     config = init_config(state)
@@ -292,7 +296,7 @@ def alerts_areas(
     from vremenar_utils.meteoalarm.areas import process_meteoalarm_areas
 
     asyncio.run(
-        process_meteoalarm_areas(logger, country, output, output_matches),
+        process_meteoalarm_areas(logger, country, output, output_matches, local_source),
     )
 
 

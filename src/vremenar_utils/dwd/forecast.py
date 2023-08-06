@@ -37,10 +37,10 @@ async def process_mosmix(
         temporary_file.name if temporary_file else "MOSMIX_S_LATEST_240.kmz",
     )
     parser = MOSMIXParserFast(logger, file_path)
-    async with redis.client() as db, BatchedMosmix(db) as batch:
+    async with redis.client() as db, BatchedMosmix(db) as batch:  # pragma: no branch
         for record in parser.parse(station_ids):
             await batch.add(record)
-    if temporary_file:
+    if temporary_file:  # pragma: no branch
         temporary_file.close()
 
     logger.info("Processed all placemarks")

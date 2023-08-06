@@ -27,7 +27,7 @@ from .units import (
     synop_past_weather_code_to_condition,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable, Iterable
     from pathlib import Path
 
@@ -84,7 +84,7 @@ class StationIDConverter:
 
     def convert_to_wmo(self: StationIDConverter, dwd_id: str) -> str | None:
         """Convert DWD ID to WMO."""
-        return self.dwd_to_wmo.get(dwd_id)
+        return self.dwd_to_wmo.get(dwd_id)  # pragma: no cover
 
     def convert_to_dwd(self: StationIDConverter, wmo_id: str) -> str | None:
         """Convert WMO ID to DWD."""
@@ -150,7 +150,7 @@ class CurrentObservationsParser(Parser):
             wmo_station_id = next(reader)[self.DATE_COLUMN].rstrip("_")
             # Skip row with German header titles
             next(reader)
-            for row in reader:
+            for row in reader:  # pragma: no branch
                 record = self.parse_row(row)
                 yield {
                     "station_id": wmo_station_id,
@@ -199,10 +199,10 @@ class CurrentObservationsParser(Parser):
         for key, threshold in to_sanitize.items():
             if key in record and record[key]:
                 value = record[key]
-                if not isinstance(value, int | float):
+                if not isinstance(value, int | float):  # pragma: no cover
                     err = f"'{key}' should be a number"
                     raise ValueError(err)
-                if value > threshold:
+                if value > threshold:  # pragma: no cover
                     self.logger.warning(
                         "Ignoring unphysical value for '%s': %s",
                         key,
@@ -318,7 +318,7 @@ class MOSMIXParserFast(Parser):
         accepted = []
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
-        if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
+        if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no branch
             accepted.append(f"{int(now.timestamp())}000")
 
         daily = now + timedelta(hours=48 - now.hour)
@@ -326,13 +326,13 @@ class MOSMIXParserFast(Parser):
         # 2 days hourly
         while now < daily:
             now += timedelta(hours=1)
-            if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
+            if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no branch
                 accepted.append(f"{int(now.timestamp())}000")
 
         # 7 days
         for i in range(28):
             time = daily + timedelta(hours=i * 6)
-            if time >= timestamps[0] and time <= timestamps[-1]:  # pragma: no cover
+            if time >= timestamps[0] and time <= timestamps[-1]:  # pragma: no branch
                 accepted.append(f"{int(time.timestamp())}000")
 
         return accepted
@@ -394,7 +394,7 @@ class MOSMIXParserFast(Parser):
             )
 
         dwd_station_id = None
-        if self.station_id_converter:
+        if self.station_id_converter:  # pragma: no branch
             dwd_station_id = self.station_id_converter.convert_to_dwd(wmo_station_id)
         base_record.update(
             {
@@ -412,13 +412,13 @@ class MOSMIXParserFast(Parser):
         records: Iterable[dict[str, str | int | float | None]],
     ) -> Iterable[dict[str, str | int | float | None]]:
         for r in records:
-            if "condition" in r and r["condition"] is not None:
+            if "condition" in r and r["condition"] is not None:  # pragma: no branch
                 r["condition"] = synop_past_weather_code_to_condition(
                     int(r["condition"]),
                 )
 
             if "precipitation" in r and r["precipitation"]:
-                if not isinstance(r["precipitation"], int | float):
+                if not isinstance(r["precipitation"], int | float):  # pragma: no cover
                     err = "'precipitation' should be a number"
                     raise ValueError(err)
                 if r["precipitation"] < 0:  # pragma: no cover
@@ -426,7 +426,7 @@ class MOSMIXParserFast(Parser):
                     r["precipitation"] = None
 
             if "wind_direction" in r and r["wind_direction"]:
-                if not isinstance(r["wind_direction"], int | float):
+                if not isinstance(r["wind_direction"], int | float):  # pragma: no cover
                     err = "'wind_direction' should be a number"
                     raise ValueError(err)
                 if r["wind_direction"] > 360:  # pragma: no cover

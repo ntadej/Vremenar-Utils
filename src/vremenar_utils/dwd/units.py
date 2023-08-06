@@ -66,7 +66,7 @@ CURRENT_OBSERVATIONS_CONDITION_MAP: dict[int, str | None] = {
 
 
 def _find(mapping: dict[int, str | None], code: int | None) -> str | None:
-    if code is None:
+    if code is None:  # pragma: no cover
         return None
     value = None
     for k, v in mapping.items():

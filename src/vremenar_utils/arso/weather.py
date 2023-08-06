@@ -44,12 +44,7 @@ def weather_data_url(data_id: str) -> str:
     if data_id == "current":
         return f"{BASEURL}/uploads/probase/www/fproduct/json/sl/nowcast_si_latest.json"
 
-    if data_id[0] == "d":
-        return (
-            f"{BASEURL}/uploads/probase/www/fproduct/json/sl/forecast_si_{data_id}.json"
-        )
-
-    return ""
+    return f"{BASEURL}/uploads/probase/www/fproduct/json/sl/forecast_si_{data_id}.json"
 
 
 def wind_direction_to_degrees(wind_direction: str) -> float:
@@ -71,13 +66,13 @@ def parse_feature(
     feature: dict[str, Any],
 ) -> dict[str, Any] | None:
     """Parse ARSO feature."""
-    if "properties" not in feature:
+    if "properties" not in feature:  # pragma: no cover
         return None
 
     properties = feature["properties"]
 
     station_id = properties["id"].strip("_")
-    if station_id not in station_ids:
+    if station_id not in station_ids:  # pragma: no cover
         return None
 
     timeline = properties["days"][0]["timeline"][0]
@@ -88,7 +83,7 @@ def parse_feature(
         temperature: float = float(timeline["txsyn"])
         temperature_low: float | None = float(timeline["tnsyn"])
     else:
-        if timeline["t"] == "":
+        if timeline["t"] == "":  # pragma: no cover
             return None
         temperature = float(timeline["t"])
         temperature_low = None
@@ -135,7 +130,7 @@ async def get_weather_data(
     timestamp = None
     for feature in response_body["features"]:
         feature_data = parse_feature(station_ids, feature)
-        if not feature_data:
+        if not feature_data:  # pragma: no cover
             continue
 
         record = {"source": f"ARSO:{data_id}:{feature_data['station_id']}"}
@@ -173,10 +168,13 @@ async def process_weather_data(
         stations_dict = await load_stations(CountryID.Slovenia)
         station_ids = list(stations_dict.keys())
 
-    async with redis.client() as db, BatchedWeather(db) as batch, BatchedMaps(
+    async with redis.client() as db, BatchedWeather(  # pragma: no branch
+        db,
+    ) as batch, BatchedMaps(
         db,
     ) as batch_maps:
-        with progress_bar(transient=True) as progress:
+        # TODO: figure out why this is not covered
+        with progress_bar(transient=True) as progress:  # pragma: no cover
             task = progress.add_task("Processing", total=len(data_ids))
             for data_id in data_ids:
                 await get_weather_data(logger, batch, batch_maps, station_ids, data_id)

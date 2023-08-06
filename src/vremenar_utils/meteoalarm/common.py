@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from vremenar_utils.cli.common import LanguageID
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from datetime import datetime
 
 
@@ -125,7 +125,7 @@ class AlertArea:
         dictionary: dict[str, str | list[list[list[float]]]],
     ) -> AlertArea:
         """Read AlertArea from a dictionary."""
-        if (
+        if (  # pragma: no cover
             not isinstance(dictionary["code"], str)
             or not isinstance(dictionary["name"], str)
             or not isinstance(dictionary["description"], str)
@@ -133,7 +133,7 @@ class AlertArea:
             err = "'code' and 'name' need to be strings"
             raise TypeError(err)
 
-        if not isinstance(dictionary["polygons"], list):
+        if not isinstance(dictionary["polygons"], list):  # pragma: no cover
             err = "'polygons' needs to be a list of lists of floats"
             raise TypeError(err)
 

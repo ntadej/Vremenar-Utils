@@ -15,6 +15,15 @@ def test_help(env: dict[str, str]) -> None:
 
 
 @pytest.mark.forked()
+def test_config_missing(env: dict[str, str]) -> None:
+    """Test config missing."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(application, ["config"], env=env, catch_exceptions=False)
+    assert result.exit_code == 1
+
+
+@pytest.mark.forked()
 def test_version(env: dict[str, str]) -> None:
     """Test version."""
     from vremenar_utils.cli import application

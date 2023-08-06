@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from firebase_admin import initialize_app, messaging  # type: ignore
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from vremenar_utils.cli.logging import Logger
 
 firebase_app = initialize_app()

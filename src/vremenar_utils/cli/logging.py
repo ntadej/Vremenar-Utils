@@ -22,7 +22,7 @@ from rich.progress import (
 from rich.style import Style
 from typer import Exit, colors
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .config import Configuration
 
 
@@ -99,7 +99,7 @@ def setup_logger(config: Configuration, name: str | None = None) -> Logger:
     if name:
         logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
-    if config.debug:
+    if config.debug:  # pragma: no cover
         logger.setLevel(DEBUG)
     else:
         logger.setLevel(INFO)

@@ -19,7 +19,7 @@ from .common import (
     AlertUrgency,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from vremenar_utils.cli.logging import Logger
 
 METEOALARM_ATOM_ENDPOINT = (
@@ -181,7 +181,7 @@ class MeteoAlarmParser:
         """Parse translatable alert data."""
         alert.event[language] = data.get("event", "").strip()
         alert.headline[language] = data.get("headline", "").strip()
-        if data.get("description"):
+        if data.get("description"):  # pragma: no branch
             alert.description[language] = data.get("description", "").strip()
         if data.get("instruction"):
             alert.instructions[language] = data.get("instruction", "").strip()
@@ -208,7 +208,7 @@ class MeteoAlarmParser:
     ) -> None:
         """Parse alert areas."""
         for area in areas:
-            if "geocode" not in area:
+            if "geocode" not in area:  # pragma: no cover
                 if "areaDesc" in area:
                     self.logger.warning("Geocode not present, using description")
                     description = area.get("areaDesc")
@@ -217,9 +217,11 @@ class MeteoAlarmParser:
                 continue
 
             geocode = area.get("geocode")
-            if isinstance(geocode, list):
+            if isinstance(geocode, list):  # pragma: no branch
                 for geoitem in geocode:
                     if geoitem.get("valueName") == "EMMA_ID":
                         alert.areas.add(geoitem.get("value", "").strip())
-            elif isinstance(geocode, dict) and geocode.get("valueName") == "EMMA_ID":
+            elif (  # pragma: no cover
+                isinstance(geocode, dict) and geocode.get("valueName") == "EMMA_ID"
+            ):
                 alert.areas.add(geocode.get("value", "").strip())

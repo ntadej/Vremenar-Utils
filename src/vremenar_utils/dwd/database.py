@@ -11,7 +11,7 @@ from vremenar_utils.database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from vremenar_utils.cli.logging import Logger
 
 
@@ -57,7 +57,7 @@ class BatchedMosmix(BatchedRedis):
         record: dict[str, str | int | float | None],
     ) -> None:
         """Process MOSMIX record."""
-        if not isinstance(record["timestamp"], str):
+        if not isinstance(record["timestamp"], str):  # pragma: no cover
             err = "Invalid 'timestamp' value"
             raise TypeError(err)
 

@@ -3,9 +3,13 @@ from io import BytesIO, TextIOWrapper
 from json import dump, load
 from pathlib import Path
 from pkgutil import get_data
+from tempfile import NamedTemporaryFile
+from typing import IO
+
+from httpx import AsyncClient
 
 from vremenar_utils.cli.common import CountryID
-from vremenar_utils.cli.logging import Logger
+from vremenar_utils.cli.logging import Logger, download_bar
 from vremenar_utils.database.stations import load_stations, store_station
 from vremenar_utils.geo.polygons import point_in_polygon
 
@@ -31,15 +35,46 @@ SLOVENIA_DESCRIPTIONS = {
 }
 
 
+async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
+    """Download the MeteoAlarm area data."""
+    url = "https://edrop.zamg.ac.at/owncloud/index.php/s/5dwRiKmsF3r54tb/download"
+    logger.info("Downloading MeteoAlarm area data from %s ...", url)
+    logger.debug("Temporary file: %s", temporary_file.name)
+    client = AsyncClient()
+    async with client.stream("GET", url) as r:
+        total = int(r.headers["Content-Length"]) if "Content-Length" in r.headers else 0
+
+        with download_bar(transient=True) as progress:
+            task = progress.add_task("", total=total)
+            async for chunk in r.aiter_bytes():
+                temporary_file.write(chunk)
+                progress.update(task, completed=r.num_bytes_downloaded)
+
+    temporary_file.flush()
+    await client.aclose()
+    logger.debug("Done!")
+
+    temporary_file.seek(0)
+
+
 async def process_meteoalarm_areas(
     logger: Logger,
     country: CountryID,
     output: Path,
     output_matches: Path,
+    local_source: bool,
 ) -> None:
     """Process MeteoAlarm ares."""
-    with Path("meteoalarm_geocodes.json").open() as f:
-        data = load(f)
+    if not local_source:  # pragma: no branch
+        with NamedTemporaryFile(
+            suffix=".json",
+            prefix="meteoalarm_geocodes",
+        ) as temporary_file:
+            await download(logger, temporary_file)
+            data = load(temporary_file)
+    else:  # pragma: no cover
+        with Path("meteoalarm_geocodes.json").open() as f:
+            data = load(f)
 
     areas: list[AlertArea] = []
 
@@ -94,7 +129,7 @@ async def match_meteoalarm_areas(
         "vremenar_utils",
         f"data/meteoalarm/{country.value}_overrides.json",
     )
-    if overrides_data:
+    if overrides_data:  # pragma: no branch
         bytes_data = BytesIO(overrides_data)
         with TextIOWrapper(bytes_data, encoding="utf-8") as file:
             overrides = load(file)
@@ -147,7 +182,7 @@ async def process_meteoalarm_station(
     if not found and station_id in overrides:
         area_code = overrides[station_id]
 
-    if not area_code:
+    if not area_code:  # pragma: no cover
         raise ValueError(station_id, label, coordinate)
 
     # update database

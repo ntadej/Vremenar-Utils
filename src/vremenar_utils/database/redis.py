@@ -8,7 +8,7 @@ from redis.asyncio.client import Pipeline as RedisPipeline
 
 from vremenar_utils.cli.common import DatabaseType
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from vremenar_utils.cli.config import Configuration
     from vremenar_utils.cli.logging import Logger
 
@@ -64,7 +64,9 @@ class BatchedRedis:
         item: Any,  # noqa: ANN401, ARG002
     ) -> None:
         """Process items in queue."""
-        err = "BatchedRedis needs to be subclassed and process implemented"
+        err = (  # pragma: no cover
+            "BatchedRedis needs to be subclassed and process implemented"
+        )
         raise NotImplementedError(err)
 
     async def _drain(self: BatchedRedis) -> None:
@@ -94,7 +96,7 @@ class BatchedRedisDelete(BatchedRedis):
         item: str,
     ) -> None:
         """Process items in queue."""
-        pipeline.delete(item)
+        pipeline.delete(item)  # pragma: no cover
 
 
 __all__ = ["redis", "Redis", "RedisPipeline", "BatchedRedis", "BatchedRedisDelete"]

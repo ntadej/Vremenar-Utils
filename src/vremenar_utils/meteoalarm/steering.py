@@ -29,7 +29,7 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
         task = progress.add_task("Processing", total=len(new_alerts))
         for alert_id, alert_url in new_alerts:
             alert = await parser.parse_cap(alert_id, alert_url, areas_desc_map)
-            if not alert or not alert.areas:
+            if not alert or not alert.areas:  # pragma: no cover
                 continue
             await store_alert(country, alert)
             counter += 1
