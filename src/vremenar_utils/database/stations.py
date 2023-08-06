@@ -17,6 +17,10 @@ async def store_station(
 
     async with redis.pipeline() as pipeline:
         pipeline.sadd(f"station:{country.value}", station_id)
+        pipeline.geoadd(
+            f"location:{country.value}",
+            (station["longitude"], station["latitude"], station_id),
+        )
         pipeline.hset(
             f"station:{country.value}:{station_id}",
             mapping=cast(Mapping[bytes | str, bytes | float | int | str], station),
