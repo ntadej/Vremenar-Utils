@@ -15,6 +15,7 @@ repos:
           - pytest
           - rich
           - typer
+          - types-attrs
           - types-python-crontab
           - types-python-dateutil
           - types-pyyaml
