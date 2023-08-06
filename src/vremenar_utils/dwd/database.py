@@ -99,7 +99,6 @@ class BatchedCurrentWeather(BatchedRedis):
         record: dict[str, str | int | float | None],
     ) -> None:
         """Process current weather record."""
-        country = CountryID.Germany
         # cleanup
         empty_keys = set()
         for key, value in record.items():
@@ -109,7 +108,7 @@ class BatchedCurrentWeather(BatchedRedis):
             record[key] = ""
 
         # store in the DB
-        key = f"current:{country.value}:{record['station_id']}"
+        key = f"dwd:current:{record['station_id']}"
         pipeline.hset(
             key,
             mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
