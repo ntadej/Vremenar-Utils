@@ -9,13 +9,19 @@ from .common import CountryID, DatabaseType
 from .config import Configuration
 from .logging import Logger
 
-COMMAND_LIST: list[str] = ["alerts-update", "arso-weather", "dwd-current", "dwd-mosmix"]
+COMMAND_LIST: list[str] = [
+    "alerts-update",
+    "arso-maps",
+    "arso-weather",
+    "dwd-current",
+    "dwd-mosmix",
+]
 COMMAND_LIST_PER_COUNTRY: list[str] = ["alerts-update"]
 
 
 def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) -> None:
     """Set cron item interval for a specific command."""
-    if command in ["alerts-update"]:
+    if command in ["alerts-update", "arso-maps"]:
         cron.minute.every(  # type: ignore
             2 if db_type == DatabaseType.Production else 5,
         )
