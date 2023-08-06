@@ -172,6 +172,25 @@ def arso_weather(
 
 
 @application.command()
+def arso_maps() -> None:
+    """ARSO weather maps data caching."""
+    config = init_config(state)
+    logger = setup_logger(config, "arso_maps")
+
+    message = "Processing ARSO weather maps data for Slovenia"
+    color_message = (
+        f'Processing {style("ARSO weather maps", fg=colors.CYAN)} data for Slovenia'
+    )
+    logger.info(message, extra={"color_message": color_message})
+
+    init_database(logger, config)
+
+    from vremenar_utils.arso.maps import process_map_data
+
+    asyncio.run(process_map_data(logger))
+
+
+@application.command()
 def dwd_mosmix(
     local_source: Annotated[
         bool,

@@ -85,3 +85,33 @@ class BatchedWeather(BatchedRedis):
             mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
         )
         pipeline.expire(key, delta)
+
+
+class BatchedMaps(BatchedRedis):
+    """Batched ARSO weather map save."""
+
+    def process(
+        self: BatchedMaps,
+        pipeline: RedisPipeline[str],
+        record: dict[str, str],
+    ) -> None:
+        """Process ARSO weather map images."""
+        now = datetime.now(tz=timezone.utc)
+        now = now.replace(minute=0, second=0, microsecond=0)
+        reference = now + timedelta(hours=-int(record["expiration"]))
+        record_time = datetime.fromtimestamp(
+            float(record["timestamp"][:-3]),
+            tz=timezone.utc,
+        )
+        delta = record_time - reference
+
+        key = f"arso:map:{record['type']}:{record['timestamp']}"
+        # clean helper vairables
+        del record["type"]
+        del record["expiration"]
+        # store in the DB
+        pipeline.hset(
+            key,
+            mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
+        )
+        pipeline.expire(key, delta)
