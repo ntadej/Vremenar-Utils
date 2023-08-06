@@ -10,7 +10,8 @@ from vremenar_utils.database.redis import BatchedRedis, redis
 from vremenar_utils.database.stations import load_stations
 
 from . import BASEURL, TIMEOUT
-from .database import BatchedWeather
+from .database import BatchedMaps, BatchedWeather
+from .maps import ObservationType
 from .stations import load_stations as load_local_stations
 
 data_ids = [
@@ -112,6 +113,7 @@ def parse_feature(
 async def get_weather_data(
     logger: Logger,
     batch: BatchedRedis,
+    batch_maps: BatchedRedis,
     station_ids: list[str],
     data_id: str,
 ) -> None:
@@ -130,6 +132,7 @@ async def get_weather_data(
     if "features" not in response_body:  # pragma: no cover
         return
 
+    timestamp = None
     for feature in response_body["features"]:
         feature_data = parse_feature(station_ids, feature)
         if not feature_data:
@@ -137,8 +140,23 @@ async def get_weather_data(
 
         record = {"source": f"ARSO:{data_id}:{feature_data['station_id']}"}
         record.update(feature_data)
+        timestamp = feature_data["timestamp"]
 
         await batch.add(record)
+
+    await batch_maps.add(
+        {
+            "type": "condition",
+            "expiration": 0,
+            "timestamp": timestamp,
+            "url": f"/stations/map/current?country={CountryID.Slovenia.value}"
+            if data_id == "current"
+            else f"/stations/map/{timestamp}?country={CountryID.Slovenia.value}",
+            "observation": ObservationType.Recent.value
+            if data_id == "current"
+            else ObservationType.Forecast.value,
+        },
+    )
 
 
 async def process_weather_data(
@@ -155,11 +173,13 @@ async def process_weather_data(
         stations_dict = await load_stations(CountryID.Slovenia)
         station_ids = list(stations_dict.keys())
 
-    async with redis.client() as db, BatchedWeather(db) as batch:
+    async with redis.client() as db, BatchedWeather(db) as batch, BatchedMaps(
+        db,
+    ) as batch_maps:
         with progress_bar(transient=True) as progress:
             task = progress.add_task("Processing", total=len(data_ids))
             for data_id in data_ids:
-                await get_weather_data(logger, batch, station_ids, data_id)
+                await get_weather_data(logger, batch, batch_maps, station_ids, data_id)
                 progress.update(task, advance=1)
 
     logger.info("Processed all data")

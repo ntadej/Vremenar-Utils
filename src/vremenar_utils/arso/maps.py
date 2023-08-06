@@ -126,7 +126,7 @@ async def get_map_data(
         time = now - timedelta(minutes=i * interval)
         url = f"{url_prefix}{time:%Y%m%d-%H%M+0000}.png"
 
-        logger.info("Output URL: %s", url)
+        logger.debug("Output URL: %s", url)
 
         record = {
             "type": map_type.value,
@@ -135,7 +135,7 @@ async def get_map_data(
             "url": url,
             "observation": ObservationType.Recent.value
             if i == 0
-            else ObservationType.Historical,
+            else ObservationType.Historical.value,
         }
 
         await batch.add(record)
@@ -145,14 +145,14 @@ async def get_map_data(
         time = now + timedelta(minutes=delta)
         url = f"{url_prefix}{now:%Y%m%d-%H%M}+{delta_str}.png"
 
-        logger.info("Output URL: %s", url)
+        logger.debug("Output URL: %s", url)
 
         record = {
             "type": map_type.value,
             "expiration": expiration,
             "timestamp": f"{int(time.timestamp())}000",
             "url": url,
-            "observation": ObservationType.Forecast,
+            "observation": ObservationType.Forecast.value,
         }
 
         await batch.add(record)

@@ -76,8 +76,11 @@ class BatchedWeather(BatchedRedis):
             del record[key]
 
         # store in the DB
-        set_key = f"arso:weather:{record['timestamp']}"
-        key = f"arso:weather:{record['timestamp']}:{record['station_id']}"
+        sub_key = record["timestamp"]
+        if isinstance(record["source"], str) and "current" in record["source"]:
+            sub_key = "current"
+        set_key = f"arso:weather:{sub_key}"
+        key = f"arso:weather:{sub_key}:{record['station_id']}"
         pipeline.sadd(set_key, key)
         pipeline.expire(set_key, delta)
         pipeline.hset(
@@ -96,16 +99,22 @@ class BatchedMaps(BatchedRedis):
         record: dict[str, str],
     ) -> None:
         """Process ARSO weather map images."""
+        expiration = int(record["expiration"])
+        sub_key = record["timestamp"]
+        if isinstance(record["url"], str) and "current" in record["url"]:
+            expiration = 2
+            sub_key = "current"
+
         now = datetime.now(tz=timezone.utc)
         now = now.replace(minute=0, second=0, microsecond=0)
-        reference = now + timedelta(hours=-int(record["expiration"]))
+        reference = now + timedelta(hours=-expiration)
         record_time = datetime.fromtimestamp(
             float(record["timestamp"][:-3]),
             tz=timezone.utc,
         )
         delta = record_time - reference
 
-        key = f"arso:map:{record['type']}:{record['timestamp']}"
+        key = f"arso:map:{record['type']}:{sub_key}"
         # clean helper vairables
         del record["type"]
         del record["expiration"]
