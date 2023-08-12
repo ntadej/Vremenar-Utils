@@ -27,13 +27,13 @@ vremenar_utils = 'vremenar_utils.cli:application'
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
 coverage = { extras = ["toml"], version = "^7.2.7" }
-mypy = "^1.4.1"
+mypy = "^1.5.0"
 pre-commit = "^3.3.3"
 pre-commit-hooks = "^4.4.0"
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pytest-forked = "^1.6.0"
-ruff = "~0.0.282"
+ruff = "~0.0.284"
 types-python-crontab = "^3.0.0.1"
 types-python-dateutil = "^2.8.19.14"
 types-pyyaml = "^6.0.12.11"
