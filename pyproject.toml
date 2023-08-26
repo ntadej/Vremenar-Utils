@@ -14,11 +14,11 @@ lxml = "^4.9.3"
 parsel = "^1.8.1"
 python-crontab = "^3.0.0"
 pyyaml = "^6.0.1"
-redis = { extras = ["hiredis"], version = "^4.6.0" }
+redis = { extras = ["hiredis"], version = "^5.0.0" }
 rich = "^13.5.2"
 Shapely = "^2.0.1"
 typer = { extras = ["all"], version = "^0.9.0" }
-wheel = "^0.41.1"
+wheel = "^0.41.2"
 xmltodict = "^0.13.0"
 
 [tool.poetry.scripts]
@@ -26,18 +26,18 @@ vremenar_utils = 'vremenar_utils.cli:application'
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
-coverage = { extras = ["toml"], version = "^7.2.7" }
-mypy = "^1.4.1"
+coverage = { extras = ["toml"], version = "^7.3.0" }
+mypy = "^1.5.1"
 pre-commit = "^3.3.3"
 pre-commit-hooks = "^4.4.0"
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pytest-forked = "^1.6.0"
-ruff = "~0.0.282"
+ruff = "~0.0.286"
 types-python-crontab = "^3.0.0.1"
 types-python-dateutil = "^2.8.19.14"
 types-pyyaml = "^6.0.12.11"
-types-redis = "^4.6.0.3"
+types-redis = "^4.6.0.5"
 gevent = "^23.7.0"
 
 [tool.black]
