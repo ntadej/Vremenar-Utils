@@ -8,37 +8,37 @@ authors = ["Tadej Novak <tadej@tano.si>"]
 python = "^3.11"
 Babel = "^2.12.1"
 firebase-admin = "^6.2.0"
-geopandas = "^0.13.2"
-httpx = "^0.24.1"
+geopandas = "^0.14.0"
+httpx = "^0.25.0"
 lxml = "^4.9.3"
 parsel = "^1.8.1"
 python-crontab = "^3.0.0"
 pyyaml = "^6.0.1"
-redis = { extras = ["hiredis"], version = "^4.6.0" }
+redis = { extras = ["hiredis"], version = "^5.0.0" }
 rich = "^13.5.2"
 Shapely = "^2.0.1"
 typer = { extras = ["all"], version = "^0.9.0" }
-wheel = "^0.41.1"
+wheel = "^0.41.2"
 xmltodict = "^0.13.0"
 
 [tool.poetry.scripts]
 vremenar_utils = 'vremenar_utils.cli:application'
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.7.0"
-coverage = { extras = ["toml"], version = "^7.2.7" }
-mypy = "^1.4.1"
-pre-commit = "^3.3.3"
+black = "^23.9.1"
+coverage = { extras = ["toml"], version = "^7.3.1" }
+gevent = "^23.9.1"
+mypy = "^1.5.1"
+pre-commit = "^3.4.0"
 pre-commit-hooks = "^4.4.0"
-pytest = "^7.4.0"
+pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
 pytest-forked = "^1.6.0"
-ruff = "~0.0.282"
+ruff = "~0.0.290"
 types-python-crontab = "^3.0.0.1"
 types-python-dateutil = "^2.8.19.14"
 types-pyyaml = "^6.0.12.11"
-types-redis = "^4.6.0.3"
-gevent = "^23.7.0"
+types-redis = "^4.6.0.6"
 
 [tool.black]
 line-length = 88
@@ -71,6 +71,7 @@ ignore_errors = true
 omit = ["src/vremenar_utils/tests/*", "tests/*"]
 
 [tool.ruff]
+target-version = "py311"
 select = [
   "F",     # pyflakes
   "E",     # pycodestyle

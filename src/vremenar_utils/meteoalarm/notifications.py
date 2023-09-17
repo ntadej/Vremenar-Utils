@@ -1,5 +1,5 @@
 """MeteoAlarm notifications."""
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from babel.dates import format_datetime
 
@@ -41,15 +41,15 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
 
                 alert_onset = datetime.fromtimestamp(
                     float(alert["info"]["onset"][:-3]),
-                    tz=timezone.utc,
+                    tz=UTC,
                 )
                 alert_expires = datetime.fromtimestamp(
                     float(alert["info"]["expires"][:-3]),
-                    tz=timezone.utc,
+                    tz=UTC,
                 )
-                if alert_onset > datetime.now(tz=timezone.utc):
+                if alert_onset > datetime.now(tz=UTC):
                     continue
-                if alert_expires < datetime.now(tz=timezone.utc):
+                if alert_expires < datetime.now(tz=UTC):
                     continue
 
                 logger.info("Alert ID: %s", alert_id)
@@ -71,7 +71,7 @@ def send_start_notification(
     alert_severity = AlertSeverity(alert["info"]["severity"])
     alert_expires = datetime.fromtimestamp(
         float(alert["info"]["expires"][:-3]),
-        tz=timezone.utc,
+        tz=UTC,
     )
 
     for language in LanguageID:

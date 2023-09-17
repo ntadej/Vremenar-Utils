@@ -2,7 +2,7 @@
 # Inspired and based on https://github.com/rolfberkenbosch/meteoalert-api
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from httpx import AsyncClient, codes
@@ -39,7 +39,7 @@ class MeteoAlarmParser:
         """Initialize MeteoAlarm parser."""
         self.logger: Logger = logger
         self.country: CountryID = country
-        self.now: datetime = datetime.now(tz=timezone.utc)
+        self.now: datetime = datetime.now(tz=UTC)
         self.existing_alert_ids: set[str] = existing_alerts
         self.obsolete_alert_ids: set[str] = set()
 
@@ -57,7 +57,7 @@ class MeteoAlarmParser:
         feed_data = parse(result)
         feed = feed_data.get("feed", [])
         entries = feed.get("entry", [])
-        for entry in entries if type(entries) is list else [entries]:
+        for entry in entries if isinstance(entries, list) else [entries]:
             cap_id = entry.get("cap:identifier")
             all_ids.add(cap_id)
             if cap_id in self.existing_alert_ids:

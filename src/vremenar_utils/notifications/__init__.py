@@ -1,7 +1,7 @@
 """Notifications support."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from firebase_admin import initialize_app, messaging  # type: ignore
@@ -34,7 +34,7 @@ def make_message(  # noqa: PLR0913
                 sound="default",
             ),
             priority="high" if important else "normal",
-            ttl=expires - datetime.now(tz=timezone.utc) if expires else None,
+            ttl=expires - datetime.now(tz=UTC) if expires else None,
         ),
         apns=messaging.APNSConfig(
             payload=messaging.APNSPayload(

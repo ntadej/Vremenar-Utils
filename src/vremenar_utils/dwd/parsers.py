@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 from csv import DictReader, reader
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar
 from zipfile import ZipFile
 
@@ -172,7 +172,7 @@ class CurrentObservationsParser(Parser):
         time = datetime.strptime(
             f"{row[self.DATE_COLUMN]} {row[self.HOUR_COLUMN]}",
             "%d.%m.%y %H:%M",
-        ).replace(tzinfo=timezone.utc)
+        ).replace(tzinfo=UTC)
         record["timestamp"] = f"{int(time.timestamp())}000"
         self._convert_units(record)
         self._sanitize_record(record)
@@ -255,7 +255,7 @@ class MOSMIXParserFast(Parser):
                     self._clear_element(elem)
                 elif tag == "ForecastTimeSteps":
                     timestamps_raw = [
-                        dateparser.parse(r.text).replace(tzinfo=timezone.utc)
+                        dateparser.parse(r.text).replace(tzinfo=UTC)
                         for r in elem.findall("dwd:TimeStep", namespaces=NS)
                     ]
                     timestamps = [f"{int(t.timestamp())}000" for t in timestamps_raw]
@@ -316,7 +316,7 @@ class MOSMIXParserFast(Parser):
     @staticmethod
     def _filter_timestamps(timestamps: list[datetime]) -> list[str]:
         accepted = []
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         now = now.replace(minute=0, second=0, microsecond=0)
         if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no branch
             accepted.append(f"{int(now.timestamp())}000")

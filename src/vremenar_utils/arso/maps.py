@@ -1,5 +1,5 @@
 """ARSO weather maps utils."""
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 
 from httpx import AsyncClient
@@ -98,7 +98,7 @@ async def get_map_data(
     logger.info("ARSO URL prefix for %s: %s", map_type, url_prefix)
 
     async with AsyncClient() as client:
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         now = now.replace(
             minute=now.minute - (now.minute % interval),
             second=0,
@@ -117,7 +117,7 @@ async def get_map_data(
             logger.info("Found!")
             break
 
-    for i in range(0, int(expiration / interval * 60 + 1)):
+    for i in range(int(expiration / interval * 60 + 1)):
         time = now - timedelta(minutes=i * interval)
         url = f"{url_prefix}{time:%Y%m%d-%H%M+0000}.png"
 

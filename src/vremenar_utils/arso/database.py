@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, cast
 
 from vremenar_utils.cli.common import CountryID
@@ -58,12 +58,12 @@ class BatchedWeather(BatchedRedis):
             err = "Invalid 'timestamp' value"
             raise TypeError(err)
 
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         now = now.replace(minute=0, second=0, microsecond=0)
         reference = now + timedelta(hours=-2)
         record_time = datetime.fromtimestamp(
             float(record["timestamp"][:-3]),
-            tz=timezone.utc,
+            tz=UTC,
         )
         delta = record_time - reference
 
@@ -105,12 +105,12 @@ class BatchedMaps(BatchedRedis):
             expiration = 2
             sub_key = "current"
 
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         now = now.replace(minute=0, second=0, microsecond=0)
         reference = now + timedelta(hours=-expiration)
         record_time = datetime.fromtimestamp(
             float(record["timestamp"][:-3]),
-            tz=timezone.utc,
+            tz=UTC,
         )
         delta = record_time - reference
 
