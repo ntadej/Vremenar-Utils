@@ -16,7 +16,7 @@ python-crontab = "^3.0.0"
 pyyaml = "^6.0.1"
 redis = { extras = ["hiredis"], version = "^5.0.1" }
 rich = "^13.6.0"
-Shapely = "^2.0.1"
+Shapely = "^2.0.2"
 typer = { extras = ["all"], version = "^0.9.0" }
 wheel = "^0.41.2"
 xmltodict = "^0.13.0"
@@ -28,8 +28,8 @@ vremenar_utils = 'vremenar_utils.cli:application'
 black = "^23.9.1"
 coverage = { extras = ["toml"], version = "^7.3.2" }
 gevent = "^23.9.1"
-mypy = "^1.5.1"
-pre-commit = "^3.4.0"
+mypy = "^1.6.0"
+pre-commit = "^3.5.0"
 pre-commit-hooks = "^4.5.0"
 pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
