@@ -53,12 +53,12 @@ def setup_command(  # noqa: PLR0913
     if config.runitor_enabled:
         runitor_command = f"runitor -api-url {config.runitor_ping_url} -uuid {uuid} --"
 
-    poetry_command = f"poetry -C {utils_path} run vremenar_utils"
+    pdm_command = f"pdm run -p {utils_path} vremenar_utils"
     command_config = (
         f"--config {config.path} --database {db_type.value} {command} {arguments}"
     )
 
-    command_final = f"{runitor_command} nice {poetry_command} {command_config}"
+    command_final = f"{runitor_command} nice {pdm_command} {command_config}"
     command_final = command_final.strip()
     command_final += " >/dev/null 2>&1"
     return command_final.strip()
