@@ -310,6 +310,10 @@ def alerts_notify(
         bool,
         typer.Option("--forecast", help="Send forecast notification."),
     ] = False,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Dry run."),
+    ] = False,
 ) -> None:
     """Notify MeteoAlarm alerts."""
     config = init_config(state)
@@ -329,7 +333,7 @@ def alerts_notify(
         # asyncio.run(send_forecast_notifications(logger, country))
         pass
     else:
-        asyncio.run(send_start_notifications(logger, country))
+        asyncio.run(send_start_notifications(logger, country, dry_run=dry_run))
 
 
 @application.command()
@@ -338,6 +342,10 @@ def alerts_update(
     forecast: Annotated[
         bool,
         typer.Option("--forecast", help="Send forecast notification."),
+    ] = False,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Dry run."),
     ] = False,
 ) -> None:
     """Load and notify MeteoAlarm alerts."""
@@ -351,7 +359,7 @@ def alerts_update(
 
     from vremenar_utils.meteoalarm.steering import get_alerts_and_notify
 
-    asyncio.run(get_alerts_and_notify(logger, country, forecast))
+    asyncio.run(get_alerts_and_notify(logger, country, forecast, dry_run=dry_run))
 
 
 @application.command()

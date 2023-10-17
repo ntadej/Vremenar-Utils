@@ -47,8 +47,11 @@ jobs:
           pdm sync -G dev
 
       - name: Run tests
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
-          pdm run test
+          echo $FIREBASE_CREDENTIALS | base64 --decode > firebase.json
+          GOOGLE_APPLICATION_CREDENTIALS=firebase.json pdm run test
 
       - name: Report coverage with Codecov
         if: github.event_name == 'push' && matrix.python-version == 3.11 && matrix.os == 'ubuntu-22.04'

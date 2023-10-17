@@ -120,11 +120,12 @@ def send_messages(messages: list[messaging.Message], dry_run: bool = False) -> N
 class BatchNotify:
     """Send notifications in batches."""
 
-    def __init__(self: BatchNotify, logger: Logger) -> None:
+    def __init__(self: BatchNotify, logger: Logger, dry_run: bool = False) -> None:
         """Initialise batch notifications."""
         self.logger = logger
         self.queue: list[messaging.Message] = []
         self.limit = 100
+        self.dry_run = dry_run
 
     def __enter__(self: BatchNotify) -> BatchNotify:
         """Context manager init."""
@@ -143,5 +144,5 @@ class BatchNotify:
     def _drain(self: BatchNotify) -> None:
         """Drain the queue."""
         if self.queue:
-            send_messages(self.queue)
+            send_messages(self.queue, dry_run=self.dry_run)
         self.queue.clear()

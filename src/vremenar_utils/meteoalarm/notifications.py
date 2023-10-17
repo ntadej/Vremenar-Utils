@@ -24,15 +24,25 @@ UNTIL = {
 }
 
 
-async def send_start_notifications(logger: Logger, country: CountryID) -> None:
+async def send_start_notifications(
+    logger: Logger,
+    country: CountryID,
+    dry_run: bool = False,
+) -> None:
     """Send notifications at the start of the alerts."""
     areas = {area.code: area for area in load_meteoalarm_areas(country)}
 
     existing_alerts: set[str] = await get_alert_ids(country)
+    logger.info("Sending notifications")
+    if dry_run:
+        logger.info("This is a dry run!")
     logger.info("Read %d existing alerts from the database", len(existing_alerts))
 
     async with redis.client() as db, BatchedNotifyOnset(db, country) as batch:
-        with BatchNotify(logger) as notifier, progress_bar(transient=True) as progress:
+        with BatchNotify(
+            logger,
+            dry_run=dry_run,
+        ) as notifier, progress_bar(transient=True) as progress:
             task = progress.add_task("Processing", total=len(existing_alerts))
             for alert_id in existing_alerts:
                 alert = await get_alert_info(country, alert_id)
@@ -56,7 +66,8 @@ async def send_start_notifications(logger: Logger, country: CountryID) -> None:
 
                 send_start_notification(logger, notifier, alert, areas)
 
-                await batch.add(alert_id)
+                if not dry_run:
+                    await batch.add(alert_id)
 
                 progress.update(task, advance=1)
 

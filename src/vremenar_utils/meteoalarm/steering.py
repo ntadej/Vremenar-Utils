@@ -68,6 +68,7 @@ async def get_alerts_and_notify(
     logger: Logger,
     country: CountryID,
     forecast: bool = False,
+    dry_run: bool = False,
 ) -> None:
     """Get alerts and notify for a specific country."""
     from .notifications import (
@@ -77,9 +78,7 @@ async def get_alerts_and_notify(
 
     await get_alerts(logger, country)
 
-    logger.info("Notifying...")
-
-    await send_start_notifications(logger, country)
+    await send_start_notifications(logger, country, dry_run=dry_run)
 
     if forecast:
         # asyncio.run(send_forecast_notifications(logger, country))

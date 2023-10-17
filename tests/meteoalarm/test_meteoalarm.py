@@ -44,7 +44,7 @@ def test_alerts_areas_slovenia(env: dict[str, str]) -> None:
 
 
 @pytest.mark.forked()
-def test_alerts_germany(env: dict[str, str]) -> None:
+def test_alerts_get_germany(env: dict[str, str]) -> None:
     """Test alerts for Germany."""
     from vremenar_utils.cli import application
 
@@ -58,13 +58,69 @@ def test_alerts_germany(env: dict[str, str]) -> None:
 
 
 @pytest.mark.forked()
-def test_alerts_slovenia(env: dict[str, str]) -> None:
+def test_alerts_get_slovenia(env: dict[str, str]) -> None:
     """Test alerts for Slovenia."""
     from vremenar_utils.cli import application
 
     result = runner.invoke(
         application,
         ["alerts-get", "si"],
+        env=env,
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0
+
+
+@pytest.mark.forked()
+def test_alerts_notify_germany(env: dict[str, str]) -> None:
+    """Test alerts notity for Germany."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(
+        application,
+        ["alerts-notify", "de", "--dry-run"],
+        env=env,
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0
+
+
+@pytest.mark.forked()
+def test_alerts_notify_slovenia(env: dict[str, str]) -> None:
+    """Test alerts notify for Slovenia."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(
+        application,
+        ["alerts-notify", "si", "--dry-run"],
+        env=env,
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0
+
+
+@pytest.mark.forked()
+def test_alerts_update_germany(env: dict[str, str]) -> None:
+    """Test alerts update for Germany."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(
+        application,
+        ["alerts-update", "de", "--dry-run"],
+        env=env,
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0
+
+
+@pytest.mark.forked()
+def test_alerts_update_slovenia(env: dict[str, str]) -> None:
+    """Test alerts update for Slovenia."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(
+        application,
+        ["alerts-update", "si", "--dry-run"],
         env=env,
         catch_exceptions=False,
     )
