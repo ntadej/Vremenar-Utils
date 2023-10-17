@@ -138,16 +138,6 @@ def init_config(state: TyperState) -> Configuration:  # noqa: C901
     if "default_mode" in config:
         configuration.database_type = DatabaseType(config["default_mode"])
 
-    if (
-        "firebase" in config
-        and configuration.mode in config["firebase"]
-        and config["firebase"][configuration.mode]
-    ):
-        path = Path(config["firebase"][configuration.mode])
-        if path.exists():
-            configuration.firebase_credentials = path
-            environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(path)
-
     if "commands" in config:
         configuration.commands = config["commands"]
     if "runitor" in config:
@@ -162,6 +152,16 @@ def init_config(state: TyperState) -> Configuration:  # noqa: C901
             configuration.database_type = state.database_type
 
     configuration.mode = configuration.database_type.value
+
+    if (
+        "firebase" in config
+        and configuration.mode in config["firebase"]
+        and config["firebase"][configuration.mode]
+    ):
+        path = Path(config["firebase"][configuration.mode])
+        if path.exists():
+            configuration.firebase_credentials = path
+            environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(path)
 
     info_panel(
         yaml.dump(

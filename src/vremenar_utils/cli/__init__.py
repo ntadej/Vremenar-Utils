@@ -375,4 +375,33 @@ def alerts_update(
     asyncio.run(get_alerts_and_notify(logger, country, forecast))
 
 
+@application.command()
+def send_message(
+    topic: str,
+    message: str,
+    send: Annotated[
+        bool,
+        typer.Option("--send", help="Actually send the notification."),
+    ] = False,
+) -> None:
+    """Send a message directly to a topic."""
+    config = init_config(state)
+    logger = setup_logger(config)
+
+    base_message = "Sending message to topic"
+    log_message = f"{base_message} [cyan]%s[/]"
+    logger.info(log_message, topic, extra={"markup": True})
+    logger.info(message)
+
+    from vremenar_utils.notifications import (
+        make_message,
+        prepare_message,
+        send_messages,
+    )
+
+    msg = make_message("Vremenar", "", message, important=True)
+    prepare_message(msg, topics=[topic], logger=logger)
+    send_messages([msg], dry_run=not send)
+
+
 __all__ = ["application"]

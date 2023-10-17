@@ -112,14 +112,9 @@ def prepare_message_for_token(
         logger.debug('Sending notification to device with token "%s"', message.token)
 
 
-def send_message(message: messaging.Message) -> None:
-    """Send a single message."""
-    messaging.send(message, app=firebase_app, dry_run=False)
-
-
-def send_messages(messages: list[messaging.Message]) -> None:
+def send_messages(messages: list[messaging.Message], dry_run: bool = False) -> None:
     """Send a batch of messages."""
-    messaging.send_all(messages, app=firebase_app, dry_run=False)
+    messaging.send_each(messages, app=firebase_app, dry_run=dry_run)
 
 
 class BatchNotify:
