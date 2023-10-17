@@ -1,44 +1,62 @@
-[tool.poetry]
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
 name = "vremenar_utils"
-version = "0.4.0"
 description = ""
-authors = ["Tadej Novak <tadej@tano.si>"]
+version = "0.4.0"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "Tadej Novak", email = "tadej@tano.si" }]
+requires-python = ">= 3.11, < 3.13"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Web Environment",
+  "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "Babel >= 2.13",
+  "firebase-admin ~= 6.2",
+  "geopandas >= 0.14",
+  "httpx ~= 0.25",
+  "lxml",
+  "parsel",
+  "python-crontab ~= 3.0",
+  "pyyaml",
+  "redis[hiredis] ~= 5.0",
+  "rich ~= 13.6",
+  "Shapely",
+  "typer[all] ~= 0.9",
+  "wheel",
+  "xmltodict",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-Babel = "^2.13.0"
-firebase-admin = "^6.2.0"
-geopandas = "^0.14.0"
-httpx = "^0.25.0"
-lxml = "^4.9.3"
-parsel = "^1.8.1"
-python-crontab = "^3.0.0"
-pyyaml = "^6.0.1"
-redis = { extras = ["hiredis"], version = "^5.0.1" }
-rich = "^13.6.0"
-Shapely = "^2.0.1"
-typer = { extras = ["all"], version = "^0.9.0" }
-wheel = "^0.41.2"
-xmltodict = "^0.13.0"
+[project.optional-dependencies]
+dev = [
+  "black ~= 23.10",
+  "coverage[toml]",
+  "gevent",
+  "mypy ~= 1.6",
+  "pre-commit",
+  "pre-commit-hooks ~= 4.5",
+  "pytest >= 7.0",
+  "pytest-cov",
+  "pytest-forked",
+  "ruff == 0.1.0",
+  "types-python-crontab",
+  "types-python-dateutil",
+  "types-pyyaml",
+  "types-redis",
+]
 
-[tool.poetry.scripts]
-vremenar_utils = 'vremenar_utils.cli:application'
+[project.scripts]
+vremenar_utils = "vremenar_utils.cli:application"
 
-[tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
-coverage = { extras = ["toml"], version = "^7.3.2" }
-gevent = "^23.9.1"
-mypy = "^1.5.1"
-pre-commit = "^3.4.0"
-pre-commit-hooks = "^4.5.0"
-pytest = "^7.4.2"
-pytest-cov = "^4.1.0"
-pytest-forked = "^1.6.0"
-ruff = "~0.0.292"
-types-python-crontab = "^3.0.0.1"
-types-python-dateutil = "^2.8.19.14"
-types-pyyaml = "^6.0.12.12"
-types-redis = "^4.6.0.7"
+[tool.pdm.scripts]
+test = "pytest -W error"
 
 [tool.black]
 line-length = 88
@@ -148,7 +166,3 @@ warn_unused_ignores = true
 minversion = "6.0"
 addopts = "--ignore=src/vremenar/tests/ --cov=vremenar_utils --cov-config=.coveragerc --cov-report=term-missing:skip-covered --cov-report xml --cov-report html:coverage"
 testpaths = ["tests"]
-
-[build-system]
-requires = ["poetry-core>=1.2.0"]
-build-backend = "poetry.core.masonry.api"

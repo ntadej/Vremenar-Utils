@@ -10,12 +10,13 @@ A collection of utilities for the [Vremenar API](https://github.com/ntadej/Vreme
 
 ## Installation and running
 
-### Python Poetry
+### Python PDM
 
-This project uses [Python Poetry](https://python-poetry.org) to track dependencies. For basic setup run
+This project uses [PDM](https://pdm.fming.dev) to track dependencies.
+For basic setup run
 
 ```shell
-poetry install
+pdm sync
 ```
 
 ## Contributing
