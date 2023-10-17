@@ -18,7 +18,7 @@ from .config import (
     init_config,
     print_config_file,
 )
-from .logging import colors, setup_logger, style
+from .logging import setup_logger
 
 if not sys.warnoptions:  # pragma: no cover
     import warnings
@@ -122,10 +122,8 @@ def stations_store(
     config = init_config(state)
     logger = setup_logger(config)
 
-    base_message = "Storing stations into database for country"
-    message = f"{base_message} %s"
-    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
-    logger.info(message, country.label(), extra={"color_message": color_message})
+    message = "Storing stations into database for country [cyan]%s[/]"
+    logger.info(message, country.label(), extra={"markup": True})
 
     init_database(logger, config)
 
@@ -152,12 +150,8 @@ def arso_weather(
     config = init_config(state)
     logger = setup_logger(config, "arso_weather")
 
-    message = "Processing ARSO weather conditions data for Slovenia"
-    color_message = (
-        f'Processing {style("ARSO weather conditions", fg=colors.CYAN)}'
-        'data for Slovenia'
-    )
-    logger.info(message, extra={"color_message": color_message})
+    message = "Processing [cyan]ARSO weather conditions[/] data for Slovenia"
+    logger.info(message, extra={"markup": True})
 
     init_database(logger, config)
 
@@ -177,11 +171,8 @@ def arso_maps() -> None:
     config = init_config(state)
     logger = setup_logger(config, "arso_maps")
 
-    message = "Processing ARSO weather maps data for Slovenia"
-    color_message = (
-        f'Processing {style("ARSO weather maps", fg=colors.CYAN)} data for Slovenia'
-    )
-    logger.info(message, extra={"color_message": color_message})
+    message = "Processing [cyan]ARSO weather maps[/] data for Slovenia"
+    logger.info(message, extra={"markup": True})
 
     init_database(logger, config)
 
@@ -205,9 +196,8 @@ def dwd_mosmix(
     config = init_config(state)
     logger = setup_logger(config, "dwd_mosmix")
 
-    message = "Processing MOSMIX data for Germany"
-    color_message = f'Processing {style("MOSMIX", fg=colors.CYAN)} data for Germany'
-    logger.info(message, extra={"color_message": color_message})
+    message = "Processing [cyan]MOSMIX[/] data for Germany"
+    logger.info(message, extra={"markup": True})
 
     init_database(logger, config)
 
@@ -233,11 +223,8 @@ def dwd_current(
     config = init_config(state)
     logger = setup_logger(config, "dwd_current")
 
-    message = "Processing current weather data for Germany"
-    color_message = (
-        f'Processing {style("current weather", fg=colors.CYAN)} data for Germany'
-    )
-    logger.info(message, extra={"color_message": color_message})
+    message = "Processing [cyan]current weather[/] data for Germany"
+    logger.info(message, extra={"markup": True})
 
     init_database(logger, config)
 
@@ -286,10 +273,8 @@ def alerts_areas(
     config = init_config(state)
     logger = setup_logger(config)
 
-    base_message = "Processing weather alerts areas for country"
-    message = f"{base_message} %s"
-    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
-    logger.info(message, country.label(), extra={"color_message": color_message})
+    message = "Processing weather alerts areas for country [cyan]%s[/]"
+    logger.info(message, country.label(), extra={"markup": True})
 
     init_database(logger, config)
 
@@ -308,10 +293,8 @@ def alerts_get(
     config = init_config(state)
     logger = setup_logger(config, "meteoalarm")
 
-    base_message = "Processing weather alerts for country"
-    message = f"{base_message} %s"
-    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
-    logger.info(message, country.label(), extra={"color_message": color_message})
+    message = "Processing weather alerts for country [cyan]%s[/]"
+    logger.info(message, country.label(), extra={"markup": True})
 
     init_database(logger, config)
 
@@ -332,10 +315,8 @@ def alerts_notify(
     config = init_config(state)
     logger = setup_logger(config, "meteoalarm_notify")
 
-    base_message = "Processing weather alerts notifications for country"
-    message = f"{base_message} %s"
-    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
-    logger.info(message, country.label(), extra={"color_message": color_message})
+    message = "Processing weather alerts notifications for country [cyan]%s[/]]"
+    logger.info(message, country.label(), extra={"markup": True})
 
     init_database(logger, config)
 
@@ -363,10 +344,8 @@ def alerts_update(
     config = init_config(state)
     logger = setup_logger(config, "meteoalarm")
 
-    base_message = "Processing weather alerts and notifying for country"
-    message = f"{base_message} %s"
-    color_message = f'{base_message} {style("%s", fg=colors.CYAN)}'
-    logger.info(message, country.label(), extra={"color_message": color_message})
+    message = "Processing weather alerts and notifying for country [cyan]%s[/]"
+    logger.info(message, country.label(), extra={"markup": True})
 
     init_database(logger, config)
 
@@ -378,7 +357,7 @@ def alerts_update(
 @application.command()
 def send_message(
     topic: str,
-    message: str,
+    body: str,
     send: Annotated[
         bool,
         typer.Option("--send", help="Actually send the notification."),
@@ -388,10 +367,9 @@ def send_message(
     config = init_config(state)
     logger = setup_logger(config)
 
-    base_message = "Sending message to topic"
-    log_message = f"{base_message} [cyan]%s[/]"
-    logger.info(log_message, topic, extra={"markup": True})
-    logger.info(message)
+    message = "Sending message to topic [cyan]%s[/]"
+    logger.info(message, topic, extra={"markup": True})
+    logger.info(body)
 
     from vremenar_utils.notifications import (
         make_message,
@@ -399,7 +377,7 @@ def send_message(
         send_messages,
     )
 
-    msg = make_message("Vremenar", "", message, important=True)
+    msg = make_message("Vremenar", "", body, important=True)
     prepare_message(msg, topics=[topic], logger=logger)
     send_messages([msg], dry_run=not send)
 

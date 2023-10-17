@@ -5,7 +5,6 @@ from logging import DEBUG, INFO, WARNING, Formatter, Logger, getLogger
 from logging.handlers import RotatingFileHandler
 from typing import TYPE_CHECKING, Any
 
-from click import style
 from rich import print
 from rich.color import Color
 from rich.logging import RichHandler
@@ -20,7 +19,7 @@ from rich.progress import (
     TransferSpeedColumn,
 )
 from rich.style import Style
-from typer import Exit, colors
+from typer import Exit
 
 if TYPE_CHECKING:  # pragma: no cover
     from .config import Configuration
@@ -109,4 +108,4 @@ def setup_logger(config: Configuration, name: str | None = None) -> Logger:
     return logger
 
 
-__all__ = ["colors", "style", "Logger"]
+__all__ = ["Logger"]
