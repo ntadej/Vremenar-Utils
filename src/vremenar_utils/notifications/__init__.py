@@ -114,7 +114,8 @@ def prepare_message_for_token(
 
 def send_messages(messages: list[messaging.Message], dry_run: bool = False) -> None:
     """Send a batch of messages."""
-    messaging.send_each(messages, app=firebase_app, dry_run=dry_run)
+    if not dry_run:
+        messaging.send_each(messages, app=firebase_app)
 
 
 class BatchNotify:
