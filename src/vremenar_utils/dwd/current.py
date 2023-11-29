@@ -11,6 +11,7 @@ from httpx import AsyncClient
 from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import redis
 
+from . import TIMEOUT
 from .database import BatchedCurrentWeather
 from .parsers import CurrentObservationsParser
 
@@ -36,7 +37,7 @@ async def download_current_weather(
     logger.info("Downloading current weather data from %s ...", url)
     logger.debug("Temporary file: %s", temporary_file.name)
     client = AsyncClient()
-    async with client.stream("GET", url) as r:
+    async with client.stream("GET", url, timeout=TIMEOUT) as r:
         async for chunk in r.aiter_raw():
             temporary_file.write(chunk)
     temporary_file.flush()

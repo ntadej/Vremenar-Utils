@@ -13,6 +13,7 @@ from vremenar_utils.cli.logging import Logger, download_bar
 from vremenar_utils.database.stations import load_stations, store_station
 from vremenar_utils.geo.polygons import point_in_polygon
 
+from . import TIMEOUT
 from .common import AlertArea
 from .database import store_alerts_areas
 
@@ -41,7 +42,7 @@ async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
     logger.info("Downloading MeteoAlarm area data from %s ...", url)
     logger.debug("Temporary file: %s", temporary_file.name)
     client = AsyncClient()
-    async with client.stream("GET", url) as r:
+    async with client.stream("GET", url, timeout=TIMEOUT) as r:
         total = int(r.headers["Content-Length"]) if "Content-Length" in r.headers else 0
 
         with download_bar(transient=True) as progress:

@@ -5,6 +5,8 @@ from httpx import AsyncClient
 
 from vremenar_utils.cli.logging import Logger, download_bar
 
+from . import TIMEOUT
+
 DWD_OPEN_DATA: str = "https://opendata.dwd.de"
 DWD_MOSMIX_URL: str = (
     f"{DWD_OPEN_DATA}/weather/local_forecasts/mos/MOSMIX_S/"
@@ -17,7 +19,7 @@ async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
     logger.info("Downloading MOSMIX data from %s ...", DWD_MOSMIX_URL)
     logger.debug("Temporary file: %s", temporary_file.name)
     client = AsyncClient()
-    async with client.stream("GET", DWD_MOSMIX_URL) as r:
+    async with client.stream("GET", DWD_MOSMIX_URL, timeout=TIMEOUT) as r:
         total = int(r.headers["Content-Length"])
 
         with download_bar(transient=True) as progress:

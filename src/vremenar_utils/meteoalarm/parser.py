@@ -10,6 +10,7 @@ from xmltodict import parse  # type: ignore
 
 from vremenar_utils.cli.common import CountryID, LanguageID
 
+from . import TIMEOUT
 from .common import (
     AlertCertainty,
     AlertInfo,
@@ -47,7 +48,7 @@ class MeteoAlarmParser:
         """Retrieve new alerts."""
         endpoint = METEOALARM_ATOM_ENDPOINT.format(self.country.full_name())
         async with AsyncClient() as client:
-            response = await client.get(endpoint, timeout=10)
+            response = await client.get(endpoint, timeout=TIMEOUT)
         result = response.text
 
         all_ids = set()
@@ -104,7 +105,7 @@ class MeteoAlarmParser:
 
         # Parse the XML response for the alert information
         async with AsyncClient() as client:
-            response = await client.get(url, timeout=10)
+            response = await client.get(url, timeout=TIMEOUT)
         # can be missing
         if response.status_code != codes.OK:  # pragma: no cover
             return None
