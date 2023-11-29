@@ -49,6 +49,10 @@ class MeteoAlarmParser:
         endpoint = METEOALARM_ATOM_ENDPOINT.format(self.country.full_name())
         async with AsyncClient() as client:
             response = await client.get(endpoint, timeout=TIMEOUT)
+        # can be invalid
+        if response.status_code != codes.OK:  # pragma: no cover
+            return set()
+
         result = response.text
 
         all_ids = set()

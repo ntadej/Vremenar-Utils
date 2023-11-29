@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Any
 
-from httpx import AsyncClient
+from httpx import AsyncClient, codes
 
 from vremenar_utils.cli.common import CountryID
 from vremenar_utils.cli.logging import Logger, progress_bar
@@ -120,7 +120,7 @@ async def get_weather_data(
     async with AsyncClient() as client:
         response = await client.get(url, timeout=TIMEOUT)
 
-    if response.status_code == 404:  # pragma: no cover
+    if response.status_code != codes.OK:  # pragma: no cover
         return
 
     response_body = response.json()
