@@ -11,6 +11,8 @@ def test_help(env: dict[str, str]) -> None:
     from vremenar_utils.cli import application
 
     result = runner.invoke(application, ["--help"], env=env, catch_exceptions=False)
+
+    print(result.stdout)  # noqa: T201
     assert result.exit_code == 0
 
 
@@ -20,6 +22,8 @@ def test_config_missing(env: dict[str, str]) -> None:
     from vremenar_utils.cli import application
 
     result = runner.invoke(application, ["config"], env=env, catch_exceptions=False)
+
+    print(result.stdout)  # noqa: T201
     assert result.exit_code == 1
 
 
@@ -29,6 +33,8 @@ def test_version(env: dict[str, str]) -> None:
     from vremenar_utils.cli import application
 
     result = runner.invoke(application, ["--version"], env=env, catch_exceptions=False)
+
+    print(result.stdout)  # noqa: T201
     assert result.exit_code == 0
 
 
@@ -43,6 +49,8 @@ def test_config_generate(env: dict[str, str]) -> None:
         env=env,
         catch_exceptions=False,
     )
+
+    print(result.stdout)  # noqa: T201
     assert result.exit_code == 0
 
 
@@ -52,4 +60,6 @@ def test_config(env: dict[str, str]) -> None:
     from vremenar_utils.cli import application
 
     result = runner.invoke(application, ["config"], env=env, catch_exceptions=False)
+
+    print(result.stdout)  # noqa: T201
     assert result.exit_code == 0
