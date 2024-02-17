@@ -29,6 +29,7 @@ class Configuration:
         self.mode: str = "staging"
         self.debug: bool = False
         self.path: Path = path
+        self.log_disabled: bool = False
         self.log_path: Path = Path()
         self.database_type: DatabaseType = DatabaseType.Staging
         self.firebase_credentials: Path = Path()
@@ -43,6 +44,7 @@ class Configuration:
             "Mode": self.mode,
             "Database": self.database_type.value,
             "Logging": {
+                "disabled": str(self.log_disabled),
                 "path": str(self.log_path),
                 "debug": self.debug,
             },
@@ -82,6 +84,7 @@ def generate_empty_config(config_file: Path) -> None:
         "default_mode": "staging",
         "logging": {
             "path": "",
+            "disabled": True,
         },
         "firebase": {
             "staging": "",
@@ -129,6 +132,8 @@ def init_config(state: TyperState) -> Configuration:  # noqa: C901
         config = yaml.safe_load(f)
 
     configuration = Configuration(state.config_file)
+    if "logging" in config and "disabled" in config["logging"]:
+        configuration.log_disabled = config["logging"]["disabled"]
     if (
         "logging" in config
         and "path" in config["logging"]
