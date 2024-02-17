@@ -32,7 +32,7 @@ class MeteoAlarmParser:
     """MeteoAlarm Atom feed parser."""
 
     def __init__(
-        self: MeteoAlarmParser,
+        self,
         logger: Logger,
         country: CountryID,
         existing_alerts: set[str],
@@ -44,7 +44,7 @@ class MeteoAlarmParser:
         self.existing_alert_ids: set[str] = existing_alerts
         self.obsolete_alert_ids: set[str] = set()
 
-    async def get_new_alerts(self: MeteoAlarmParser) -> set[tuple[str, str]]:
+    async def get_new_alerts(self) -> set[tuple[str, str]]:
         """Retrieve new alerts."""
         endpoint = METEOALARM_ATOM_ENDPOINT.format(self.country.full_name())
         async with AsyncClient() as client:
@@ -88,18 +88,18 @@ class MeteoAlarmParser:
 
         return new_ids
 
-    def check_for_obsolete(self: MeteoAlarmParser, all_ids: set[str]) -> None:
+    def check_for_obsolete(self, all_ids: set[str]) -> None:
         """Check for obsolete alerts."""
         for alert_id in self.existing_alert_ids:
             if alert_id not in all_ids:
                 self.obsolete_alert_ids.add(alert_id)
 
-    def parse_alert_datetime(self: MeteoAlarmParser, string: str) -> datetime:
+    def parse_alert_datetime(self, string: str) -> datetime:
         """Parse alert date/time."""
         return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S%z")
 
     async def parse_cap(
-        self: MeteoAlarmParser,
+        self,
         alert_id: str,
         url: str,
         areas_desc_map: dict[str, str],
@@ -164,11 +164,7 @@ class MeteoAlarmParser:
         self.logger.debug(alert.areas)
         return alert
 
-    def parse_alert_info(
-        self: MeteoAlarmParser,
-        alert: AlertInfo,
-        data: dict[str, str],
-    ) -> None:
+    def parse_alert_info(self, alert: AlertInfo, data: dict[str, str]) -> None:
         """Parse alert information."""
         alert.onset = self.parse_alert_datetime(data.get("onset", ""))
         alert.expires = self.parse_alert_datetime(data.get("expires", ""))
@@ -178,7 +174,7 @@ class MeteoAlarmParser:
         alert.response_type = AlertResponseType(data.get("responseType", "").lower())
 
     def parse_alert_translations(
-        self: MeteoAlarmParser,
+        self,
         alert: AlertInfo,
         language: LanguageID,
         data: dict[str, str],
@@ -194,7 +190,7 @@ class MeteoAlarmParser:
         alert.web[language] = data.get("web", "").strip()
 
     def parse_alert_parameters(
-        self: MeteoAlarmParser,
+        self,
         alert: AlertInfo,
         parameters: list[dict[str, str]],
     ) -> None:
@@ -206,7 +202,7 @@ class MeteoAlarmParser:
                 )
 
     def parse_alert_areas(
-        self: MeteoAlarmParser,
+        self,
         alert: AlertInfo,
         areas: list[dict[str, list[dict[str, str]] | dict[str, str] | str]],
         areas_desc_map: dict[str, str],

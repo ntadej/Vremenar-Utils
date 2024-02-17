@@ -49,7 +49,7 @@ class BatchedWeather(BatchedRedis):
     """Batched ARSO weather information save."""
 
     def process(
-        self: BatchedWeather,
+        self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
     ) -> None:
@@ -93,11 +93,7 @@ class BatchedWeather(BatchedRedis):
 class BatchedMaps(BatchedRedis):
     """Batched ARSO weather map save."""
 
-    def process(
-        self: BatchedMaps,
-        pipeline: RedisPipeline[str],
-        record: dict[str, str],
-    ) -> None:
+    def process(self, pipeline: RedisPipeline[str], record: dict[str, str]) -> None:
         """Process ARSO weather map images."""
         expiration = int(record["expiration"])
         sub_key = record["timestamp"]

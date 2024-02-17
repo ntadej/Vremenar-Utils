@@ -33,25 +33,21 @@ def init_database(logger: Logger, config: Configuration) -> None:
 class BatchedRedis:
     """Put items to redis in batches."""
 
-    def __init__(
-        self: BatchedRedis,
-        connection: Redis[str],
-        limit: int | None = 1000,
-    ) -> None:
+    def __init__(self, connection: Redis[str], limit: int | None = 1000) -> None:
         """Initialise with DB."""
         self.connection = connection
         self.queue: list[Any] = []
         self.limit = limit
 
-    async def __aenter__(self: BatchedRedis) -> BatchedRedis:
+    async def __aenter__(self) -> BatchedRedis:
         """Context manager init."""
         return self
 
-    async def __aexit__(self: BatchedRedis, *args: Any) -> None:  # noqa: ANN401
+    async def __aexit__(self, *args: Any) -> None:  # noqa: ANN401
         """Context manager exit."""
         await self._drain()
 
-    async def add(self: BatchedRedis, item: Any) -> None:  # noqa: ANN401
+    async def add(self, item: Any) -> None:  # noqa: ANN401
         """Put item to the DB (add it in the queue)."""
         if len(self.queue) == self.limit:
             await self._drain()
@@ -59,7 +55,7 @@ class BatchedRedis:
         self.queue.append(item)
 
     def process(
-        self: BatchedRedis,
+        self,
         pipeline: RedisPipeline[str],  # noqa: ARG002
         item: Any,  # noqa: ANN401, ARG002
     ) -> None:
@@ -69,7 +65,7 @@ class BatchedRedis:
         )
         raise NotImplementedError(err)
 
-    async def _drain(self: BatchedRedis) -> None:
+    async def _drain(self) -> None:
         """Drain the queue."""
         if not self.connection:  # pragma: no cover
             err = "Invalid redis connection"
@@ -90,11 +86,7 @@ class BatchedRedis:
 class BatchedRedisDelete(BatchedRedis):
     """Batch delete redis keys."""
 
-    def process(
-        self: BatchedRedisDelete,
-        pipeline: RedisPipeline[str],
-        item: str,
-    ) -> None:
+    def process(self, pipeline: RedisPipeline[str], item: str) -> None:
         """Process items in queue."""
         pipeline.delete(item)  # pragma: no cover
 

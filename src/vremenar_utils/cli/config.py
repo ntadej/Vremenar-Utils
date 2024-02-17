@@ -14,7 +14,7 @@ from .logging import error_panel, info_panel
 class TyperState:
     """Execution configuration state."""
 
-    def __init__(self: TyperState) -> None:
+    def __init__(self) -> None:
         """Initialize configuration state."""
         self.config_file: Path = Path("config.yml")
         self.debug: bool = False
@@ -24,7 +24,7 @@ class TyperState:
 class Configuration:
     """Configuration helper."""
 
-    def __init__(self: Configuration, path: Path) -> None:
+    def __init__(self, path: Path) -> None:
         """Initialize configuration helper."""
         self.mode: str = "staging"
         self.debug: bool = False
@@ -37,7 +37,7 @@ class Configuration:
         self.runitor_enabled: bool = False
         self.runitor_ping_url: str = ""
 
-    def to_object(self: Configuration) -> dict[str, Any]:
+    def to_object(self) -> dict[str, Any]:
         """Convert configuration to object."""
         obj = {
             "Mode": self.mode,

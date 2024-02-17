@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 6.3.*",
+  "firebase-admin == 6.4.*",
   "geopandas == 0.14.*",
   "httpx == 0.26.*",
   "lxml",
@@ -41,10 +41,10 @@ dev = [
   "mypy == 1.8.*",
   "pre-commit",
   "pre-commit-hooks == 4.5.*",
-  "pytest >= 7.0",
+  "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked",
-  "ruff == 0.1.14",
+  "ruff == 0.2.1",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
@@ -56,20 +56,6 @@ vremenar_utils = "vremenar_utils.cli:application"
 
 [tool.pdm.scripts]
 test = "pytest -W error"
-
-[tool.black]
-line-length = 88
-target-version = ['py311']
-include = '\.pyi?$'
-skip-string-normalization = true
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.mypy_cache
-  | \.venv
-)/
-'''
 
 [tool.coverage.run]
 branch = true
@@ -88,7 +74,11 @@ ignore_errors = true
 omit = ["src/vremenar_utils/tests/*", "tests/*"]
 
 [tool.ruff]
+src = ["src"]
 target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
 select = [
   "F",     # pyflakes
   "E",     # pycodestyle
@@ -131,14 +121,14 @@ select = [
   "RUF",   # ruff
 ]
 ignore = [
-  "ANN102",  # missing-type-cls (not working for the moment)
+  "ANN101",  # missing-type-self (deprecated)
+  "ANN102",  # missing-type-class (deprecated)
   "PLR2004", # magic-value-comparison (not wanted)
   "D203",    # one-blank-line-before-class (conflicting with no-blank-line-before-class)
   "D213",    # multi-line-summary-second-line (conflicting with multi-line-summary-first-line)
   "FBT001",  # boolean-positional-arg-in-function-definition (not wanted)
   "FBT002",  # boolean-default-value-in-function-definition (not wanted)
 ]
-line-length = 88
 
 [tool.mypy]
 strict = true

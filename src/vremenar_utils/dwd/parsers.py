@@ -53,7 +53,7 @@ class StationIDConverter:
     )
     STATION_TYPES: ClassVar[list[str]] = ["SY", "MN"]
 
-    def __init__(self: StationIDConverter, logger: Logger) -> None:
+    def __init__(self, logger: Logger) -> None:
         """Initialize DWD station ID converter."""
         self.logger = logger
         self.dwd_to_wmo: dict[str, str] = {}
@@ -61,12 +61,12 @@ class StationIDConverter:
 
         self._update()
 
-    def _update(self: StationIDConverter) -> None:
+    def _update(self) -> None:
         self.logger.info("Updating station ID maps")
         response = httpx.get(self.STATION_LIST_URL, headers=HEADERS)
         self._parse_station_list(response.text)
 
-    def _parse_station_list(self: StationIDConverter, html: str) -> None:
+    def _parse_station_list(self, html: str) -> None:
         sel = Selector(html)
         station_rows: SelectorList[Selector] = SelectorList()
         for station_type in self.STATION_TYPES:
@@ -82,11 +82,11 @@ class StationIDConverter:
             self.wmo_to_dwd[wmo_id] = dwd_id
         self.logger.info("Parsed %d station ID mappings", len(station_rows))
 
-    def convert_to_wmo(self: StationIDConverter, dwd_id: str) -> str | None:
+    def convert_to_wmo(self, dwd_id: str) -> str | None:
         """Convert DWD ID to WMO."""
         return self.dwd_to_wmo.get(dwd_id)  # pragma: no cover
 
-    def convert_to_dwd(self: StationIDConverter, wmo_id: str) -> str | None:
+    def convert_to_dwd(self, wmo_id: str) -> str | None:
         """Convert WMO ID to DWD."""
         return self.wmo_to_dwd.get(wmo_id)
 
@@ -95,7 +95,7 @@ class Parser:
     """Base parser class."""
 
     def __init__(
-        self: Parser,
+        self,
         logger: Logger,
         path: Path,
         without_station_id_converter: bool = False,
@@ -141,9 +141,7 @@ class CurrentObservationsParser(Parser):
         "wind_gust_speed": kmh_to_ms,
     }
 
-    def parse(
-        self: CurrentObservationsParser,
-    ) -> Iterable[dict[str, str | int | float | None]]:
+    def parse(self) -> Iterable[dict[str, str | int | float | None]]:
         """Parse current weather."""
         with self.path.open() as f:
             reader = DictReader(f, delimiter=";")
@@ -158,10 +156,7 @@ class CurrentObservationsParser(Parser):
                 }
                 break  # only parse first row for now
 
-    def parse_row(
-        self: CurrentObservationsParser,
-        row: dict[str, str],
-    ) -> dict[str, str | int | float | None]:
+    def parse_row(self, row: dict[str, str]) -> dict[str, str | int | float | None]:
         """Parse a row of data."""
         record: dict[str, str | int | float | None] = {
             element: (
@@ -178,18 +173,12 @@ class CurrentObservationsParser(Parser):
         self._sanitize_record(record)
         return record
 
-    def _convert_units(
-        self: CurrentObservationsParser,
-        record: dict[str, str | int | float | None],
-    ) -> None:
+    def _convert_units(self, record: dict[str, str | int | float | None]) -> None:
         for element, converter in self.CONVERTERS.items():
             if record[element] is not None:
                 record[element] = converter(record[element])
 
-    def _sanitize_record(
-        self: CurrentObservationsParser,
-        record: dict[str, str | int | float | None],
-    ) -> None:
+    def _sanitize_record(self, record: dict[str, str | int | float | None]) -> None:
         to_sanitize = {
             "cloud_cover": 100,
             "relative_humidity": 100,
@@ -197,7 +186,7 @@ class CurrentObservationsParser(Parser):
         }
 
         for key, threshold in to_sanitize.items():
-            if key in record and record[key]:
+            if record.get(key):
                 value = record[key]
                 if not isinstance(value, int | float):  # pragma: no cover
                     err = f"'{key}' should be a number"
@@ -229,7 +218,7 @@ class MOSMIXParserFast(Parser):
     }
 
     def parse(
-        self: MOSMIXParserFast,
+        self,
         station_ids: list[str],
     ) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
@@ -283,9 +272,7 @@ class MOSMIXParserFast(Parser):
                         progress.update(task, advance=1)
                         yield from self._sanitize_records(records)
 
-    def stations(
-        self: MOSMIXParserFast,
-    ) -> Iterable[dict[str, str | int | float | None]]:
+    def stations(self) -> Iterable[dict[str, str | int | float | None]]:
         """Parse the file."""
         self.logger.debug("Parsing %s", self.path)
 
@@ -338,7 +325,7 @@ class MOSMIXParserFast(Parser):
         return accepted
 
     def _parse_station(  # noqa: PLR0913
-        self: MOSMIXParserFast,
+        self,
         station_elem: Element,
         station_ids: list[str],
         timestamps: list[str],
@@ -408,16 +395,16 @@ class MOSMIXParserFast(Parser):
         return [base_record]
 
     def _sanitize_records(
-        self: MOSMIXParserFast,
+        self,
         records: Iterable[dict[str, str | int | float | None]],
     ) -> Iterable[dict[str, str | int | float | None]]:
         for r in records:
-            if "condition" in r and r["condition"] is not None:  # pragma: no branch
+            if r.get("condition") and r["condition"] is not None:  # pragma: no branch
                 r["condition"] = synop_past_weather_code_to_condition(
                     int(r["condition"]),
                 )
 
-            if "precipitation" in r and r["precipitation"]:
+            if r.get("precipitation"):
                 if not isinstance(r["precipitation"], int | float):  # pragma: no cover
                     err = "'precipitation' should be a number"
                     raise ValueError(err)
@@ -425,7 +412,7 @@ class MOSMIXParserFast(Parser):
                     self.logger.warning("Ignoring negative precipitation value: %s", r)
                     r["precipitation"] = None
 
-            if "wind_direction" in r and r["wind_direction"]:
+            if r.get("wind_direction"):
                 if not isinstance(r["wind_direction"], int | float):  # pragma: no cover
                     err = "'wind_direction' should be a number"
                     raise ValueError(err)

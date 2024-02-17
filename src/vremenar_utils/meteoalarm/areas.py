@@ -4,7 +4,7 @@ from json import dump, load
 from pathlib import Path
 from pkgutil import get_data
 from tempfile import NamedTemporaryFile
-from typing import IO
+from typing import IO, Any, cast
 
 from httpx import AsyncClient
 
@@ -34,6 +34,12 @@ SLOVENIA_DESCRIPTIONS = {
     "SI010": "Slovenia / South-East",
     "SI801": "Slovenia / Sea",
 }
+
+
+def read_meteoalarm_areas() -> dict[str, Any]:
+    """Read MeteoAlarm areas."""
+    with Path("meteoalarm_geocodes.json").open() as f:
+        return cast(dict[str, Any], load(f))
 
 
 async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
@@ -74,8 +80,7 @@ async def process_meteoalarm_areas(
             await download(logger, temporary_file)
             data = load(temporary_file)
     else:  # pragma: no cover
-        with Path("meteoalarm_geocodes.json").open() as f:
-            data = load(f)
+        data = read_meteoalarm_areas()
 
     areas: list[AlertArea] = []
 

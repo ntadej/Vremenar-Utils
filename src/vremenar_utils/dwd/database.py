@@ -52,7 +52,7 @@ class BatchedMosmix(BatchedRedis):
     """Batched MOSMIX save."""
 
     def process(
-        self: BatchedMosmix,
+        self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
     ) -> None:
@@ -94,7 +94,7 @@ class BatchedCurrentWeather(BatchedRedis):
     """Batched current weather save."""
 
     def process(
-        self: BatchedCurrentWeather,
+        self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
     ) -> None:

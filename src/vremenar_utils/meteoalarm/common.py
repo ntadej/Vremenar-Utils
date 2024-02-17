@@ -60,7 +60,7 @@ class AlertSeverity(Enum):
     Severe = "severe"  # red
     Extreme = "extreme"  # violet
 
-    def topics(self: AlertSeverity) -> list[str]:
+    def topics(self) -> list[str]:
         """Get topics based on the severity."""
         if self is AlertSeverity.Minor:
             return ["minor"]
@@ -85,7 +85,7 @@ class AlertArea:
     """MeteoAlarm area."""
 
     def __init__(
-        self: AlertArea,
+        self,
         code: str,
         name: str,
         description: str,
@@ -97,11 +97,11 @@ class AlertArea:
         self.description = description
         self.polygons = polygons
 
-    def __repr__(self: AlertArea) -> str:
+    def __repr__(self) -> str:
         """Represent MeteoAlarm area as string."""
         return f"{self.code}: {self.name} ({len(self.polygons)} polygon(s))"
 
-    def to_dict(self: AlertArea) -> dict[str, str | list[list[list[float]]]]:
+    def to_dict(self) -> dict[str, str | list[list[list[float]]]]:
         """Get dictionary with class properties."""
         return {
             "code": self.code,
@@ -110,7 +110,7 @@ class AlertArea:
             "polygons": self.polygons,
         }
 
-    def to_dict_for_database(self: AlertArea) -> dict[str, str]:
+    def to_dict_for_database(self) -> dict[str, str]:
         """Get dictionary with class properties for database usage."""
         return {
             "code": self.code,
@@ -148,7 +148,7 @@ class AlertArea:
 class AlertInfo:
     """MeteoAlarm alert info."""
 
-    def __init__(self: AlertInfo, alert_id: str) -> None:
+    def __init__(self, alert_id: str) -> None:
         """Initialise MeteoAlarm alert."""
         self.id: str = alert_id
         self.areas: set[str] = set()
@@ -169,7 +169,7 @@ class AlertInfo:
         self.sender_name: dict[LanguageID, str] = {}
         self.web: dict[LanguageID, str] = {}
 
-    def __repr__(self: AlertInfo) -> str:
+    def __repr__(self) -> str:
         """Get string representation of an alert."""
         return (
             f"{self.id}: {self.event[LanguageID.English]}"
@@ -177,7 +177,7 @@ class AlertInfo:
             f" ({self.onset} - {self.expires})"
         )
 
-    def to_info_dict(self: AlertInfo) -> dict[str, str]:
+    def to_info_dict(self) -> dict[str, str]:
         """Get dictionary with common properties."""
         return {
             "id": self.id,
@@ -190,7 +190,7 @@ class AlertInfo:
             "expires": f"{int(self.expires.timestamp())!s}000",
         }
 
-    def to_localised_dict(self: AlertInfo, language: LanguageID) -> dict[str, str]:
+    def to_localised_dict(self, language: LanguageID) -> dict[str, str]:
         """Get dictionary with localised properties."""
         output: dict[str, str] = {}
         attributes = [
@@ -217,16 +217,16 @@ class AlertInfo:
 class AlertNotificationInfo:
     """Alert notification info."""
 
-    def __init__(self: AlertNotificationInfo, alert_id: str) -> None:
+    def __init__(self, alert_id: str) -> None:
         """Initialise alert notification info."""
         self.id: str = alert_id
         self.announce: int = 0
         self.onset: int = 0
 
-    def __repr__(self: AlertNotificationInfo) -> str:
+    def __repr__(self) -> str:
         """Represent alert notification info as string."""
         return f"{self.id}: {self.announce}/{self.onset}"
 
-    def to_dict(self: AlertNotificationInfo) -> dict[str, int]:
+    def to_dict(self) -> dict[str, int]:
         """Get dictionary with class properties."""
         return {"announce": self.announce, "onset": self.onset}
