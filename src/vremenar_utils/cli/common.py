@@ -1,4 +1,5 @@
 """Vremenar common utils."""
+
 from __future__ import annotations
 
 from enum import Enum

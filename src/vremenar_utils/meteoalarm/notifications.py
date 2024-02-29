@@ -1,4 +1,5 @@
 """MeteoAlarm notifications."""
+
 from datetime import UTC, datetime
 
 from babel.dates import format_datetime
@@ -39,10 +40,13 @@ async def send_start_notifications(
     logger.info("Read %d existing alerts from the database", len(existing_alerts))
 
     async with redis.client() as db, BatchedNotifyOnset(db, country) as batch:
-        with BatchNotify(
-            logger,
-            dry_run=dry_run,
-        ) as notifier, progress_bar(transient=True) as progress:
+        with (
+            BatchNotify(
+                logger,
+                dry_run=dry_run,
+            ) as notifier,
+            progress_bar(transient=True) as progress,
+        ):
             task = progress.add_task("Processing", total=len(existing_alerts))
             for alert_id in existing_alerts:
                 alert = await get_alert_info(country, alert_id)

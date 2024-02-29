@@ -1,4 +1,5 @@
 """MeteoAlarm database utilities."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -22,9 +23,12 @@ async def get_alert_info(
 ) -> dict[str, dict[str, str]]:
     """Get alert info from ID."""
     alert = {}
-    async with redis.client() as connection, connection.pipeline(
-        transaction=False,
-    ) as pipeline:
+    async with (
+        redis.client() as connection,
+        connection.pipeline(
+            transaction=False,
+        ) as pipeline,
+    ):
         pipeline.hgetall(f"alert:{country.value}:{alert_id}:info")
         pipeline.smembers(f"alert:{country.value}:{alert_id}:areas")
         for language in LanguageID:

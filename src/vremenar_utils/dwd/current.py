@@ -1,4 +1,5 @@
 """DWD current weather utils."""
+
 from csv import reader
 from io import BytesIO, TextIOWrapper
 from pathlib import Path
@@ -50,9 +51,12 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
     if test_mode:  # pragma: no branch
         stations = [stations[0], stations[-1]]
 
-    async with redis.client() as db, BatchedCurrentWeather(  # pragma: no branch
-        db,
-    ) as batch:
+    async with (
+        redis.client() as db,
+        BatchedCurrentWeather(  # pragma: no branch
+            db,
+        ) as batch,
+    ):
         with progress_bar(transient=True) as progress:
             # TODO: figure out why this is not covered
             task = progress.add_task(  # pragma: no cover

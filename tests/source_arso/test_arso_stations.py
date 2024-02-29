@@ -1,4 +1,5 @@
 """ARSO stations utilities tests."""
+
 import pytest
 from typer.testing import CliRunner
 

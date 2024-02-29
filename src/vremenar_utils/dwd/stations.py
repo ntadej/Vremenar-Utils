@@ -1,4 +1,5 @@
 """DWD stations utils."""
+
 from csv import reader, writer
 from io import BytesIO, TextIOWrapper
 from operator import itemgetter
@@ -181,10 +182,13 @@ def _write_mosmix_stations(
     stations_keys: list[str] = []
 
     _, shape_buffered = load_shape("Germany")
-    with output.open("w", newline="") as csvfile, output_new.open(
-        "w",
-        newline="",
-    ) as csvfile_new:
+    with (
+        output.open("w", newline="") as csvfile,
+        output_new.open(
+            "w",
+            newline="",
+        ) as csvfile_new,
+    ):
         csv = writer(csvfile)
         csv_new = writer(csvfile_new)
         for station in stations:

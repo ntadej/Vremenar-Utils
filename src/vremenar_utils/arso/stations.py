@@ -1,4 +1,5 @@
 """ARSO stations utilities."""
+
 from io import BytesIO, TextIOWrapper
 from json import load
 from pkgutil import get_data

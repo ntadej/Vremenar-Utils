@@ -1,4 +1,5 @@
 """MeteoAlarm parsing."""
+
 # Inspired and based on https://github.com/rolfberkenbosch/meteoalert-api
 from __future__ import annotations
 

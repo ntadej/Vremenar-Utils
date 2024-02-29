@@ -1,4 +1,5 @@
 """Crontab utilities."""
+
 from pathlib import Path
 
 from crontab import CronItem, CronTab

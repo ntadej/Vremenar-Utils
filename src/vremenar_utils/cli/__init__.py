@@ -1,4 +1,5 @@
 """Vremenar Utils CLI."""
+
 import asyncio
 import sys
 from pathlib import Path

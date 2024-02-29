@@ -1,4 +1,5 @@
 """Geo Shapes Utils."""
+
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 
