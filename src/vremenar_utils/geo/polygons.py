@@ -1,4 +1,5 @@
 """Polygon helper utilities."""
+
 from shapely.geometry import Point, Polygon  # type: ignore
 
 

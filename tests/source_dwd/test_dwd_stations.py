@@ -1,4 +1,5 @@
 """DWD stations utilities tests."""
+
 from tempfile import NamedTemporaryFile
 
 import pytest
@@ -12,13 +13,16 @@ def test_stations(env: dict[str, str]) -> None:
     """Test stations update."""
     from vremenar_utils.cli import application
 
-    with NamedTemporaryFile(
-        suffix=".csv",
-        prefix="DWD_",
-    ) as temporary_file, NamedTemporaryFile(
-        suffix=".csv",
-        prefix="NEW_DWD_",
-    ) as temporary_file_new:
+    with (
+        NamedTemporaryFile(
+            suffix=".csv",
+            prefix="DWD_",
+        ) as temporary_file,
+        NamedTemporaryFile(
+            suffix=".csv",
+            prefix="NEW_DWD_",
+        ) as temporary_file_new,
+    ):
         result = runner.invoke(
             application,
             ["dwd-stations", temporary_file.name, temporary_file_new.name],
@@ -33,13 +37,16 @@ def test_stations_local(env: dict[str, str]) -> None:
     """Test stations update with local source."""
     from vremenar_utils.cli import application
 
-    with NamedTemporaryFile(
-        suffix=".csv",
-        prefix="DWD_",
-    ) as temporary_file, NamedTemporaryFile(
-        suffix=".csv",
-        prefix="NEW_DWD_",
-    ) as temporary_file_new:
+    with (
+        NamedTemporaryFile(
+            suffix=".csv",
+            prefix="DWD_",
+        ) as temporary_file,
+        NamedTemporaryFile(
+            suffix=".csv",
+            prefix="NEW_DWD_",
+        ) as temporary_file_new,
+    ):
         result = runner.invoke(
             application,
             [

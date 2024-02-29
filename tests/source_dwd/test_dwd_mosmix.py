@@ -1,4 +1,5 @@
 """DWD MOSMIX utilities tests."""
+
 import pytest
 from typer.testing import CliRunner
 
