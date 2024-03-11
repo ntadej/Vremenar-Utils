@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:80fd3a460f8705d81afcd7a8c8e8da6eb55a902b503abff26076d76b2231c5e1"
+content_hash = "sha256:a2d84c07eaca1e34e94828de7c6fff0085330574884a7d81f503480d8820cc69"
 
 [[package]]
 name = "anyio"
@@ -380,7 +380,7 @@ files = [
 
 [[package]]
 name = "firebase-admin"
-version = "6.4.0"
+version = "6.5.0"
 requires_python = ">=3.7"
 summary = "Firebase Admin Python SDK"
 dependencies = [
@@ -392,8 +392,8 @@ dependencies = [
     "pyjwt[crypto]>=2.5.0",
 ]
 files = [
-    {file = "firebase_admin-6.4.0-py3-none-any.whl", hash = "sha256:aa06f19f0aa8b9b929dbe5cd13677c9ba05fe7ff819564f420aae02c645c6322"},
-    {file = "firebase_admin-6.4.0.tar.gz", hash = "sha256:4ac83ee00abe68498b9f08d701b550a77b3a59efba610a9e2fb3d7b1515166c6"},
+    {file = "firebase_admin-6.5.0-py3-none-any.whl", hash = "sha256:fe34ee3ca0e625c5156b3931ca4b4b69b5fc344dbe51bba9706ff674ce277898"},
+    {file = "firebase_admin-6.5.0.tar.gz", hash = "sha256:e716dde1447f0a1cd1523be76ff872df33c4e1a3c079564ace033b2ad60bcc4f"},
 ]
 
 [[package]]

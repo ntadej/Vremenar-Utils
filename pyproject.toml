@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 6.4.*",
+  "firebase-admin ==6.5.*",
   "geopandas == 0.14.*",
   "httpx == 0.26.*",
   "lxml",
