@@ -29,7 +29,7 @@ dependencies = [
   "redis[hiredis] == 5.0.*",
   "rich == 13.7.*",
   "Shapely",
-  "typer[all] == 0.9.*",
+  "typer[all] ==0.12.*",
   "wheel",
   "xmltodict",
 ]
