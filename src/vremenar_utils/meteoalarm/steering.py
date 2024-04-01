@@ -1,4 +1,5 @@
 """MeteoAlarm steering code."""
+
 from vremenar_utils.cli.common import CountryID
 from vremenar_utils.cli.logging import Logger, progress_bar
 

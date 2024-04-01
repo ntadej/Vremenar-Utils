@@ -1,4 +1,5 @@
 """ARSO maps utilities tests."""
+
 import pytest
 from typer.testing import CliRunner
 

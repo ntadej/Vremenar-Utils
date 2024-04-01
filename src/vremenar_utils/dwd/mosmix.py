@@ -1,4 +1,5 @@
 """DWD MOSMIX utils."""
+
 from typing import IO
 
 from httpx import AsyncClient

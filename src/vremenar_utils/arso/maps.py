@@ -1,4 +1,5 @@
 """ARSO weather maps utils."""
+
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 

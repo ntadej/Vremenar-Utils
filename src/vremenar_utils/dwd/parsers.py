@@ -1,4 +1,5 @@
 """Parses of DWD open data."""
+
 # Based on brightsky
 # Copyright (c) 2020 Jakob de Maeyer
 from __future__ import annotations
@@ -224,9 +225,13 @@ class MOSMIXParserFast(Parser):
         """Parse the file."""
         self.logger.debug("Parsing %s", self.path)
 
-        with ZipFile(self.path) as zip_file, zip_file.open(
-            zip_file.namelist()[0],
-        ) as file, progress_bar(transient=True) as progress:
+        with (
+            ZipFile(self.path) as zip_file,
+            zip_file.open(
+                zip_file.namelist()[0],
+            ) as file,
+            progress_bar(transient=True) as progress,
+        ):
             task = progress.add_task("Processing", total=len(station_ids))
 
             timestamps: list[str] = []
@@ -276,9 +281,12 @@ class MOSMIXParserFast(Parser):
         """Parse the file."""
         self.logger.debug("Parsing %s", self.path)
 
-        with ZipFile(self.path) as zip_file, zip_file.open(
-            zip_file.namelist()[0],
-        ) as file:
+        with (
+            ZipFile(self.path) as zip_file,
+            zip_file.open(
+                zip_file.namelist()[0],
+            ) as file,
+        ):
             for _, elem in iterparse(file):
                 tag = QName(elem.tag).localname
 
