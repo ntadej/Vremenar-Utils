@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:80fd3a460f8705d81afcd7a8c8e8da6eb55a902b503abff26076d76b2231c5e1"
+content_hash = "sha256:8b820034da5405af50d6efe614239855accaa86bbc88c9fdb7b24367837bd35e"
 
 [[package]]
 name = "anyio"
@@ -1123,15 +1123,15 @@ files = [
 
 [[package]]
 name = "pre-commit-hooks"
-version = "4.5.0"
+version = "4.6.0"
 requires_python = ">=3.8"
 summary = "Some out-of-the-box hooks for pre-commit."
 dependencies = [
     "ruamel-yaml>=0.15",
 ]
 files = [
-    {file = "pre_commit_hooks-4.5.0-py2.py3-none-any.whl", hash = "sha256:b779d5c44ede9b1fda48e2d96b08e9aa5b1d2fdb8903ca09f0dbaca22d529edb"},
-    {file = "pre_commit_hooks-4.5.0.tar.gz", hash = "sha256:ffbe2af1c85ac9a7695866955680b4dee98822638b748a6f3debefad79748c8a"},
+    {file = "pre_commit_hooks-4.6.0-py2.py3-none-any.whl", hash = "sha256:a69199e6a2d45ec59c1020a81ca1549abddc2afb798276d9a0d951752d6abbfe"},
+    {file = "pre_commit_hooks-4.6.0.tar.gz", hash = "sha256:eb1f43ee67869cd41b4c59017fad4a0f9d4d61201d163f2135535aaf65035a2b"},
 ]
 
 [[package]]
