@@ -1,4 +1,5 @@
 """Stations database helpers."""
+
 from collections.abc import Mapping
 from typing import cast
 

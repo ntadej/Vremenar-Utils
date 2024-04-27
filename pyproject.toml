@@ -19,9 +19,9 @@ classifiers = [
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 6.4.*",
+  "firebase-admin == 6.5.*",
   "geopandas == 0.14.*",
-  "httpx == 0.26.*",
+  "httpx == 0.27.*",
   "lxml",
   "parsel",
   "python-crontab == 3.0.*",
@@ -29,7 +29,7 @@ dependencies = [
   "redis[hiredis] == 5.0.*",
   "rich == 13.7.*",
   "Shapely",
-  "typer[all] == 0.9.*",
+  "typer-slim[standard] == 0.12.*",
   "wheel",
   "xmltodict",
 ]
@@ -38,13 +38,13 @@ dependencies = [
 dev = [
   "coverage[toml]",
   "gevent",
-  "mypy == 1.8.*",
+  "mypy == 1.10.*",
   "pre-commit",
-  "pre-commit-hooks == 4.5.*",
+  "pre-commit-hooks == 4.6.*",
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked",
-  "ruff == 0.2.1",
+  "ruff == 0.4.2",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
