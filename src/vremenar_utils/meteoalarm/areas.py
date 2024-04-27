@@ -45,7 +45,7 @@ def read_meteoalarm_areas() -> dict[str, Any]:
 
 async def download(logger: Logger, temporary_file: IO[bytes]) -> None:
     """Download the MeteoAlarm area data."""
-    url = "https://edrop.zamg.ac.at/owncloud/index.php/s/5dwRiKmsF3r54tb/download"
+    url = "https://drive.usercontent.google.com/download?id=16s24hYHfYQhKMNcP1hpgQmg13Yb8j0hV&export=download&authuser=0"
     logger.info("Downloading MeteoAlarm area data from %s ...", url)
     logger.debug("Temporary file: %s", temporary_file.name)
     client = AsyncClient()
