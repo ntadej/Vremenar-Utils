@@ -4,8 +4,8 @@
 [metadata]
 groups = ["default", "dev"]
 strategy = ["cross_platform"]
-lock_version = "4.4.1"
-content_hash = "sha256:121b4e8889f4eff9cb2d47f338a0e0390546004dce00e6eff9ddac2f85c6ea2d"
+lock_version = "4.4.2"
+content_hash = "sha256:fa8e6b6632fbf0b401479cdea319c851f1ae708c5c1a7fc40497e2ba10df5e54"
 
 [[package]]
 name = "anyio"
@@ -1357,14 +1357,14 @@ files = [
 
 [[package]]
 name = "python-crontab"
-version = "3.0.0"
+version = "3.2.0"
 summary = "Python Crontab API"
 dependencies = [
     "python-dateutil",
 ]
 files = [
-    {file = "python-crontab-3.0.0.tar.gz", hash = "sha256:79fb7465039ddfd4fb93d072d6ee0d45c1ac8bf1597f0686ea14fd4361dba379"},
-    {file = "python_crontab-3.0.0-py3-none-any.whl", hash = "sha256:6d5ba3c190ec76e4d252989a1644fcb233dbf53fbc8fceeb9febe1657b9fb1d4"},
+    {file = "python_crontab-3.2.0-py3-none-any.whl", hash = "sha256:82cb9b6a312d41ff66fd3caf3eed7115c28c195bfb50711bc2b4b9592feb9fe5"},
+    {file = "python_crontab-3.2.0.tar.gz", hash = "sha256:40067d1dd39ade3460b2ad8557c7651514cd3851deffff61c5c60e1227c5c36b"},
 ]
 
 [[package]]
