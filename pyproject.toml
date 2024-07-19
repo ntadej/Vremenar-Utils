@@ -38,7 +38,7 @@ dependencies = [
 dev = [
   "coverage[toml]",
   "gevent",
-  "mypy == 1.10.*",
+  "mypy ==1.11.*",
   "pre-commit",
   "pre-commit-hooks == 4.6.*",
   "pytest >= 8.0",
