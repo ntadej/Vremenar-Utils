@@ -332,7 +332,7 @@ class MOSMIXParserFast(Parser):
 
         return accepted
 
-    def _parse_station(  # noqa: PLR0913
+    def _parse_station(
         self,
         station_elem: Element,
         station_ids: list[str],
