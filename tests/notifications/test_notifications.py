@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_send_message(env: dict[str, str]) -> None:
     """Test send message."""
     from vremenar_utils.cli import application

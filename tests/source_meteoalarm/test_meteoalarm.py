@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_areas_germany(env: dict[str, str]) -> None:
     """Test alerts areas for Germany."""
     from vremenar_utils.cli import application
@@ -25,7 +25,7 @@ def test_alerts_areas_germany(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_areas_slovenia(env: dict[str, str]) -> None:
     """Test alerts areas for Slovenia."""
     from vremenar_utils.cli import application
@@ -44,7 +44,7 @@ def test_alerts_areas_slovenia(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_get_germany(env: dict[str, str]) -> None:
     """Test alerts for Germany."""
     from vremenar_utils.cli import application
@@ -58,7 +58,7 @@ def test_alerts_get_germany(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_get_slovenia(env: dict[str, str]) -> None:
     """Test alerts for Slovenia."""
     from vremenar_utils.cli import application
@@ -72,7 +72,7 @@ def test_alerts_get_slovenia(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_notify_germany(env: dict[str, str]) -> None:
     """Test alerts notity for Germany."""
     from vremenar_utils.cli import application
@@ -86,7 +86,7 @@ def test_alerts_notify_germany(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_notify_slovenia(env: dict[str, str]) -> None:
     """Test alerts notify for Slovenia."""
     from vremenar_utils.cli import application
@@ -100,7 +100,7 @@ def test_alerts_notify_slovenia(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_update_germany(env: dict[str, str]) -> None:
     """Test alerts update for Germany."""
     from vremenar_utils.cli import application
@@ -114,7 +114,7 @@ def test_alerts_update_germany(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_alerts_update_slovenia(env: dict[str, str]) -> None:
     """Test alerts update for Slovenia."""
     from vremenar_utils.cli import application

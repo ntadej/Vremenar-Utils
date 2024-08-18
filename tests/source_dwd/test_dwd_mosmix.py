@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_mosmix_main(env: dict[str, str]) -> None:
     """Test MOSMIX update."""
     from vremenar_utils.cli import application
@@ -15,7 +15,7 @@ def test_mosmix_main(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_mosmix_local_source(env: dict[str, str]) -> None:
     """Test MOSMIX update from local source."""
     from vremenar_utils.cli import application
@@ -29,7 +29,7 @@ def test_mosmix_local_source(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_mosmix_local_stations(env: dict[str, str]) -> None:
     """Test MOSMIX update using local stations list."""
     from vremenar_utils.cli import application

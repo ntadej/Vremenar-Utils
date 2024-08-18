@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_help(env: dict[str, str]) -> None:
     """Test help."""
     from vremenar_utils.cli import application
@@ -17,7 +17,7 @@ def test_help(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_config_missing(env: dict[str, str]) -> None:
     """Test config missing."""
     from vremenar_utils.cli import application
@@ -28,7 +28,7 @@ def test_config_missing(env: dict[str, str]) -> None:
     assert result.exit_code == 1
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_version(env: dict[str, str]) -> None:
     """Test version."""
     from vremenar_utils.cli import application
@@ -39,7 +39,7 @@ def test_version(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_config_generate(env: dict[str, str]) -> None:
     """Test config generation."""
     from vremenar_utils.cli import application
@@ -55,7 +55,7 @@ def test_config_generate(env: dict[str, str]) -> None:
     assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_config(env: dict[str, str]) -> None:
     """Test config."""
     from vremenar_utils.cli import application

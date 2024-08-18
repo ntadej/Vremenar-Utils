@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_current(env: dict[str, str]) -> None:
     """Test current weather update."""
     from vremenar_utils.cli import application

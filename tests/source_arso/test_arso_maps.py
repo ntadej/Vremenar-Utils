@@ -6,7 +6,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_arso_maps(env: dict[str, str]) -> None:
     """Test ARSO maps update."""
     from vremenar_utils.cli import application

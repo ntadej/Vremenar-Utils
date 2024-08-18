@@ -8,7 +8,7 @@ from typer.testing import CliRunner
 runner = CliRunner()
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_stations(env: dict[str, str]) -> None:
     """Test stations update."""
     from vremenar_utils.cli import application
@@ -32,7 +32,7 @@ def test_stations(env: dict[str, str]) -> None:
         assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_stations_local(env: dict[str, str]) -> None:
     """Test stations update with local source."""
     from vremenar_utils.cli import application
@@ -61,7 +61,7 @@ def test_stations_local(env: dict[str, str]) -> None:
         assert result.exit_code == 0
 
 
-@pytest.mark.forked()
+@pytest.mark.forked
 def test_stations_store(env: dict[str, str]) -> None:
     """Test stations store."""
     from vremenar_utils.cli import application
