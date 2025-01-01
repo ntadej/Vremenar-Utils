@@ -22,7 +22,7 @@ from rich.progress import (
 from rich.style import Style
 from typer import Exit
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .config import Configuration
 
 

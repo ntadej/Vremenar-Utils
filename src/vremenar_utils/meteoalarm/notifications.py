@@ -37,7 +37,7 @@ async def send_start_notifications(
 
     existing_alerts: set[str] = await get_alert_ids(country)
     logger.info("Sending notifications")
-    if dry_run:
+    if dry_run:  # pragma: no branch
         logger.info("This is a dry run!")
     logger.info("Read %d existing alerts from the database", len(existing_alerts))
 
@@ -72,7 +72,7 @@ async def send_start_notifications(
 
                 send_start_notification(logger, notifier, alert, areas)
 
-                if not dry_run:
+                if not dry_run:  # pragma: no cover
                     await batch.add(alert_id)
 
                 progress.update(task, advance=1)

@@ -48,7 +48,7 @@ async def validate_stations(country: CountryID, station_ids: set[str]) -> int:
             ids_to_remove.add(station_id)
 
     if ids_to_remove:  # pragma: no cover
-        async with redis.client() as connection:  # pragma: no branch
+        async with redis.client() as connection:
             for station_id in ids_to_remove:
                 async with connection.pipeline() as pipeline:
                     pipeline.srem(f"station:{country.value}", station_id)
@@ -63,7 +63,7 @@ async def load_stations(
 ) -> dict[str, dict[str, str | int | float]]:
     """Load stations from redis."""
     stations: dict[str, dict[str, str | int | float]] = {}
-    async with redis.client() as connection:  # pragma: no branch
+    async with redis.client() as connection:
         station_ids: set[str] = await redis.smembers(f"station:{country.value}")
         async with connection.pipeline(transaction=False) as pipeline:
             for station_id in station_ids:

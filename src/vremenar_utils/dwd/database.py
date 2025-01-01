@@ -12,7 +12,7 @@ from vremenar_utils.database.stations import store_station, validate_stations
 
 from .stations import load_stations, zoom_level_conversion
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger
 
 

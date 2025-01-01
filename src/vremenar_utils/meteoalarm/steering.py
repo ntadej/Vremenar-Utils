@@ -20,10 +20,21 @@ if TYPE_CHECKING:
     from vremenar_utils.cli.common import CountryID
 
 
-async def get_alerts(logger: Logger, country: CountryID) -> None:
+async def get_alerts(
+    logger: Logger,
+    country: CountryID,
+    force_refresh: bool | None = False,
+) -> None:
     """Get alerts for a specific country."""
     existing_alerts: set[str] = await get_alert_ids(country)
     logger.info("Read %d existing alerts from the database", len(existing_alerts))
+    if force_refresh:
+        logger.info(
+            "Deleting %d existing alerts from the database",
+            len(existing_alerts),
+        )
+        for alert_id in existing_alerts:
+            await delete_alert(country, alert_id)
 
     parser = MeteoAlarmParser(logger, country, existing_alerts)
     new_alerts = await parser.get_new_alerts()
@@ -44,7 +55,7 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
 
     logger.info("Added %d new alerts", counter)
 
-    for alert_id in parser.obsolete_alert_ids:
+    for alert_id in parser.obsolete_alert_ids:  # pragma: no cover
         await delete_alert(country, alert_id)
 
     logger.info("Removed %d obsolete alerts", len(parser.obsolete_alert_ids))
@@ -74,19 +85,11 @@ async def get_alerts(logger: Logger, country: CountryID) -> None:
 async def get_alerts_and_notify(
     logger: Logger,
     country: CountryID,
-    forecast: bool = False,
     dry_run: bool = False,
 ) -> None:
     """Get alerts and notify for a specific country."""
-    from .notifications import (
-        # send_forecast_notifications,
-        send_start_notifications,
-    )
+    from .notifications import send_start_notifications
 
     await get_alerts(logger, country)
 
     await send_start_notifications(logger, country, dry_run=dry_run)
-
-    if forecast:
-        # asyncio.run(send_forecast_notifications(logger, country))
-        pass

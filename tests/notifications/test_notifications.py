@@ -18,3 +18,45 @@ def test_send_message(env: dict[str, str]) -> None:
         catch_exceptions=False,
     )
     assert result.exit_code == 0
+
+
+def test_notifications_make() -> None:
+    """Test making notifications."""
+    from vremenar_utils.notifications import make_message, prepare_message
+
+    message = make_message("Hello", "subtitle", "test message")
+
+    with pytest.raises(
+        ValueError,
+        match="Either a list of topics or a token need to be specified.",
+    ):
+        prepare_message(message)
+
+    with pytest.raises(
+        ValueError,
+        match="Topics and a token can not be set at the same time.",
+    ):
+        prepare_message(message, topics=["topic"], token="test")  # noqa: S106
+
+    prepare_message(message, topics=["topic"])
+    prepare_message(message, topics=["topic1", "topic2"])
+
+    with pytest.raises(
+        ValueError,
+        match="Topics should not be empty.",
+    ):
+        prepare_message(message, topics=[])
+
+    with pytest.raises(
+        ValueError,
+        match="Too many topics used at the same time.",
+    ):
+        prepare_message(message, topics=["topic"] * 6)
+
+    prepare_message(message, token="test")  # noqa: S106
+
+    with pytest.raises(
+        ValueError,
+        match="Token should not be empty.",
+    ):
+        prepare_message(message, token="")

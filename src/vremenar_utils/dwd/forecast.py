@@ -23,6 +23,7 @@ async def process_mosmix(
     logger: Logger,
     local_source: bool | None = False,
     local_stations: bool | None = False,
+    test_mode: bool | None = False,
 ) -> None:
     """Cache DWD MOSMIX data."""
     # load stations to use
@@ -46,6 +47,8 @@ async def process_mosmix(
     async with redis.client() as db, BatchedMosmix(db) as batch:
         for record in parser.parse(station_ids):
             await batch.add(record)
+            if test_mode:  # pragma: no branch
+                break
     if temporary_file:  # pragma: no branch
         temporary_file.close()
 

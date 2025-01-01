@@ -6,7 +6,7 @@ import asyncio
 import sys
 from pathlib import Path
 from sys import argv
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 
@@ -27,8 +27,6 @@ if not sys.warnoptions:  # pragma: no cover
     import warnings
 
     warnings.simplefilter("default")
-
-DatabaseAnnotatedType = Optional[DatabaseType]  # noqa: UP007
 
 application = typer.Typer()
 state = TyperState()
@@ -56,7 +54,7 @@ def main(
         "config.yml",
     ),
     database: Annotated[
-        DatabaseAnnotatedType,
+        DatabaseType | None,
         typer.Option(
             "--database",
             envvar="VREMENAR_DATABASE",
@@ -194,6 +192,10 @@ def dwd_mosmix(
         bool,
         typer.Option("--local-stations", help="Use local stations database."),
     ] = False,
+    test_mode: Annotated[
+        bool,
+        typer.Option("--test-mode", help="Only run as a test on a few stations."),
+    ] = False,
 ) -> None:
     """DWD weather MOSMIX data caching."""
     config = init_config(state)
@@ -211,6 +213,7 @@ def dwd_mosmix(
             logger,
             local_source=local_source,
             local_stations=local_stations,
+            test_mode=test_mode,
         ),
     )
 
@@ -233,7 +236,7 @@ def dwd_current(
 
     from vremenar_utils.dwd.current import current_weather
 
-    asyncio.run(current_weather(logger, test_mode if test_mode else False))
+    asyncio.run(current_weather(logger, test_mode))
 
 
 @application.command()
@@ -291,6 +294,10 @@ def alerts_areas(
 @application.command()
 def alerts_get(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
+    force_refresh: Annotated[
+        bool,
+        typer.Option("--force-refresh", help="Force refresh all alerts from source."),
+    ] = False,
 ) -> None:
     """Load MeteoAlarm alerts."""
     config = init_config(state)
@@ -303,16 +310,12 @@ def alerts_get(
 
     from vremenar_utils.meteoalarm.steering import get_alerts
 
-    asyncio.run(get_alerts(logger, country))
+    asyncio.run(get_alerts(logger, country, force_refresh))
 
 
 @application.command()
 def alerts_notify(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
-    forecast: Annotated[
-        bool,
-        typer.Option("--forecast", help="Send forecast notification."),
-    ] = False,
     dry_run: Annotated[
         bool,
         typer.Option("--dry-run", help="Dry run."),
@@ -327,25 +330,14 @@ def alerts_notify(
 
     init_database(logger, config)
 
-    from vremenar_utils.meteoalarm.notifications import (
-        # send_forecast_notifications,
-        send_start_notifications,
-    )
+    from vremenar_utils.meteoalarm.notifications import send_start_notifications
 
-    if forecast:
-        # asyncio.run(send_forecast_notifications(logger, country))
-        pass
-    else:
-        asyncio.run(send_start_notifications(logger, country, dry_run=dry_run))
+    asyncio.run(send_start_notifications(logger, country, dry_run=dry_run))
 
 
 @application.command()
 def alerts_update(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
-    forecast: Annotated[
-        bool,
-        typer.Option("--forecast", help="Send forecast notification."),
-    ] = False,
     dry_run: Annotated[
         bool,
         typer.Option("--dry-run", help="Dry run."),
@@ -362,7 +354,7 @@ def alerts_update(
 
     from vremenar_utils.meteoalarm.steering import get_alerts_and_notify
 
-    asyncio.run(get_alerts_and_notify(logger, country, forecast, dry_run=dry_run))
+    asyncio.run(get_alerts_and_notify(logger, country, dry_run=dry_run))
 
 
 @application.command()

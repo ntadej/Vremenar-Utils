@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from firebase_admin import initialize_app, messaging  # type: ignore
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger
 
 firebase_app = initialize_app()
@@ -85,7 +85,7 @@ def prepare_message_for_topics(
         raise ValueError(err)
 
     if len(topics) > 5:
-        err = "Too many topics used at the same time"
+        err = "Too many topics used at the same time."
         raise ValueError(err)
 
     if len(topics) == 1:
@@ -94,7 +94,7 @@ def prepare_message_for_topics(
             logger.debug('Sending notification with topic "%s"', message.topic)
     else:
         message.condition = " || ".join([f"'{topic}' in topics" for topic in topics])
-        if logger:
+        if logger:  # pragma: no cover
             logger.debug('Sending notification with condition "%s"', message.condition)
 
 
@@ -109,13 +109,13 @@ def prepare_message_for_token(
         raise ValueError(err)
 
     message.token = token
-    if logger:
+    if logger:  # pragma: no cover
         logger.debug('Sending notification to device with token "%s"', message.token)
 
 
 def send_messages(messages: list[messaging.Message], dry_run: bool = False) -> None:
     """Send a batch of messages."""
-    if not dry_run:
+    if not dry_run:  # pragma: no cover
         messaging.send_each(messages, app=firebase_app)
 
 

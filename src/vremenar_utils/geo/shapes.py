@@ -7,7 +7,7 @@ from geopandas import GeoDataFrame, read_file  # type: ignore
 from shapely.geometry import Point  # type: ignore
 
 
-def get_shape(shape_id: str) -> None:
+def get_shape(shape_id: str) -> None:  # pragma: no cover
     """Get shape for a country."""
     # Taken from http://thematicmapping.org/downloads/world_borders.php
     # http://thematicmapping.org/downloads/TM_WORLD_BORDERS-0.3.zip

@@ -9,7 +9,7 @@ from redis.asyncio.client import Pipeline as RedisPipeline
 
 from vremenar_utils.cli.common import DatabaseType
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from vremenar_utils.cli.config import Configuration
     from vremenar_utils.cli.logging import Logger
 

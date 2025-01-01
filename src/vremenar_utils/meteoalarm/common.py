@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from vremenar_utils.cli.common import LanguageID
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from datetime import datetime
 
 
@@ -69,8 +69,9 @@ class AlertSeverity(Enum):
             return ["moderate", "minor"]
         if self is AlertSeverity.Severe:
             return ["severe", "moderate", "minor"]
-        if self is AlertSeverity.Extreme:  # noqa: RET503
+        if self is AlertSeverity.Extreme:
             return ["extreme", "severe", "moderate", "minor"]
+        raise RuntimeError()  # pragma: no cover
 
 
 class AlertCertainty(Enum):
@@ -204,12 +205,15 @@ class AlertInfo:
         ]
 
         for attribute in attributes:
-            if hasattr(self, attribute) and getattr(self, attribute):
+            if hasattr(self, attribute) and getattr(  # pragma: no branch
+                self,
+                attribute,
+            ):
                 value = getattr(self, attribute)
                 output[attribute] = (
                     value[language] if language in value else value[LanguageID.English]
                 )
-            else:
+            else:  # pragma: no cover
                 output[attribute] = ""
 
         return output

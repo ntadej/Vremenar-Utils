@@ -51,7 +51,7 @@ def test_alerts_get_germany(env: dict[str, str]) -> None:
 
     result = runner.invoke(
         application,
-        ["alerts-get", "de"],
+        ["alerts-get", "de", "--force-refresh"],
         env=env,
         catch_exceptions=False,
     )

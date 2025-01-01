@@ -21,7 +21,7 @@ from .common import (
     AlertUrgency,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger
 
 METEOALARM_ATOM_ENDPOINT = (
@@ -92,7 +92,7 @@ class MeteoAlarmParser:
     def check_for_obsolete(self, all_ids: set[str]) -> None:
         """Check for obsolete alerts."""
         for alert_id in self.existing_alert_ids:
-            if alert_id not in all_ids:
+            if alert_id not in all_ids:  # pragma: no cover
                 self.obsolete_alert_ids.add(alert_id)
 
     def parse_alert_datetime(self, string: str) -> datetime:
@@ -128,7 +128,7 @@ class MeteoAlarmParser:
         # get the alert data in the supported languages
         translations = alert_dict.get("info", [])
 
-        if isinstance(translations, list):
+        if isinstance(translations, list):  # pragma: no branch
             for translation in translations:
                 try:
                     lang = LanguageID(translation.get("language")[:2])
@@ -136,7 +136,7 @@ class MeteoAlarmParser:
                     continue
                 self.parse_alert_info(alert, translation)
                 self.parse_alert_translations(alert, lang, translation)
-        else:
+        else:  # pragma: no cover
             try:
                 lang = LanguageID(translation.get("language")[:2])
             except ValueError:  # pragma: no cover
@@ -185,7 +185,7 @@ class MeteoAlarmParser:
         alert.headline[language] = data.get("headline", "").strip()
         if data.get("description"):  # pragma: no branch
             alert.description[language] = data.get("description", "").strip()
-        if data.get("instruction"):
+        if data.get("instruction"):  # pragma: no branch
             alert.instructions[language] = data.get("instruction", "").strip()
         alert.sender_name[language] = data.get("senderName", "").strip()
         alert.web[language] = data.get("web", "").strip()

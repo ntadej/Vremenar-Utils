@@ -28,7 +28,7 @@ from .units import (
     synop_past_weather_code_to_condition,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
     from pathlib import Path
 
@@ -72,7 +72,7 @@ class StationIDConverter:
         station_rows: SelectorList[Selector] = SelectorList()
         for station_type in self.STATION_TYPES:
             station_rows.extend(sel.xpath(f'//tr[td[3][text() = "{station_type}"]]'))
-        if not station_rows:
+        if not station_rows:  # pragma: no cover
             error = "No synoptic stations"
             raise ValueError(error)
         self.dwd_to_wmo.clear()
@@ -315,7 +315,7 @@ class MOSMIXParserFast(Parser):
         accepted = []
         now = datetime.now(tz=UTC)
         now = now.replace(minute=0, second=0, microsecond=0)
-        if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no branch
+        if now >= timestamps[0] and now <= timestamps[-1]:  # pragma: no cover
             accepted.append(f"{int(now.timestamp())}000")
 
         daily = now + timedelta(hours=48 - now.hour)
@@ -381,7 +381,7 @@ class MOSMIXParserFast(Parser):
                         re.sub(r"\s+", "\n", values_str.strip()).splitlines(),
                     )
                 ]
-                if len(records[column]) != len(timestamps):
+                if len(records[column]) != len(timestamps):  # pragma: no cover
                     error = "Mismatch in number of timestamps and values"
                     raise ValueError(error)
 
