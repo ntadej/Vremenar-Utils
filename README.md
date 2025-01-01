@@ -10,13 +10,19 @@ A collection of utilities for the [Vremenar API](https://github.com/ntadej/Vreme
 
 ## Installation and running
 
-### Python PDM
+### uv
 
-This project uses [PDM](https://pdm.fming.dev) to track dependencies.
-For basic setup run
+This project uses [uv](https://github.com/astral-sh/uv) to track dependencies.
+For basic development setup run
 
 ```shell
-pdm sync
+uv sync
+```
+
+For production setup run
+
+```shell
+uv sync --no-dev
 ```
 
 ## Contributing

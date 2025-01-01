@@ -6,7 +6,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-14]
+        os: [ubuntu-24.04, macos-14]
         python-version: ["3.11", "3.12"]
 
     steps:
@@ -15,70 +15,50 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Setup PDM
-        uses: pdm-project/setup-pdm@v4
-
-      - name: Set up cache
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: ${{ runner.os }}-venv-${{ matrix.python-version }}-${{ hashFiles('**/pdm.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-${{ matrix.python-version }}-
-
       - name: Start Redis
-        uses: shogo82148/actions-setup-redis@v1.35.1
+        uses: shogo82148/actions-setup-redis@v1
         with:
           redis-port: 6379
           redis-version: "6.x"
           auto-start: true
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Set up dependencies
+        run: uv sync -p ${{ matrix.python-version }}
+
       - name: Download DWD MOSMIX
         run: |
           wget https://opendata.dwd.de/weather/local_forecasts/mos/MOSMIX_S/all_stations/kml/MOSMIX_S_LATEST_240.kmz
-
-      - name: Setup server
-        run: |
-          pdm sync -G dev
 
       - name: Run tests
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
           echo $FIREBASE_CREDENTIALS | base64 --decode > firebase.json
-          GOOGLE_APPLICATION_CREDENTIALS=firebase.json pdm run test
+          GOOGLE_APPLICATION_CREDENTIALS=firebase.json uv run pytest -W error
 
       - name: Report coverage with Codecov
-        if: github.event_name == 'push' && matrix.python-version == 3.11 && matrix.os == 'ubuntu-22.04'
-        uses: codecov/codecov-action@v4
+        if: github.event_name == 'push' && matrix.python-version == 3.11 && matrix.os == 'ubuntu-24.04'
+        uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           flags: unittests
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Override Coverage Source Path for Sonar
-        if: matrix.python-version == 3.11 && matrix.os == 'ubuntu-22.04'
+        if: matrix.python-version == 3.11 && matrix.os == 'ubuntu-24.04'
         run: sed -i "s/<source>\/home\/runner\/work\/Vremenar-Utils\/Vremenar-Utils<\/source>/<source>\/github\/workspace<\/source>/g" coverage.xml
 
-      - name: SonarCloud Scan
-        if: matrix.python-version == 3.11 && matrix.os == 'ubuntu-22.04'
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: SonarQube Scan
+        if: matrix.python-version == 3.11 && matrix.os == 'ubuntu-24.04'
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  deploy-production:
-    runs-on: ubuntu-22.04
-    needs: test
-    if: github.ref == 'refs/heads/deploy'
-    environment: Production
-
-    steps:
-      - name: Deploy
-        run: |
-          echo "Deploying to production..."
