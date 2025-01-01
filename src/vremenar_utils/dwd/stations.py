@@ -1,20 +1,24 @@
 """DWD stations utils."""
 
+from __future__ import annotations
+
 from csv import reader, writer
 from io import BytesIO, TextIOWrapper
 from operator import itemgetter
 from pathlib import Path
 from pkgutil import get_data
 from tempfile import NamedTemporaryFile
-from typing import TextIO
+from typing import TYPE_CHECKING, TextIO
 
 from shapely.geometry import Point  # type: ignore
 
-from vremenar_utils.cli.logging import Logger
 from vremenar_utils.geo.shapes import inside_shape, load_shape
 
 from .mosmix import download
 from .parsers import MOSMIXParserFast
+
+if TYPE_CHECKING:
+    from vremenar_utils.cli.logging import Logger
 
 DWD_STATION_KEYS = [
     "station_id",
@@ -130,7 +134,7 @@ async def process_mosmix_stations(
 
     temporary_file = None
     if not local_source:
-        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")
+        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")  # noqa: SIM115
         await download(logger, temporary_file)
 
     meta_keys = ["name", "type", "admin", "status"]

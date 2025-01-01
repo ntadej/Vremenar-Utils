@@ -1,5 +1,7 @@
 """ARSO weather maps utils."""
 
+from __future__ import annotations
+
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 
@@ -156,9 +158,8 @@ async def get_map_data(
 
 async def process_map_data(logger: Logger) -> None:
     """Cache ARSO weather maps data."""
-    async with redis.client() as db, BatchedMaps(db) as batch:  # pragma: no branch
-        # TODO: figure out why this is not covered
-        with progress_bar(transient=True) as progress:  # pragma: no cover
+    async with redis.client() as db, BatchedMaps(db) as batch:
+        with progress_bar(transient=True) as progress:
             task = progress.add_task("Processing", total=len(MapType))
             for map_type in MapType:
                 await get_map_data(logger, batch, map_type)

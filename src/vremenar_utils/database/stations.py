@@ -1,11 +1,14 @@
 """Stations database helpers."""
 
-from collections.abc import Mapping
-from typing import cast
+from __future__ import annotations
 
-from vremenar_utils.cli.common import CountryID
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, cast
 
 from .redis import redis
+
+if TYPE_CHECKING:
+    from vremenar_utils.cli.common import CountryID
 
 
 async def store_station(

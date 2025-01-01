@@ -6,7 +6,7 @@ from logging import DEBUG, INFO, WARNING, Formatter, Logger, getLogger
 from logging.handlers import RotatingFileHandler
 from typing import TYPE_CHECKING, Any
 
-from rich import print
+from rich import print as rprint
 from rich.color import Color
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -28,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def info_panel(message: str, title: str = "Information") -> None:
     """Print info message in a panel."""
-    print(
+    rprint(
         Panel(
             message,
             title=title,
@@ -40,7 +40,7 @@ def info_panel(message: str, title: str = "Information") -> None:
 
 def error_panel(message: str) -> Exit:
     """Print error message in a panel."""
-    print(
+    rprint(
         Panel(
             message,
             title="Error",

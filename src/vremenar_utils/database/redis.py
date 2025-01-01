@@ -57,8 +57,8 @@ class BatchedRedis:
 
     def process(
         self,
-        pipeline: RedisPipeline[str],  # noqa: ARG002
-        item: Any,  # noqa: ANN401, ARG002
+        pipeline: RedisPipeline[str],
+        item: Any,  # noqa: ANN401
     ) -> None:
         """Process items in queue."""
         err = (  # pragma: no cover
@@ -92,4 +92,4 @@ class BatchedRedisDelete(BatchedRedis):
         pipeline.delete(item)  # pragma: no cover
 
 
-__all__ = ["redis", "Redis", "RedisPipeline", "BatchedRedis", "BatchedRedisDelete"]
+__all__ = ["BatchedRedis", "BatchedRedisDelete", "Redis", "RedisPipeline", "redis"]

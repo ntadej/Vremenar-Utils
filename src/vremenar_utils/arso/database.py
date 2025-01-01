@@ -28,7 +28,7 @@ async def store_stations(logger: Logger) -> None:
             "latitude": station["latitude"],
             "longitude": station["longitude"],
             "altitude": station["altitude"],
-            "zoom_level": zoom_level_conversion(float(station["zoomLevel"])),
+            "zoom_level": zoom_level_conversion(int(station["zoomLevel"])),
             "forecast_only": 0,
         }
 

@@ -1,6 +1,8 @@
 """Parses of DWD open data."""
+
 # Based on brightsky
 # Copyright (c) 2020 Jakob de Maeyer
+from __future__ import annotations
 
 
 def celsius_to_kelvin(temperature: float) -> float:

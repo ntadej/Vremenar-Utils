@@ -1,5 +1,7 @@
 """ARSO weather conditions utils."""
 
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Any
 
@@ -171,15 +173,10 @@ async def process_weather_data(
 
     async with (
         redis.client() as db,
-        BatchedWeather(  # pragma: no branch
-            db,
-        ) as batch,
-        BatchedMaps(
-            db,
-        ) as batch_maps,
+        BatchedWeather(db) as batch,
+        BatchedMaps(db) as batch_maps,
     ):
-        # TODO: figure out why this is not covered
-        with progress_bar(transient=True) as progress:  # pragma: no cover
+        with progress_bar(transient=True) as progress:
             task = progress.add_task("Processing", total=len(data_ids))
             for data_id in data_ids:
                 await get_weather_data(logger, batch, batch_maps, station_ids, data_id)

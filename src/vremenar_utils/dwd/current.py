@@ -1,5 +1,7 @@
 """DWD current weather utils."""
 
+from __future__ import annotations
+
 from csv import reader
 from io import BytesIO, TextIOWrapper
 from pathlib import Path
@@ -53,16 +55,10 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
 
     async with (
         redis.client() as db,
-        BatchedCurrentWeather(  # pragma: no branch
-            db,
-        ) as batch,
+        BatchedCurrentWeather(db) as batch,
     ):
         with progress_bar(transient=True) as progress:
-            # TODO: figure out why this is not covered
-            task = progress.add_task(  # pragma: no cover
-                "Processing",
-                total=len(stations),
-            )
+            task = progress.add_task("Processing", total=len(stations))
             for sid in stations:
                 station_id = sid
                 if len(station_id) == 4:  # pragma: no branch
@@ -72,7 +68,7 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
                     f"{station_id}-BEOB.csv"
                 )
 
-                temporary_file = NamedTemporaryFile(
+                temporary_file = NamedTemporaryFile(  # noqa: SIM115
                     suffix=".csv",
                     prefix=f"DWD_CURRENT_{station_id}",
                 )

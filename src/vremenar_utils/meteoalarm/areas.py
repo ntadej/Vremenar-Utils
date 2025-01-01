@@ -1,5 +1,7 @@
 """MeteoAlarm areas utils."""
 
+from __future__ import annotations
+
 from io import BytesIO, TextIOWrapper
 from json import dump, load
 from pathlib import Path

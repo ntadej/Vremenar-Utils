@@ -72,7 +72,9 @@ class StationIDConverter:
         station_rows: SelectorList[Selector] = SelectorList()
         for station_type in self.STATION_TYPES:
             station_rows.extend(sel.xpath(f'//tr[td[3][text() = "{station_type}"]]'))
-        assert station_rows, "No synoptic stations"
+        if not station_rows:
+            error = "No synoptic stations"
+            raise ValueError(error)
         self.dwd_to_wmo.clear()
         self.wmo_to_dwd.clear()
         for row in station_rows:
@@ -379,7 +381,9 @@ class MOSMIXParserFast(Parser):
                         re.sub(r"\s+", "\n", values_str.strip()).splitlines(),
                     )
                 ]
-                assert len(records[column]) == len(timestamps)
+                if len(records[column]) != len(timestamps):
+                    error = "Mismatch in number of timestamps and values"
+                    raise ValueError(error)
 
             # Turn dict of lists into list of dicts
             return (

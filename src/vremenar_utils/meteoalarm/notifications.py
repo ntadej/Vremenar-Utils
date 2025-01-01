@@ -1,5 +1,7 @@
 """MeteoAlarm notifications."""
 
+from __future__ import annotations
+
 from datetime import UTC, datetime
 
 from babel.dates import format_datetime
@@ -112,7 +114,3 @@ def send_start_notification(
             ]
             prepare_message(message, topics=topics, logger=logger)
             notifier.send(message)
-
-
-# async def send_forecast_notifications(logger: Logger, country: CountryID) -> None:
-#     """Send notifications with daily alert forecasts."""

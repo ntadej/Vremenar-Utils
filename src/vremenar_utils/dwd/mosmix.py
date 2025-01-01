@@ -1,5 +1,7 @@
 """DWD MOSMIX utils."""
 
+from __future__ import annotations
+
 from typing import IO
 
 from httpx import AsyncClient

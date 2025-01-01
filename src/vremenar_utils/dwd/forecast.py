@@ -1,10 +1,12 @@
 """DWD MOSMIX utils."""
 
+from __future__ import annotations
+
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import TYPE_CHECKING
 
 from vremenar_utils.cli.common import CountryID
-from vremenar_utils.cli.logging import Logger
 from vremenar_utils.database.redis import redis
 from vremenar_utils.database.stations import load_stations
 
@@ -12,6 +14,9 @@ from .database import BatchedMosmix
 from .mosmix import download
 from .parsers import MOSMIXParserFast
 from .stations import load_stations as load_local_stations
+
+if TYPE_CHECKING:
+    from vremenar_utils.cli.logging import Logger
 
 
 async def process_mosmix(
@@ -31,14 +36,14 @@ async def process_mosmix(
 
     temporary_file = None
     if not local_source:
-        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")
+        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")  # noqa: SIM115
         await download(logger, temporary_file)
 
     file_path = Path(
         temporary_file.name if temporary_file else "MOSMIX_S_LATEST_240.kmz",
     )
     parser = MOSMIXParserFast(logger, file_path)
-    async with redis.client() as db, BatchedMosmix(db) as batch:  # pragma: no branch
+    async with redis.client() as db, BatchedMosmix(db) as batch:
         for record in parser.parse(station_ids):
             await batch.add(record)
     if temporary_file:  # pragma: no branch

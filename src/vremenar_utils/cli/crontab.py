@@ -1,14 +1,19 @@
 """Crontab utilities."""
 
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from crontab import CronItem, CronTab
-from rich import print
+from rich import print as rprint
 from rich.prompt import Confirm
 
 from .common import CountryID, DatabaseType
-from .config import Configuration
-from .logging import Logger
+
+if TYPE_CHECKING:
+    from .config import Configuration
+    from .logging import Logger
 
 COMMAND_LIST: list[str] = [
     "alerts-update",
@@ -65,7 +70,7 @@ def setup_command(  # noqa: PLR0913
     return command_final.strip()
 
 
-def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901, PLR0912
+def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901, PLR0912, PLR0915
     """Prepare crontab for Vremenar Utils."""
     cron = CronTab(user=True)
 
@@ -152,8 +157,9 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
                     job = cron.new(command=command_string)
                 set_cron_item_interval(job, command, db_type)
 
-    assert cron.crons
-    assert cron.lines
+    if not cron.crons or not cron.lines:
+        error = "No crontab jobs found!"
+        raise RuntimeError(error)
 
     # print new status
     logger.info("Crontab to write:")
@@ -161,10 +167,10 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
         logger.info("%s", line)
 
     # ask to write changes
-    print()
+    rprint()
     confirmation = Confirm.ask("Do you want to save this crontab?", default=False)
 
     if confirmation:
-        print()
+        rprint()
         logger.info("Saving crontab...")
         cron.write()

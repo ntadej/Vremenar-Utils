@@ -1,6 +1,9 @@
 """MeteoAlarm steering code."""
 
-from vremenar_utils.cli.common import CountryID
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from vremenar_utils.cli.logging import Logger, progress_bar
 
 from .areas import build_meteoalarm_area_description_map, load_meteoalarm_areas
@@ -12,6 +15,9 @@ from .database import (
     store_alerts_for_area,
 )
 from .parser import MeteoAlarmParser
+
+if TYPE_CHECKING:
+    from vremenar_utils.cli.common import CountryID
 
 
 async def get_alerts(logger: Logger, country: CountryID) -> None:

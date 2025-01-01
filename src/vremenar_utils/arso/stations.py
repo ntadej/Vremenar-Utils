@@ -1,5 +1,7 @@
 """ARSO stations utilities."""
 
+from __future__ import annotations
+
 from io import BytesIO, TextIOWrapper
 from json import load
 from pkgutil import get_data
@@ -22,10 +24,12 @@ def load_stations() -> dict[str, dict[str, str | int | float]]:
     return output
 
 
-def zoom_level_conversion(zoom_level: float) -> float:
+def zoom_level_conversion(zoom_level: int) -> float:
     """Convert zoom levels from ARSO ones."""
-    zoom_level = zoom_level + 1.0 if zoom_level == 5.0 else zoom_level
-    zoom_level /= 6
+    zoom_level_processed = (
+        float(zoom_level) + 1.0 if zoom_level == 5 else float(zoom_level)
+    )
+    zoom_level_processed /= 6
     zoom_epsilon = 0.25
-    zoom_level *= 11 - 7.5 - zoom_epsilon
-    return 11 - zoom_level - zoom_epsilon
+    zoom_level_processed *= 11 - 7.5 - zoom_epsilon
+    return 11 - zoom_level_processed - zoom_epsilon
