@@ -16,6 +16,7 @@ wheels/
 .coverage
 /coverage
 /coverage.xml
+/junit.xml
 /run
 /version.json
 /tmp

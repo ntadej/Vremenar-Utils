@@ -45,7 +45,7 @@ async def process_mosmix(
     )
     parser = MOSMIXParserFast(logger, file_path)
     async with redis.client() as db, BatchedMosmix(db) as batch:
-        for record in parser.parse(station_ids):
+        for record in parser.parse(station_ids):  # pragma: no branch
             await batch.add(record)
             if test_mode:  # pragma: no branch
                 break

@@ -33,7 +33,7 @@ async def get_alerts(
             "Deleting %d existing alerts from the database",
             len(existing_alerts),
         )
-        for alert_id in existing_alerts:
+        for alert_id in existing_alerts:  # pragma: no cover
             await delete_alert(country, alert_id)
 
     parser = MeteoAlarmParser(logger, country, existing_alerts)

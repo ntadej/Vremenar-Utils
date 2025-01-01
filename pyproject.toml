@@ -151,5 +151,5 @@ warn_unreachable = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov=vremenar_utils --cov-config=.coveragerc --cov-report=term-missing:skip-covered --cov-report xml --cov-report html:coverage"
+addopts = "--cov=vremenar_utils --cov-config=.coveragerc --cov-report=term-missing:skip-covered --cov-report xml --cov-report html:coverage --junitxml=junit.xml -o junit_family=legacy"
 testpaths = ["tests"]

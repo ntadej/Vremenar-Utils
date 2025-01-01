@@ -240,7 +240,7 @@ class MOSMIXParserFast(Parser):
             accepted_timestamps: list[str] = []
             placemark = 0
             source = ""
-            for _, elem in iterparse(file):
+            for _, elem in iterparse(file):  # pragma: no branch
                 tag = QName(elem.tag).localname
 
                 if tag == "ProductID":
@@ -410,7 +410,7 @@ class MOSMIXParserFast(Parser):
         self,
         records: Iterable[dict[str, str | int | float | None]],
     ) -> Iterable[dict[str, str | int | float | None]]:
-        for r in records:
+        for r in records:  # pragma: no branch
             if r.get("condition") and r["condition"] is not None:  # pragma: no branch
                 r["condition"] = synop_past_weather_code_to_condition(
                     int(r["condition"]),
