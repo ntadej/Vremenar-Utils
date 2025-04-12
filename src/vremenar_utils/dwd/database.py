@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, cast
 
@@ -13,6 +12,8 @@ from vremenar_utils.database.stations import store_station, validate_stations
 from .stations import load_stations, zoom_level_conversion
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from vremenar_utils.cli.logging import Logger
 
 
@@ -86,7 +87,7 @@ class BatchedMosmix(BatchedRedis):
         pipeline.expire(set_key, delta)
         pipeline.hset(
             key,
-            mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
+            mapping=cast("Mapping[bytes | str, bytes | float | int | str]", record),
         )
         pipeline.expire(key, delta)
 
@@ -112,6 +113,6 @@ class BatchedCurrentWeather(BatchedRedis):
         key = f"dwd:current:{record['station_id']}"
         pipeline.hset(
             key,
-            mapping=cast(Mapping[bytes | str, bytes | float | int | str], record),
+            mapping=cast("Mapping[bytes | str, bytes | float | int | str]", record),
         )
         pipeline.expire(key, timedelta(hours=3))

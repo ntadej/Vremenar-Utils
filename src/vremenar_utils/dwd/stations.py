@@ -10,7 +10,7 @@ from pkgutil import get_data
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, TextIO
 
-from shapely.geometry import Point  # type: ignore
+from shapely.geometry import Point  # type: ignore[import-untyped]
 
 from vremenar_utils.geo.shapes import inside_shape, load_shape
 
@@ -155,7 +155,7 @@ async def process_mosmix_stations(
         if station_id in old_stations:
             station.update({key: old_stations[station_id][key] for key in meta_keys})
         else:
-            station.update({key: "" for key in meta_keys})
+            station.update(dict.fromkeys(meta_keys, ""))
         station["dwd_station_id"] = (
             str(int(station["dwd_station_id"])) if station["dwd_station_id"] else ""
         )

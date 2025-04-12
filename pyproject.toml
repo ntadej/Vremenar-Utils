@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 6.6.*",
+  "firebase-admin == 6.7.*",
   "geopandas == 1.0.*",
   "httpx == 0.28.*",
   "lxml",
@@ -28,7 +28,7 @@ dependencies = [
   "python-crontab == 3.2.*",
   "pyyaml",
   "redis[hiredis] == 5.2.*",
-  "rich == 13.9.*",
+  "rich == 14.0.*",
   "Shapely",
   "typer-slim[standard] == 0.15.*",
   "wheel",
@@ -39,13 +39,13 @@ dependencies = [
 dev = [
   "coverage[toml]",
   "gevent",
-  "mypy == 1.14.1",
+  "mypy == 1.15.0",
   "pre-commit",
   "pre-commit-hooks == 5.0.*",
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked",
-  "ruff == 0.8.4",
+  "ruff == 0.11.5",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
@@ -82,14 +82,6 @@ line-length = 88
 
 [tool.ruff.lint]
 select = [
-  "F",     # pyflakes
-  "E",     # pycodestyle
-  "W",     # pycodestyle
-  "C90",   # mccabe (complexity)
-  "I",     # isort
-  "N",     # pep8-naming
-  "D",     # pydocstyle
-  "UP",    # pyupgrade
   "YTT",   # flake8-2020
   "ANN",   # flake8-annotations
   "ASYNC", # flake8-async
@@ -112,23 +104,32 @@ select = [
   "T20",   # flake8-print
   "PT",    # flake8-pytest-style
   "Q",     # flake8-quotes
+  "RSE",   # flake8-raise
   "RET",   # flake8-return
   "SLF",   # flake8-self
   "SIM",   # flake8-simplify
   "TID",   # flake8-tidy-imports
   "TC",    # flake8-type-checking
-  "INT",   # flake8-gettext
   "ARG",   # flake8-unused-arguments
   "PTH",   # flake8-use-pathlib
-  "PD",    # pandas-vet
-  "PL",    # pylint
-  "TRY",   # tryceratops
   "FLY",   # flynt
+  "I",     # isort
+  "C90",   # mccabe (complexity)
   "NPY",   # numpy
+  "PD",    # pandas-vet
+  "N",     # pep8-naming
   "PERF",  # perflint
-  "FURB",  # refurb
+  "E",     # pycodestyle
+  "W",     # pycodestyle
   "DOC",   # pydoclint
+  "D",     # pydocstyle
+  "F",     # pyflakes
+  "PGH",   # pygrep-hooks
+  "PL",    # pylint
+  "UP",    # pyupgrade
+  "FURB",  # refurb
   "RUF",   # ruff
+  "TRY",   # tryceratops
 ]
 ignore = [
   "PLR2004", # magic-value-comparison (not wanted)

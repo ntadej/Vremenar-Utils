@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from vremenar_utils.cli.common import CountryID, LanguageID
 from vremenar_utils.database.redis import BatchedRedis, Redis, RedisPipeline, redis
 
 from .common import AlertArea, AlertInfo, AlertNotificationInfo
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 async def get_alert_ids(country: CountryID) -> set[str]:
@@ -52,7 +54,7 @@ async def store_alert(country: CountryID, alert: AlertInfo) -> None:
         pipeline.hset(
             f"alert:{country.value}:{alert.id}:info",
             mapping=cast(
-                Mapping[bytes | str, bytes | float | int | str],
+                "Mapping[bytes | str, bytes | float | int | str]",
                 alert.to_info_dict(),
             ),
         )
@@ -61,14 +63,14 @@ async def store_alert(country: CountryID, alert: AlertInfo) -> None:
             pipeline.hset(
                 f"alert:{country.value}:{alert.id}:localised_{language.value}",
                 mapping=cast(
-                    Mapping[bytes | str, bytes | float | int | str],
+                    "Mapping[bytes | str, bytes | float | int | str]",
                     alert.to_localised_dict(language),
                 ),
             )
         pipeline.hset(
             f"alert:{country.value}:{alert.id}:notifications",
             mapping=cast(
-                Mapping[bytes | str, bytes | float | int | str],
+                "Mapping[bytes | str, bytes | float | int | str]",
                 AlertNotificationInfo(alert.id).to_dict(),
             ),
         )
@@ -119,7 +121,7 @@ async def store_alerts_areas(country: CountryID, areas: list[AlertArea]) -> None
                 pipeline.hset(
                     f"alerts_area:{country.value}:{area.code}:info",
                     mapping=cast(
-                        Mapping[bytes | str, bytes | float | int | str],
+                        "Mapping[bytes | str, bytes | float | int | str]",
                         area.to_dict_for_database(),
                     ),
                 )

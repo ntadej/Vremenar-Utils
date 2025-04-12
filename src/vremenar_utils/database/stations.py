@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, cast
 
 from .redis import redis
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from vremenar_utils.cli.common import CountryID
 
 
@@ -28,12 +29,15 @@ async def store_station(
             )
         pipeline.hset(
             f"station:{country.value}:{station_id}",
-            mapping=cast(Mapping[bytes | str, bytes | float | int | str], station),
+            mapping=cast("Mapping[bytes | str, bytes | float | int | str]", station),
         )
         if metadata is not None:  # pragma: no branch
             pipeline.hset(
                 f"station:{country.value}:{station_id}",
-                mapping=cast(Mapping[bytes | str, bytes | float | int | str], metadata),
+                mapping=cast(
+                    "Mapping[bytes | str, bytes | float | int | str]",
+                    metadata,
+                ),
             )
         await pipeline.execute()
 

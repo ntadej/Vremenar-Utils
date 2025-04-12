@@ -42,7 +42,7 @@ SLOVENIA_DESCRIPTIONS = {
 def read_meteoalarm_areas() -> dict[str, Any]:  # pragma: no cover
     """Read MeteoAlarm areas."""
     with Path("meteoalarm_geocodes.json").open() as f:
-        return cast(dict[str, Any], load(f))
+        return cast("dict[str, Any]", load(f))
 
 
 async def download(logger: Logger, temporary_file: IO[bytes]) -> None:

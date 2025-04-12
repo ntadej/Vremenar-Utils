@@ -28,19 +28,19 @@ COMMAND_LIST_PER_COUNTRY: list[str] = ["alerts-update"]
 def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) -> None:
     """Set cron item interval for a specific command."""
     if command in ["alerts-update", "arso-maps"]:
-        cron.minute.every(  # type: ignore
+        cron.minute.every(  # type: ignore[union-attr]
             2 if db_type == DatabaseType.Production else 5,
         )
     elif command in ["arso-weather", "dwd-current"]:
         if db_type == DatabaseType.Production:
-            cron.minute.every(15)  # type: ignore
+            cron.minute.every(15)  # type: ignore[union-attr]
         else:
-            cron.minute.on(45)  # type: ignore
+            cron.minute.on(45)  # type: ignore[union-attr]
     elif command == "dwd-mosmix":
         if db_type == DatabaseType.Production:
-            cron.minute.on(35)  # type: ignore
+            cron.minute.on(35)  # type: ignore[union-attr]
         else:
-            cron.minute.on(40)  # type: ignore
+            cron.minute.on(40)  # type: ignore[union-attr]
     else:
         error = f"Unknown command: {command}"
         raise ValueError(error)

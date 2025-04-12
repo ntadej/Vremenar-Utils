@@ -71,7 +71,7 @@ class AlertSeverity(Enum):
             return ["severe", "moderate", "minor"]
         if self is AlertSeverity.Extreme:
             return ["extreme", "severe", "moderate", "minor"]
-        raise RuntimeError()  # pragma: no cover
+        raise RuntimeError  # pragma: no cover
 
 
 class AlertCertainty(Enum):

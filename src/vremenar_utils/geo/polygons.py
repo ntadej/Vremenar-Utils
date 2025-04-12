@@ -1,6 +1,6 @@
 """Polygon helper utilities."""
 
-from shapely.geometry import Point, Polygon  # type: ignore
+from shapely.geometry import Point, Polygon  # type: ignore[import-untyped]
 
 
 def point_in_polygon(point: list[float], polygon: list[list[float]]) -> bool:

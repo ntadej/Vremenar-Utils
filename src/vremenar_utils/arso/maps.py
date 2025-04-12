@@ -45,7 +45,7 @@ def weather_map_prefix(map_type: MapType) -> str:
         return f"{prefix}_t2m_"
     if map_type is MapType.HailProbability:
         return f"{prefix}_hp_"
-    raise RuntimeError()  # pragma: no cover
+    raise RuntimeError  # pragma: no cover
 
 
 def weather_map_interval(map_type: MapType) -> int:
@@ -56,7 +56,7 @@ def weather_map_interval(map_type: MapType) -> int:
         return 30
     if map_type in [MapType.WindSpeed, MapType.Temperature]:
         return 60
-    raise RuntimeError()  # pragma: no cover
+    raise RuntimeError  # pragma: no cover
 
 
 def weather_map_expiration(map_type: MapType) -> int:
@@ -67,7 +67,7 @@ def weather_map_expiration(map_type: MapType) -> int:
         return 6
     if map_type in [MapType.WindSpeed, MapType.Temperature]:
         return 6
-    raise RuntimeError()  # pragma: no cover
+    raise RuntimeError  # pragma: no cover
 
 
 def weather_map_forecast(map_type: MapType) -> list[tuple[int, str]]:
@@ -85,7 +85,7 @@ def weather_map_forecast(map_type: MapType) -> list[tuple[int, str]]:
             (300, "0500"),
             (360, "0600"),
         ]
-    raise RuntimeError()  # pragma: no cover
+    raise RuntimeError  # pragma: no cover
 
 
 async def get_map_data(

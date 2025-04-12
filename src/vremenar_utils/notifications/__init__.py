@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from firebase_admin import initialize_app, messaging  # type: ignore
+from firebase_admin import initialize_app, messaging  # type: ignore[import-untyped]
 
 if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger

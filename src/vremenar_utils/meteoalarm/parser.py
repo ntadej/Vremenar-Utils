@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from httpx import AsyncClient, codes
-from xmltodict import parse  # type: ignore
+from xmltodict import parse  # type: ignore[import-untyped]
 
 from vremenar_utils.cli.common import CountryID, LanguageID
 

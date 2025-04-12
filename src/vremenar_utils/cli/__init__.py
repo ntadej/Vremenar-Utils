@@ -36,7 +36,7 @@ def version_callback(value: bool) -> None:
     """Version callback."""
     if value:
         typer.echo(f"Vremenar Utils, version {__version__}")
-        raise typer.Exit()
+        raise typer.Exit
 
 
 @application.callback()
@@ -137,7 +137,7 @@ def stations_store(
 
         asyncio.run(arso_store_stations(logger))
     else:  # pragma: no cover
-        raise RuntimeError()
+        raise RuntimeError
 
 
 @application.command()
