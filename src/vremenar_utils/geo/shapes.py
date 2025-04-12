@@ -3,8 +3,8 @@
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 
-from geopandas import GeoDataFrame, read_file  # type: ignore[import-untyped]
-from shapely.geometry import Point  # type: ignore[import-untyped]
+from geopandas import GeoDataFrame, read_file  # type: ignore # noqa: PGH003
+from shapely.geometry import Point  # type: ignore # noqa: PGH003
 
 
 def get_shape(shape_id: str) -> None:  # pragma: no cover
