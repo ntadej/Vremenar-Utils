@@ -6,7 +6,6 @@ repos:
         args: []
         additional_dependencies:
           - Babel
-          - firebase-admin
           - httpx
           - numpy
           - parsel
