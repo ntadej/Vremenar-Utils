@@ -13,9 +13,11 @@ from vremenar_utils.database.redis import BatchedRedis, redis
 from vremenar_utils.database.stations import load_stations
 
 from . import BASEURL, TIMEOUT
-from .database import BatchedMaps, BatchedWeather
+from .database import BatchedMaps, BatchedWeather, BatchedWeather48h
 from .maps import ObservationType
+from .parser import MeteoSIWebMetParser
 from .stations import load_stations as load_local_stations
+from .stations import load_stations_map
 
 data_ids = [
     "current",
@@ -183,3 +185,18 @@ async def process_weather_data(
                 progress.update(task, advance=1)
 
     logger.info("Processed all data")
+
+
+async def process_weather_data_48h(logger: Logger) -> None:
+    """Process ARSO 48h weather measurements data."""
+    stations = load_stations_map()
+    parser = MeteoSIWebMetParser(logger, stations)
+
+    async with redis.client() as db, BatchedWeather48h(db) as batch:
+        with progress_bar(transient=True) as progress:
+            task = progress.add_task("Processing", total=len(stations.keys()))
+            for station_id in stations:
+                data = await parser.get_data(station_id=station_id)
+                for record in data:
+                    await batch.add(record)
+                progress.update(task, advance=1)

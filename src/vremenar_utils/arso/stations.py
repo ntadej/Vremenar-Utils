@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from csv import reader
 from io import BytesIO, TextIOWrapper
 from json import load
 from pkgutil import get_data
+from typing import TextIO
 
 
 def load_stations() -> dict[str, dict[str, str | int | float]]:
@@ -22,6 +24,27 @@ def load_stations() -> dict[str, dict[str, str | int | float]]:
         station["id"] = station["id"].strip("_")
         output[station["id"]] = station
     return output
+
+
+def load_stations_map() -> dict[str, str]:
+    """Load ARSO stations map."""
+    data = get_data("vremenar_utils", "data/stations/ARSO.id.csv")
+    if not data:  # pragma: no cover
+        return {}
+
+    bytes_data = BytesIO(data)
+    with TextIOWrapper(bytes_data, encoding="utf-8") as file:
+        return load_stations_map_from_csv(file)
+
+
+def load_stations_map_from_csv(csv_file: TextIO) -> dict[str, str]:
+    """Get a dictionary of supported DWD stations from a CSV file."""
+    stations: dict[str, str] = {}
+
+    csv = reader(csv_file, dialect="excel")
+    for row in csv:
+        stations[row[0]] = row[1]
+    return stations
 
 
 def zoom_level_conversion(zoom_level: int) -> float:

@@ -92,6 +92,51 @@ class BatchedWeather(BatchedRedis):
         pipeline.expire(key, delta)
 
 
+class BatchedWeather48h(BatchedRedis):
+    """Batched ARSO weather information save for 48h measurements."""
+
+    def process(
+        self,
+        pipeline: RedisPipeline[str],
+        record: dict[str, str | int | float | None],
+    ) -> None:
+        """Process ARSO weather records."""
+        if not isinstance(record["timestamp"], str):  # pragma: no cover
+            err = "Invalid 'timestamp' value"
+            raise TypeError(err)
+
+        now = datetime.now(tz=UTC)
+        now = now.replace(minute=0, second=0, microsecond=0)
+        reference = now + timedelta(hours=-96)
+        record_time = datetime.fromtimestamp(
+            float(record["timestamp"][:-3]),
+            tz=UTC,
+        )
+        delta = record_time - reference
+
+        # cleanup
+        empty_keys = set()
+        for key, value in record.items():
+            if value is None:
+                empty_keys.add(key)
+        for key in empty_keys:
+            del record[key]
+
+        # store in the DB
+        sub_key = record["timestamp"]
+        if isinstance(record["source"], str) and "current" in record["source"]:
+            sub_key = "current"
+        set_key = f"arso:weather_48h:{sub_key}"
+        key = f"arso:weather_48h:{sub_key}:{record['station_id']}"
+        pipeline.sadd(set_key, key)
+        pipeline.expire(set_key, delta)
+        pipeline.hset(
+            key,
+            mapping=cast("Mapping[bytes | str, bytes | float | int | str]", record),
+        )
+        pipeline.expire(key, delta)
+
+
 class BatchedMaps(BatchedRedis):
     """Batched ARSO weather map save."""
 

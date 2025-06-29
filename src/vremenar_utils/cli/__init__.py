@@ -167,6 +167,22 @@ def arso_weather(
 
 
 @application.command()
+def arso_weather_48h() -> None:
+    """ARSO 48h weather measurements data caching."""
+    config = init_config(state)
+    logger = setup_logger(config, "arso_weather_48h")
+
+    message = "Processing [cyan]ARSO 48h weather measurements[/] data for Slovenia"
+    logger.info(message, extra={"markup": True})
+
+    init_database(logger, config)
+
+    from vremenar_utils.arso.weather import process_weather_data_48h
+
+    asyncio.run(process_weather_data_48h(logger))
+
+
+@application.command()
 def arso_maps() -> None:
     """ARSO weather maps data caching."""
     config = init_config(state)
