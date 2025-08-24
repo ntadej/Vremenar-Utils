@@ -25,7 +25,7 @@ dependencies = [
   "httpx == 0.28.*",
   "lxml",
   "parsel",
-  "python-crontab == 3.2.*",
+  "python-crontab ==3.3.*",
   "pyyaml",
   "redis[hiredis] == 6.2.*",
   "rich == 14.0.*",
