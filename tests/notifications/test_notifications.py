@@ -1,5 +1,7 @@
 """Notifications tests."""
 
+import re
+
 import pytest
 from typer.testing import CliRunner
 
@@ -28,13 +30,13 @@ def test_notifications_make() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Either a list of topics or a token need to be specified.",
+        match=re.escape("Either a list of topics or a token need to be specified."),
     ):
         prepare_message(message)
 
     with pytest.raises(
         ValueError,
-        match="Topics and a token can not be set at the same time.",
+        match=re.escape("Topics and a token can not be set at the same time."),
     ):
         prepare_message(message, topics=["topic"], token="test")  # noqa: S106
 
@@ -43,13 +45,13 @@ def test_notifications_make() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Topics should not be empty.",
+        match=re.escape("Topics should not be empty."),
     ):
         prepare_message(message, topics=[])
 
     with pytest.raises(
         ValueError,
-        match="Too many topics used at the same time.",
+        match=re.escape("Too many topics used at the same time."),
     ):
         prepare_message(message, topics=["topic"] * 6)
 
@@ -57,6 +59,6 @@ def test_notifications_make() -> None:
 
     with pytest.raises(
         ValueError,
-        match="Token should not be empty.",
+        match=re.escape("Token should not be empty."),
     ):
         prepare_message(message, token="")

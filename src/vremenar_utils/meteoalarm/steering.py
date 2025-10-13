@@ -88,7 +88,7 @@ async def get_alerts_and_notify(
     dry_run: bool = False,
 ) -> None:
     """Get alerts and notify for a specific country."""
-    from .notifications import send_start_notifications
+    from .notifications import send_start_notifications  # noqa: PLC0415
 
     await get_alerts(logger, country)
 

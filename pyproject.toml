@@ -17,20 +17,21 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 6.9.*",
+  "firebase-admin == 7.1.*",
   "geopandas == 1.1.*",
   "httpx == 0.28.*",
   "lxml",
   "parsel",
-  "python-crontab == 3.2.*",
+  "python-crontab == 3.3.*",
   "pyyaml",
-  "redis[hiredis] == 6.2.*",
-  "rich == 14.0.*",
+  "redis[hiredis] == 6.4.*",
+  "rich == 14.2.*",
   "Shapely",
-  "typer-slim[standard] == 0.16.*",
+  "typer-slim[standard] == 0.19.*",
   "wheel",
   "xmltodict",
 ]
@@ -39,13 +40,13 @@ dependencies = [
 dev = [
   "coverage[toml]",
   "gevent",
-  "mypy == 1.16.0",
+  "mypy == 1.18.2",
   "pre-commit",
-  "pre-commit-hooks == 5.0.*",
+  "pre-commit-hooks == 6.0.*",
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked",
-  "ruff == 0.11.13",
+  "ruff == 0.14.0",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
@@ -140,7 +141,8 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/*" = ["S101", "T201"]
+"src/vremenar_utils/cli/__init__.py" = ["PLC0415"]
+"**/tests/*" = ["PLC0415", "S101", "T201"]
 
 [tool.mypy]
 strict = true
