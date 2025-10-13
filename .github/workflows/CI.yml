@@ -43,7 +43,7 @@ jobs:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
           echo $FIREBASE_CREDENTIALS | base64 --decode > firebase.json
-          GOOGLE_APPLICATION_CREDENTIALS=firebase.json uv run pytest -W error
+          GOOGLE_APPLICATION_CREDENTIALS=firebase.json uv run -p ${{ matrix.python-version }} pytest -W error
 
       - name: Report coverage with Codecov
         if: matrix.python-version == 3.13 && matrix.os == 'ubuntu-24.04'
