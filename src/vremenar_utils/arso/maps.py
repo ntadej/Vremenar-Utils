@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
-from enum import Enum
+from enum import StrEnum
 
 from httpx import AsyncClient
 
@@ -14,7 +14,7 @@ from . import TIMEOUT, UPLOADS_BASEURL
 from .database import BatchedMaps
 
 
-class ObservationType(str, Enum):
+class ObservationType(StrEnum):
     """Observation type enum."""
 
     Historical = "historical"
@@ -22,7 +22,7 @@ class ObservationType(str, Enum):
     Forecast = "forecast"
 
 
-class MapType(str, Enum):
+class MapType(StrEnum):
     """Map type enum."""
 
     Precipitation = "precipitation"
@@ -127,13 +127,13 @@ async def get_map_data(
         logger.debug("Output URL: %s", url)
 
         record = {
-            "type": map_type.value,
+            "type": map_type,
             "expiration": expiration,
             "timestamp": f"{int(time.timestamp())}000",
             "url": url,
-            "observation": ObservationType.Recent.value
+            "observation": ObservationType.Recent
             if i == 0
-            else ObservationType.Historical.value,
+            else ObservationType.Historical,
         }
 
         await batch.add(record)
@@ -146,11 +146,11 @@ async def get_map_data(
         logger.debug("Output URL: %s", url)
 
         record = {
-            "type": map_type.value,
+            "type": map_type,
             "expiration": expiration,
             "timestamp": f"{int(time.timestamp())}000",
             "url": url,
-            "observation": ObservationType.Forecast.value,
+            "observation": ObservationType.Forecast,
         }
 
         await batch.add(record)

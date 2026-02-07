@@ -21,19 +21,19 @@ async def store_station(
     station_id = station["id"]
 
     async with redis.pipeline() as pipeline:
-        pipeline.sadd(f"station:{country.value}", station_id)
+        pipeline.sadd(f"station:{country}", station_id)
         if "latitude" in station and "longitude" in station:
             pipeline.geoadd(
-                f"location:{country.value}",
+                f"location:{country}",
                 (station["longitude"], station["latitude"], station_id),
             )
         pipeline.hset(
-            f"station:{country.value}:{station_id}",
+            f"station:{country}:{station_id}",
             mapping=cast("Mapping[bytes | str, bytes | float | int | str]", station),
         )
         if metadata is not None:  # pragma: no branch
             pipeline.hset(
-                f"station:{country.value}:{station_id}",
+                f"station:{country}:{station_id}",
                 mapping=cast(
                     "Mapping[bytes | str, bytes | float | int | str]",
                     metadata,
@@ -44,7 +44,7 @@ async def store_station(
 
 async def validate_stations(country: CountryID, station_ids: set[str]) -> int:
     """Validate station IDs and remove obsolete."""
-    existing_ids: set[str] = await redis.smembers(f"station:{country.value}")
+    existing_ids: set[str] = await redis.smembers(f"station:{country}")
     ids_to_remove: set[str] = set()
 
     for station_id in existing_ids:  # pragma: no cover
@@ -55,8 +55,8 @@ async def validate_stations(country: CountryID, station_ids: set[str]) -> int:
         async with redis.client() as connection:
             for station_id in ids_to_remove:
                 async with connection.pipeline() as pipeline:
-                    pipeline.srem(f"station:{country.value}", station_id)
-                    pipeline.delete(f"station:{country.value}:{station_id}")
+                    pipeline.srem(f"station:{country}", station_id)
+                    pipeline.delete(f"station:{country}:{station_id}")
                     await pipeline.execute()
 
     return len(ids_to_remove)
@@ -68,10 +68,10 @@ async def load_stations(
     """Load stations from redis."""
     stations: dict[str, dict[str, str | int | float]] = {}
     async with redis.client() as connection:
-        station_ids: set[str] = await redis.smembers(f"station:{country.value}")
+        station_ids: set[str] = await redis.smembers(f"station:{country}")
         async with connection.pipeline(transaction=False) as pipeline:
             for station_id in station_ids:
-                pipeline.hgetall(f"station:{country.value}:{station_id}")
+                pipeline.hgetall(f"station:{country}:{station_id}")
             response = await pipeline.execute()
 
     for station in response:

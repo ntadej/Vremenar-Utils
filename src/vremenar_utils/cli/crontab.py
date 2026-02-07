@@ -61,7 +61,7 @@ def setup_command(  # noqa: PLR0913
 
     pdm_command = f"pdm run -p {utils_path} vremenar_utils"
     command_config = (
-        f"--config {config.path} --database {db_type.value} {command} {arguments}"
+        f"--config {config.path} --database {db_type} {command} {arguments}"
     )
 
     command_final = f"{runitor_command} nice {pdm_command} {command_config}"
@@ -111,7 +111,7 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
                     continue
 
                 for country in CountryID:
-                    if country.value not in uuid:
+                    if country not in uuid:
                         continue
 
                     command_string = setup_command(
@@ -119,14 +119,14 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
                         utils_path,
                         db_type,
                         command,
-                        uuid[country.value],
-                        country.value,
+                        uuid[country],
+                        country,
                     )
 
                     if first:
                         job = cron.new(
                             command=command_string,
-                            comment=f"Vremenar Utils: {db_type.value}",
+                            comment=f"Vremenar Utils: {db_type}",
                             pre_comment=True,
                         )
                         first = False
@@ -149,7 +149,7 @@ def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901,
                 if first:
                     job = cron.new(
                         command=command_string,
-                        comment=f"Vremenar Utils: {db_type.value}",
+                        comment=f"Vremenar Utils: {db_type}",
                         pre_comment=True,
                     )
                     first = False

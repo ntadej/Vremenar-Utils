@@ -149,12 +149,12 @@ async def get_weather_data(
             "type": "condition",
             "expiration": 0,
             "timestamp": timestamp,
-            "url": f"/stations/map/current?country={CountryID.Slovenia.value}"
+            "url": f"/stations/map/current?country={CountryID.Slovenia}"
             if data_id == "current"
-            else f"/stations/map/{timestamp}?country={CountryID.Slovenia.value}",
-            "observation": ObservationType.Recent.value
+            else f"/stations/map/{timestamp}?country={CountryID.Slovenia}",
+            "observation": ObservationType.Recent
             if data_id == "current"
-            else ObservationType.Forecast.value,
+            else ObservationType.Forecast,
         },
     )
 

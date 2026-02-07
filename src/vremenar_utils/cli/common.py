@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class CountryID(str, Enum):
+class CountryID(StrEnum):
     """Supported countries ID enum."""
 
     Slovenia = "si"
@@ -28,7 +28,7 @@ class CountryID(str, Enum):
         raise RuntimeError  # pragma: no cover
 
 
-class LanguageID(str, Enum):
+class LanguageID(StrEnum):
     """Supported languages ID enum."""
 
     English = "en"
@@ -36,7 +36,7 @@ class LanguageID(str, Enum):
     Slovenian = "sl"
 
 
-class DatabaseType(str, Enum):
+class DatabaseType(StrEnum):
     """Database type enum."""
 
     Staging = "staging"

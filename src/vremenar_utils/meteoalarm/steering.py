@@ -62,11 +62,7 @@ async def get_alerts(
 
     alert_areas: dict[str, set[str]] = await get_alert_area_map(country)
 
-    logger.info(
-        "Total of %d alerts are available for %s",
-        len(alert_areas),
-        country.value,
-    )
+    logger.info("Total of %d alerts are available for %s", len(alert_areas), country)
 
     # make area-alert mappings
     areas_with_alerts: set[str] = set()

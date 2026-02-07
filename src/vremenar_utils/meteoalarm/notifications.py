@@ -96,20 +96,20 @@ def send_start_notification(
             until_string = format_datetime(
                 alert_expires.astimezone(),
                 FORMAT[language],
-                locale=language.value,
+                locale=language,
             )
             message = make_message(
-                alert[language.value]["event"],
+                alert[language]["event"],
                 "",
                 f"{areas[area_code].name},"
                 f" {UNTIL[language]} {until_string}:"
-                f" {alert[language.value]['description']}",
+                f" {alert[language]['description']}",
                 important=True,
                 expires=alert_expires,
                 badge=1,
             )
             topics = [
-                f"{language.value}_{severity}_{area_code}"
+                f"{language}_{severity}_{area_code}"
                 for severity in alert_severity.topics()
             ]
             prepare_message(message, topics=topics, logger=logger)

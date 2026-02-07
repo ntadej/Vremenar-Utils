@@ -89,7 +89,7 @@ async def process_meteoalarm_areas(
 
     for feature in data["features"]:
         properties = feature["properties"]
-        if properties["country"].lower() != country.value:
+        if properties["country"].lower() != country:
             continue
 
         coordinates = feature["geometry"]["coordinates"]
@@ -136,7 +136,7 @@ async def match_meteoalarm_areas(
     overrides: dict[str, str] = {}
     overrides_data = get_data(
         "vremenar_utils",
-        f"data/meteoalarm/{country.value}_overrides.json",
+        f"data/meteoalarm/{country}_overrides.json",
     )
     if overrides_data:  # pragma: no branch
         bytes_data = BytesIO(overrides_data)
@@ -146,7 +146,7 @@ async def match_meteoalarm_areas(
     matches: dict[str, str] = {}
 
     for station_id, station in stations.items():
-        if "country" in station and str(station["country"]).lower() != country.value:
+        if "country" in station and str(station["country"]).lower() != country:
             continue
 
         matches[station_id] = await process_meteoalarm_station(
@@ -202,7 +202,7 @@ async def process_meteoalarm_station(
 
 def load_meteoalarm_areas(country: CountryID) -> list[AlertArea]:
     """Load MeteoAlarm areas from file."""
-    data = get_data("vremenar_utils", f"data/meteoalarm/{country.value}.json")
+    data = get_data("vremenar_utils", f"data/meteoalarm/{country}.json")
     if not data:  # pragma: no cover
         return []
 

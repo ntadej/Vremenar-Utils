@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from json import dumps
 from typing import TYPE_CHECKING
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
-class AlertType(Enum):
+class AlertType(StrEnum):
     """Alert type."""
 
     Generic = "alert"
@@ -30,7 +30,7 @@ class AlertType(Enum):
     RainFlood = "rain-flood"
 
 
-class AlertResponseType(Enum):
+class AlertResponseType(StrEnum):
     """Alert response type."""
 
     Shelter = "shelter"  # Take shelter in place or per instructions
@@ -44,7 +44,7 @@ class AlertResponseType(Enum):
     NoResponse = "none"  # No recommended action
 
 
-class AlertUrgency(Enum):
+class AlertUrgency(StrEnum):
     """Alert urgency."""
 
     Immediate = "immediate"  # Responsive action should be taken immediately.
@@ -53,7 +53,7 @@ class AlertUrgency(Enum):
     Past = "past"  # Responsive action no longer required.
 
 
-class AlertSeverity(Enum):
+class AlertSeverity(StrEnum):
     """Alert severity."""
 
     Minor = "minor"  # yellow
@@ -74,7 +74,7 @@ class AlertSeverity(Enum):
         raise RuntimeError  # pragma: no cover
 
 
-class AlertCertainty(Enum):
+class AlertCertainty(StrEnum):
     """Alert certainty."""
 
     Observed = "observed"
@@ -183,11 +183,11 @@ class AlertInfo:
         """Get dictionary with common properties."""
         return {
             "id": self.id,
-            "type": self.type.value,
-            "urgency": self.urgency.value,
-            "severity": self.severity.value,
-            "certainty": self.certainty.value,
-            "response_type": self.response_type.value,
+            "type": self.type,
+            "urgency": self.urgency,
+            "severity": self.severity,
+            "certainty": self.certainty,
+            "response_type": self.response_type,
             "onset": f"{int(self.onset.timestamp())!s}000",
             "expires": f"{int(self.expires.timestamp())!s}000",
         }

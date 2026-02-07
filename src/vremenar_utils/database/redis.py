@@ -26,7 +26,7 @@ def init_database(logger: Logger, config: Configuration) -> None:
         DatabaseType.Test: 2,
     }.get(config.database_type, 0)
 
-    logger.info("Using %s database with ID %d", config.database_type.value, database)
+    logger.info("Using %s database with ID %d", config.database_type, database)
 
     redis = from_url(f"redis://localhost/{database}", decode_responses=True)
 

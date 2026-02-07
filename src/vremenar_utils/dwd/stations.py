@@ -45,7 +45,7 @@ def zoom_level_conversion(location_type: str, admin_level: float) -> float:
     if admin_level >= 9:
         return 9.9
     if admin_level >= 8:
-        if location_type in ["town"]:
+        if location_type == "town":
             return 8.5
         if location_type in ["village", "suburb"]:
             return 9.1
