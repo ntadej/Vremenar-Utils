@@ -419,7 +419,7 @@ wheels = [
 
 [[package]]
 name = "firebase-admin"
-version = "7.1.0"
+version = "7.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachecontrol" },
@@ -429,9 +429,9 @@ dependencies = [
     { name = "httpx", extra = ["http2"] },
     { name = "pyjwt", extra = ["crypto"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/41/859f78701761bed7abdb8a7c050819c654dad17f96c658dcdf263d5a9641/firebase_admin-7.1.0.tar.gz", hash = "sha256:a163014a4368c43f7efa409948065f8856b51bd2ae5d82c24586e546d5fd4a26", size = 194786, upload-time = "2025-07-31T20:36:39.512Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/27/92ae60e01df51ce2de33d74d67a71e2a3c97e7b6bc0402d0a576fc3d20bc/firebase_admin-7.3.0.tar.gz", hash = "sha256:262b9bcc43c8820834d8eee5fc60d15aaedc76976b1988e1740b9579f34f9577", size = 196473, upload-time = "2026-03-19T19:01:09.683Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/16/eb9bf44cdc7af0317a70ae770ad4170b9fcfbb660ac32806742506be1246/firebase_admin-7.1.0-py3-none-any.whl", hash = "sha256:1913e783b7ad56f891e1aca86e6fdde6a8ec49b7a920dd451da155e8647506c8", size = 137140, upload-time = "2025-07-31T20:36:38.266Z" },
+    { url = "https://files.pythonhosted.org/packages/60/97/4bffee90a160bf35ad81a1c2cd17811dda5c24e51d2aa5463845561df50c/firebase_admin-7.3.0-py3-none-any.whl", hash = "sha256:4538491d20a0edf12e0ad19c18d31e4e6e2f18d149cdf9ba7f8623ff1e4cda97", size = 138233, upload-time = "2026-03-19T19:01:08.098Z" },
 ]
 
 [[package]]
@@ -2176,7 +2176,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "babel", specifier = ">=2.13" },
-    { name = "firebase-admin", specifier = "==7.1.*" },
+    { name = "firebase-admin", specifier = "==7.3.*" },
     { name = "geopandas", specifier = "==1.1.*" },
     { name = "httpx", specifier = "==0.28.*" },
     { name = "lxml" },
