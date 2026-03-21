@@ -128,6 +128,7 @@ class MeteoAlarmParser:
         # get the alert data in the supported languages
         translations = alert_dict.get("info", [])
 
+        translation = None
         if isinstance(translations, list):  # pragma: no branch
             for translation in translations:
                 try:
@@ -138,12 +139,15 @@ class MeteoAlarmParser:
                 self.parse_alert_translations(alert, lang, translation)
         else:  # pragma: no cover
             try:
-                lang = LanguageID(translation.get("language")[:2])
+                lang = LanguageID(translations.get("language")[:2])
             except ValueError:  # pragma: no cover
                 lang = LanguageID.English
             translation = translations
             self.parse_alert_info(alert, translation)
             self.parse_alert_translations(alert, lang, translation)
+
+        if not translation:  # pragma: no cover
+            return None
 
         # parse parameters
         parameters = translation.get("parameter", [])

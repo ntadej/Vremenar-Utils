@@ -76,6 +76,7 @@ def download_bar(**kwargs: Any) -> Progress:  # noqa: ANN401
 
 def setup_logger(config: Configuration, name: str | None = None) -> Logger:
     """Prepare logger and write the log file."""
+    file_handler = None
     if not config.log_disabled and name:
         file_formatter = Formatter(
             "%(asctime)s %(levelname)-8s %(message)s",
@@ -96,7 +97,7 @@ def setup_logger(config: Configuration, name: str | None = None) -> Logger:
     )
 
     logger = getLogger()
-    if not config.log_disabled and name:
+    if file_handler is not None:
         logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
     if config.debug:  # pragma: no cover
