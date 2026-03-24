@@ -28,7 +28,7 @@ dependencies = [
   "parsel",
   "python-crontab == 3.3.*",
   "pyyaml",
-  "redis[hiredis] == 7.3.*",
+  "redis[hiredis] ==7.4.*",
   "rich == 14.3.*",
   "Shapely",
   "typer == 0.24.*",
