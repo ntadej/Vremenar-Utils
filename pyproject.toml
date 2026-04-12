@@ -29,7 +29,7 @@ dependencies = [
   "python-crontab == 3.3.*",
   "pyyaml",
   "redis[hiredis] == 7.3.*",
-  "rich == 14.3.*",
+  "rich ==15.0.*",
   "Shapely",
   "typer == 0.24.*",
   "wheel",
