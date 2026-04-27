@@ -12,7 +12,11 @@ from zipfile import ZipFile
 
 import httpx
 from dateutil import parser as dateparser
-from lxml.etree import Element, QName, iterparse  # type: ignore[import-untyped]
+from lxml.etree import (  # type: ignore[import-untyped]  # ty: ignore[unresolved-import]
+    Element,
+    QName,
+    iterparse,
+)
 from parsel import Selector, SelectorList
 
 from vremenar_utils import __version__
