@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -23,7 +23,7 @@ jobs:
           auto-start: true
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
@@ -47,14 +47,16 @@ jobs:
 
       - name: Report coverage with Codecov
         if: matrix.python-version == 3.13 && matrix.os == 'ubuntu-24.04'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
           flags: unittests
 
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() }} && matrix.python-version == 3.13 && matrix.os == 'ubuntu-24.04'
-        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && matrix.python-version == 3.13 && matrix.os == 'ubuntu-24.04' }}
+        uses: codecov/codecov-action@v7
+        with:
+          report_type: test_results
 
       - name: SonarQube Scan
         if: matrix.python-version == 3.13 && matrix.os == 'ubuntu-24.04'
