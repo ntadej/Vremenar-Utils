@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from httpx import AsyncClient, codes
+from httpx2 import AsyncClient, codes
 from xmltodict import parse  # type: ignore[import-untyped]
 
 from vremenar_utils.cli.common import CountryID, LanguageID

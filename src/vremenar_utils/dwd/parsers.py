@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar
 from zipfile import ZipFile
 
-import httpx
+import httpx2
 from dateutil import parser as dateparser
 from lxml.etree import (  # type: ignore[import-untyped]  # ty: ignore[unresolved-import]
     Element,
@@ -68,7 +68,7 @@ class StationIDConverter:
 
     def _update(self) -> None:
         self.logger.info("Updating station ID maps")
-        response = httpx.get(self.STATION_LIST_URL, headers=HEADERS)
+        response = httpx2.get(self.STATION_LIST_URL, headers=HEADERS)
         self._parse_station_list(response.text)
 
     def _parse_station_list(self, html: str) -> None:

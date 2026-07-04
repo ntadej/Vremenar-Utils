@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import BatchedRedis, redis

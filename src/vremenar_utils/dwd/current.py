@@ -9,7 +9,7 @@ from pkgutil import get_data
 from tempfile import NamedTemporaryFile
 from typing import IO
 
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from vremenar_utils.cli.logging import Logger, progress_bar
 from vremenar_utils.database.redis import redis

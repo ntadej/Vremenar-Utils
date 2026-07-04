@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import IO
 
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from vremenar_utils.cli.logging import Logger, download_bar
 

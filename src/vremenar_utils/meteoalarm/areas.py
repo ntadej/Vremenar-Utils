@@ -9,7 +9,7 @@ from pkgutil import get_data
 from tempfile import NamedTemporaryFile
 from typing import IO, Any, cast
 
-from httpx import AsyncClient
+from httpx2 import AsyncClient
 
 from vremenar_utils.cli.common import CountryID
 from vremenar_utils.cli.logging import Logger, download_bar

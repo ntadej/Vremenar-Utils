@@ -21,17 +21,17 @@ classifiers = [
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 7.4.*",
+  "firebase-admin == 7.5.*",
   "geopandas == 1.1.*",
-  "httpx == 0.28.*",
+  "httpx2 == 2.4.*",
   "lxml",
   "parsel",
   "python-crontab == 3.3.*",
   "pyyaml",
-  "redis[hiredis] == 7.4.*",
+  "redis[hiredis] == 8.0.*",
   "rich == 15.0.*",
   "Shapely",
-  "typer == 0.25.*",
+  "typer == 0.26.*",
   "wheel",
   "xmltodict",
 ]
@@ -46,8 +46,8 @@ dev = [
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked",
-  "ruff == 0.15.13",
-  "ty == 0.0.37",
+  "ruff == 0.15.20",
+  "ty == 0.0.56",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
@@ -145,9 +145,13 @@ ignore = [
 "src/vremenar_utils/cli/__init__.py" = ["PLC0415"]
 "**/tests/*" = ["PLC0415", "S101", "T201"]
 
+[tool.ty.environment]
+python-version = "3.11"
+
 [tool.ty.rules]
 all = "error"
 invalid-method-override = "ignore"
+missing-override-decorator = "ignore"
 unused-type-ignore-comment = "ignore"
 
 [tool.mypy]

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from httpx import AsyncClient, codes
+from httpx2 import AsyncClient, codes
 
 from vremenar_utils.cli.common import CountryID
 from vremenar_utils.cli.logging import Logger, progress_bar
