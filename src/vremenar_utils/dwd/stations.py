@@ -47,7 +47,7 @@ def zoom_level_conversion(location_type: str, admin_level: float) -> float:
     if admin_level >= 8:
         if location_type == "town":
             return 8.5
-        if location_type in ["village", "suburb"]:
+        if location_type in {"village", "suburb"}:
             return 9.1
         return 9.5
     return 7.5
@@ -134,7 +134,7 @@ async def process_mosmix_stations(
 
     temporary_file = None
     if not local_source:
-        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")  # noqa: SIM115
+        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")  # ruff: ignore[open-file-with-context-handler]
         await download(logger, temporary_file)
 
     meta_keys = ["name", "type", "admin", "status"]
@@ -187,9 +187,10 @@ def _write_mosmix_stations(
 
     _, shape_buffered = load_shape("Germany")
     with (
-        output.open("w", newline="") as csvfile,
+        output.open("w", encoding="utf-8", newline="") as csvfile,
         output_new.open(
             "w",
+            encoding="utf-8",
             newline="",
         ) as csvfile_new,
     ):

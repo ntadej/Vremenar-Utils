@@ -51,7 +51,7 @@ def error_panel(message: str) -> Exit:
     return Exit(1)
 
 
-def progress_bar(**kwargs: Any) -> Progress:  # noqa: ANN401
+def progress_bar(**kwargs: Any) -> Progress:  # ruff: ignore[any-type]
     """Return progress bar."""
     return Progress(
         TextColumn("[progress.description]{task.description:>27} "),
@@ -62,7 +62,7 @@ def progress_bar(**kwargs: Any) -> Progress:  # noqa: ANN401
     )
 
 
-def download_bar(**kwargs: Any) -> Progress:  # noqa: ANN401
+def download_bar(**kwargs: Any) -> Progress:  # ruff: ignore[any-type]
     """Return download bar."""
     return Progress(
         TextColumn("[progress.description]{task.description:>27} "),

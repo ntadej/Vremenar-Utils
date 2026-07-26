@@ -23,7 +23,7 @@ def test_units_conversion() -> None:
 def test_units_mappings() -> None:
     """Test mappings."""
     from vremenar_utils.dwd.units import (
-        _find,
+        _find,  # ruff: ignore[import-private-name]
         current_observations_weather_code_to_condition,
         synop_past_weather_code_to_condition,
     )

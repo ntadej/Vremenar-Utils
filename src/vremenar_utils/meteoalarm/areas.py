@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import operator
 from io import BytesIO, TextIOWrapper
 from json import dump, load
 from pathlib import Path
@@ -41,7 +42,7 @@ SLOVENIA_DESCRIPTIONS = {
 
 def read_meteoalarm_areas() -> dict[str, Any]:  # pragma: no cover
     """Read MeteoAlarm areas."""
-    with Path("meteoalarm_geocodes.json").open() as f:
+    with Path("meteoalarm_geocodes.json").open(encoding="utf-8") as f:
         return cast("dict[str, Any]", load(f))
 
 
@@ -115,7 +116,7 @@ async def process_meteoalarm_areas(
 
     await store_alerts_areas(country, areas)
 
-    with output.open("w") as f:
+    with output.open("w", encoding="utf-8") as f:
         dump([area.to_dict() for area in areas], f, indent=2)
         f.write("\n")
 
@@ -157,9 +158,9 @@ async def match_meteoalarm_areas(
             overrides,
         )
 
-    with output.open("w") as f:
+    with output.open("w", encoding="utf-8") as f:
         dump(
-            dict(sorted(matches.items(), key=lambda item: item[0])),
+            dict(sorted(matches.items(), key=operator.itemgetter(0))),
             f,
             indent=2,
         )

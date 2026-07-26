@@ -1,0 +1,1 @@
+"""Meteoalarm source tests."""

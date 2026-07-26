@@ -50,7 +50,7 @@ async def store_stations(logger: Logger) -> None:
 class BatchedWeather(BatchedRedis):
     """Batched ARSO weather information save."""
 
-    def process(
+    def process(  # ruff: ignore[no-self-use]
         self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
@@ -95,7 +95,7 @@ class BatchedWeather(BatchedRedis):
 class BatchedWeather48h(BatchedRedis):
     """Batched ARSO weather information save for 48h measurements."""
 
-    def process(
+    def process(  # ruff: ignore[no-self-use]
         self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
@@ -140,7 +140,7 @@ class BatchedWeather48h(BatchedRedis):
 class BatchedMaps(BatchedRedis):
     """Batched ARSO weather map save."""
 
-    def process(self, pipeline: RedisPipeline[str], record: dict[str, str]) -> None:
+    def process(self, pipeline: RedisPipeline[str], record: dict[str, str]) -> None:  # ruff: ignore[no-self-use]
         """Process ARSO weather map images."""
         expiration = int(record["expiration"])
         sub_key = record["timestamp"]

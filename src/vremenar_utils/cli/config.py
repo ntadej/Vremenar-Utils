@@ -104,7 +104,7 @@ def generate_empty_config(config_file: Path) -> None:
         },
     }
 
-    with config_file.open("w") as f:
+    with config_file.open("w", encoding="utf-8") as f:
         yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
     print_config_file(config_file)
@@ -115,7 +115,7 @@ def print_config_file(config_file: Path) -> None:
     if not config_file.exists():
         config_missing(config_file)
 
-    with config_file.open() as f:
+    with config_file.open(encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     info_panel(
@@ -124,7 +124,7 @@ def print_config_file(config_file: Path) -> None:
     )
 
 
-def init_config(state: TyperState) -> Configuration:  # noqa: C901
+def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-structure]
     """Initialise configuration from CLI state."""
     if not state.config_file.exists():
         config_missing(state.config_file)

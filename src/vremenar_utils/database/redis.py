@@ -18,7 +18,7 @@ redis: Redis[str]
 
 def init_database(logger: Logger, config: Configuration) -> None:
     """Initialize database."""
-    global redis  # noqa: PLW0603
+    global redis  # ruff: ignore[global-statement]
 
     database: int = {
         DatabaseType.Staging: 0,
@@ -44,11 +44,11 @@ class BatchedRedis:
         """Context manager init."""
         return self
 
-    async def __aexit__(self, *args: Any) -> None:  # noqa: ANN401
+    async def __aexit__(self, *args: Any) -> None:  # ruff: ignore[any-type]
         """Context manager exit."""
         await self._drain()
 
-    async def add(self, item: Any) -> None:  # noqa: ANN401
+    async def add(self, item: Any) -> None:  # ruff: ignore[any-type]
         """Put item to the DB (add it in the queue)."""
         if len(self.queue) == self.limit:
             await self._drain()
@@ -58,7 +58,7 @@ class BatchedRedis:
     def process(
         self,
         pipeline: RedisPipeline[str],
-        item: Any,  # noqa: ANN401
+        item: Any,  # ruff: ignore[any-type]
     ) -> None:
         """Process items in queue."""
         err = (  # pragma: no cover
@@ -87,7 +87,7 @@ class BatchedRedis:
 class BatchedRedisDelete(BatchedRedis):
     """Batch delete redis keys."""
 
-    def process(self, pipeline: RedisPipeline[str], item: str) -> None:
+    def process(self, pipeline: RedisPipeline[str], item: str) -> None:  # ruff: ignore[no-self-use]
         """Process items in queue."""
         pipeline.delete(item)  # pragma: no cover
 

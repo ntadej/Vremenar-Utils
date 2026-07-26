@@ -5,7 +5,10 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from firebase_admin import initialize_app, messaging  # type: ignore # noqa: PGH003
+from firebase_admin import (  # type: ignore # ruff: ignore[blanket-type-ignore]
+    initialize_app,
+    messaging,
+)
 
 if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger
@@ -15,7 +18,7 @@ firebase_app = initialize_app()
 firebase_app.credential.get_credential()
 
 
-def make_message(  # noqa: PLR0913
+def make_message(  # ruff: ignore[too-many-arguments, too-many-positional-arguments]
     title: str,
     subtitle: str,
     body: str,

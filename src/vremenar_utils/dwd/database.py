@@ -53,7 +53,7 @@ async def store_stations(logger: Logger) -> None:
 class BatchedMosmix(BatchedRedis):
     """Batched MOSMIX save."""
 
-    def process(
+    def process(  # ruff: ignore[no-self-use]
         self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],
@@ -95,7 +95,7 @@ class BatchedMosmix(BatchedRedis):
 class BatchedCurrentWeather(BatchedRedis):
     """Batched current weather save."""
 
-    def process(
+    def process(  # ruff: ignore[no-self-use]
         self,
         pipeline: RedisPipeline[str],
         record: dict[str, str | int | float | None],

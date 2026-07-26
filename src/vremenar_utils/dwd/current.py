@@ -68,7 +68,7 @@ async def current_weather(logger: Logger, test_mode: bool = False) -> None:
                     f"{station_id}-BEOB.csv"
                 )
 
-                temporary_file = NamedTemporaryFile(  # noqa: SIM115
+                temporary_file = NamedTemporaryFile(  # ruff: ignore[open-file-with-context-handler]
                     suffix=".csv",
                     prefix=f"DWD_CURRENT_{station_id}",
                 )

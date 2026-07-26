@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import operator
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -61,4 +62,4 @@ class MeteoSIWebMetParser:
                 },
             )
 
-        return sorted(entries, key=lambda x: x["timestamp"])
+        return sorted(entries, key=operator.itemgetter("timestamp"))

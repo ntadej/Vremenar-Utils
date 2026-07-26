@@ -88,7 +88,7 @@ def parse_feature(
         temperature: float = float(timeline["txsyn"])
         temperature_low: float | None = float(timeline["tnsyn"])
     else:
-        if timeline["t"] == "":  # pragma: no cover
+        if not timeline["t"]:  # pragma: no cover
             return None
         temperature = float(timeline["t"])
         temperature_low = None

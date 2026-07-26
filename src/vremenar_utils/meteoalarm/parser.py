@@ -95,7 +95,8 @@ class MeteoAlarmParser:
             if alert_id not in all_ids:  # pragma: no cover
                 self.obsolete_alert_ids.add(alert_id)
 
-    def parse_alert_datetime(self, string: str) -> datetime:
+    @staticmethod
+    def parse_alert_datetime(string: str) -> datetime:
         """Parse alert date/time."""
         return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S%z")
 
@@ -178,8 +179,8 @@ class MeteoAlarmParser:
         alert.urgency = AlertUrgency(data.get("urgency", "").lower())
         alert.response_type = AlertResponseType(data.get("responseType", "").lower())
 
+    @staticmethod
     def parse_alert_translations(
-        self,
         alert: AlertInfo,
         language: LanguageID,
         data: dict[str, str],
@@ -194,8 +195,8 @@ class MeteoAlarmParser:
         alert.sender_name[language] = data.get("senderName", "").strip()
         alert.web[language] = data.get("web", "").strip()
 
+    @staticmethod
     def parse_alert_parameters(
-        self,
         alert: AlertInfo,
         parameters: list[dict[str, str]],
     ) -> None:

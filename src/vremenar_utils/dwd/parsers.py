@@ -296,7 +296,7 @@ class MOSMIXParserFast(Parser):
             for _, elem in iterparse(file):
                 tag = QName(elem.tag).localname
 
-                if tag in ["ProductID", "IssueTime", "ForecastTimeSteps"]:
+                if tag in {"ProductID", "IssueTime", "ForecastTimeSteps"}:
                     self._clear_element(elem)
                 elif tag == "Placemark":
                     records = self._parse_station(elem, [], [], [])

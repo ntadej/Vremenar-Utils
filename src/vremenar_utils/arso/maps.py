@@ -50,33 +50,33 @@ def weather_map_prefix(map_type: MapType) -> str:
 
 def weather_map_interval(map_type: MapType) -> int:
     """Get map interval for type."""
-    if map_type in [MapType.Precipitation, MapType.HailProbability]:
+    if map_type in {MapType.Precipitation, MapType.HailProbability}:
         return 5
     if map_type is MapType.CloudCoverage:
         return 30
-    if map_type in [MapType.WindSpeed, MapType.Temperature]:
+    if map_type in {MapType.WindSpeed, MapType.Temperature}:
         return 60
     raise RuntimeError  # pragma: no cover
 
 
 def weather_map_expiration(map_type: MapType) -> int:
     """Get map expiration for type."""
-    if map_type in [MapType.Precipitation, MapType.HailProbability]:
+    if map_type in {MapType.Precipitation, MapType.HailProbability}:
         return 3
     if map_type is MapType.CloudCoverage:
         return 6
-    if map_type in [MapType.WindSpeed, MapType.Temperature]:
+    if map_type in {MapType.WindSpeed, MapType.Temperature}:
         return 6
     raise RuntimeError  # pragma: no cover
 
 
 def weather_map_forecast(map_type: MapType) -> list[tuple[int, str]]:
     """Get map forecast list for type."""
-    if map_type in [MapType.Precipitation, MapType.HailProbability]:
+    if map_type in {MapType.Precipitation, MapType.HailProbability}:
         return []
     if map_type is MapType.CloudCoverage:
         return [(30, "0030"), (60, "0100")]
-    if map_type in [MapType.WindSpeed, MapType.Temperature]:
+    if map_type in {MapType.WindSpeed, MapType.Temperature}:
         return [
             (60, "0100"),
             (120, "0200"),

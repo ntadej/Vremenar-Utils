@@ -38,7 +38,7 @@ def test_notifications_make() -> None:
         ValueError,
         match=re.escape("Topics and a token can not be set at the same time."),
     ):
-        prepare_message(message, topics=["topic"], token="test")  # noqa: S106
+        prepare_message(message, topics=["topic"], token="test")  # ruff: ignore[hardcoded-password-func-arg]
 
     prepare_message(message, topics=["topic"])
     prepare_message(message, topics=["topic1", "topic2"])
@@ -55,7 +55,7 @@ def test_notifications_make() -> None:
     ):
         prepare_message(message, topics=["topic"] * 6)
 
-    prepare_message(message, token="test")  # noqa: S106
+    prepare_message(message, token="test")  # ruff: ignore[hardcoded-password-func-arg]
 
     with pytest.raises(
         ValueError,

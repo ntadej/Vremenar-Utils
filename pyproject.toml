@@ -23,7 +23,7 @@ dependencies = [
   "Babel >= 2.13",
   "firebase-admin == 7.5.*",
   "geopandas == 1.1.*",
-  "httpx2 ==2.5.*",
+  "httpx2 ==2.9.*",
   "lxml",
   "parsel",
   "python-crontab == 3.3.*",
@@ -31,7 +31,7 @@ dependencies = [
   "redis[hiredis] == 8.0.*",
   "rich == 15.0.*",
   "Shapely",
-  "typer == 0.26.*",
+  "typer == 0.27.*",
   "wheel",
   "xmltodict",
 ]
@@ -40,14 +40,14 @@ dependencies = [
 dev = [
   "coverage[toml]",
   "gevent",
-  "mypy == 2.1.0",
+  "mypy == 2.3.0",
   "pre-commit",
   "pre-commit-hooks == 6.0.*",
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked",
-  "ruff == 0.15.20",
-  "ty == 0.0.56",
+  "ruff == 0.16.0",
+  "ty == 0.0.63",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
@@ -83,7 +83,9 @@ target-version = "py313"
 line-length = 88
 
 [tool.ruff.lint]
+preview = true
 select = [
+  # "ERA",   # eradicate
   "YTT",   # flake8-2020
   "ANN",   # flake8-annotations
   "ASYNC", # flake8-async
@@ -95,13 +97,16 @@ select = [
   "COM",   # flake8-commas
   "C4",    # flake8-comprehensions
   "DTZ",   # flake8-datetimez
+  "T10",   # flake8-debugger
   "EM",    # flake8-errmsg
   "EXE",   # flake8-executable
+  "FIX",   # flake8-fixme
   "FA",    # flake8-future-annotations
   "ISC",   # flake8-implicit-str-concat
   "ICN",   # flake8-import-conventions
   "LOG",   # flake8-logging
   "G",     # flake8-logging-format
+  "INP",   # flake8-no-pep420
   "PIE",   # flake8-pie
   "T20",   # flake8-print
   "PT",    # flake8-pytest-style
@@ -110,7 +115,9 @@ select = [
   "RET",   # flake8-return
   "SLF",   # flake8-self
   "SIM",   # flake8-simplify
+  "SLOT",  # flake8-slots
   "TID",   # flake8-tidy-imports
+  "TD",    # flake8-todos
   "TC",    # flake8-type-checking
   "ARG",   # flake8-unused-arguments
   "PTH",   # flake8-use-pathlib
@@ -123,15 +130,15 @@ select = [
   "PERF",  # perflint
   "E",     # pycodestyle
   "W",     # pycodestyle
-  "DOC",   # pydoclint
-  "D",     # pydocstyle
-  "F",     # pyflakes
-  "PGH",   # pygrep-hooks
-  "PL",    # pylint
-  "UP",    # pyupgrade
-  "FURB",  # refurb
-  "RUF",   # ruff
-  "TRY",   # tryceratops
+  # "DOC",   # pydoclint
+  "D",    # pydocstyle
+  "F",    # pyflakes
+  "PGH",  # pygrep-hooks
+  "PL",   # pylint
+  "UP",   # pyupgrade
+  "FURB", # refurb
+  "RUF",  # ruff
+  "TRY",  # tryceratops
 ]
 ignore = [
   "PLR2004", # magic-value-comparison (not wanted)
@@ -139,6 +146,7 @@ ignore = [
   "D213",    # multi-line-summary-second-line (conflicting with multi-line-summary-first-line)
   "FBT001",  # boolean-positional-arg-in-function-definition (not wanted)
   "FBT002",  # boolean-default-value-in-function-definition (not wanted)
+  "RUF067",  # non-empty-init-module (not wanted)
 ]
 
 [tool.ruff.lint.per-file-ignores]

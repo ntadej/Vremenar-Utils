@@ -27,11 +27,11 @@ COMMAND_LIST_PER_COUNTRY: list[str] = ["alerts-update"]
 
 def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) -> None:
     """Set cron item interval for a specific command."""
-    if command in ["alerts-update", "arso-maps"]:
+    if command in {"alerts-update", "arso-maps"}:
         cron.minute.every(  # type: ignore[union-attr]  # ty: ignore[unresolved-attribute]
             2 if db_type == DatabaseType.Production else 5,
         )
-    elif command in ["arso-weather", "dwd-current"]:
+    elif command in {"arso-weather", "dwd-current"}:
         if db_type == DatabaseType.Production:
             cron.minute.every(15)  # type: ignore[union-attr]  # ty: ignore[unresolved-attribute]
         else:
@@ -46,7 +46,7 @@ def set_cron_item_interval(cron: CronItem, command: str, db_type: DatabaseType) 
         raise ValueError(error)
 
 
-def setup_command(  # noqa: PLR0913
+def setup_command(  # ruff: ignore[too-many-arguments, too-many-positional-arguments]
     config: Configuration,
     utils_path: Path,
     db_type: DatabaseType,
@@ -70,7 +70,7 @@ def setup_command(  # noqa: PLR0913
     return command_final.strip()
 
 
-def setup_crontab(logger: Logger, config: Configuration) -> None:  # noqa: C901, PLR0912, PLR0915
+def setup_crontab(logger: Logger, config: Configuration) -> None:  # ruff: ignore[complex-structure, too-many-branches, too-many-statements]
     """Prepare crontab for Vremenar Utils."""
     cron = CronTab(user=True)
 

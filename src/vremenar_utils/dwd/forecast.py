@@ -37,7 +37,7 @@ async def process_mosmix(
 
     temporary_file = None
     if not local_source:
-        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")  # noqa: SIM115
+        temporary_file = NamedTemporaryFile(suffix=".kmz", prefix="DWD_MOSMIX_")  # ruff: ignore[open-file-with-context-handler]
         await download(logger, temporary_file)
 
     file_path = Path(
