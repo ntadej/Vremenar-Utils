@@ -105,6 +105,7 @@ class Parser:
         self,
         logger: Logger,
         path: Path,
+        *,
         without_station_id_converter: bool = False,
     ) -> None:
         """Initialize the parser."""

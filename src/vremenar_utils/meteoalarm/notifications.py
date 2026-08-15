@@ -30,6 +30,7 @@ UNTIL = {
 async def send_start_notifications(
     logger: Logger,
     country: CountryID,
+    *,
     dry_run: bool = False,
 ) -> None:
     """Send notifications at the start of the alerts."""

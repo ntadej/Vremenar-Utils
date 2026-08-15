@@ -161,6 +161,7 @@ async def get_weather_data(
 
 async def process_weather_data(
     logger: Logger,
+    *,
     local_stations: bool | None = False,
 ) -> None:
     """Cache ARSO weather condition data."""

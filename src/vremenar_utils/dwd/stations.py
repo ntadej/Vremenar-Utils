@@ -124,6 +124,7 @@ async def process_mosmix_stations(
     logger: Logger,
     output: Path,
     output_new: Path,
+    *,
     local_source: bool | None = False,
 ) -> None:
     """Load DWD MOSMIX stations."""

@@ -23,12 +23,12 @@ dependencies = [
   "Babel >= 2.13",
   "firebase-admin == 7.5.*",
   "geopandas == 1.1.*",
-  "httpx2 ==2.9.*",
+  "httpx2 ==2.10.*",
   "lxml",
   "parsel",
   "python-crontab == 3.3.*",
   "pyyaml",
-  "redis[hiredis] == 8.0.*",
+  "redis[hiredis] == 8.1.*",
   "rich == 15.0.*",
   "Shapely",
   "typer == 0.27.*",
@@ -40,14 +40,14 @@ dependencies = [
 dev = [
   "coverage[toml]",
   "gevent",
-  "mypy == 2.3.0",
+  "mypy == 2.3.1",
   "pre-commit",
   "pre-commit-hooks == 6.0.*",
   "pytest >= 8.0",
   "pytest-cov",
-  "pytest-forked",
-  "ruff == 0.16.0",
-  "ty == 0.0.63",
+  "pytest-forked == 1.6.*",
+  "ruff == 0.16.3",
+  "ty == 0.0.72",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
@@ -141,17 +141,19 @@ select = [
   "TRY",  # tryceratops
 ]
 ignore = [
-  "PLR2004", # magic-value-comparison (not wanted)
-  "D203",    # one-blank-line-before-class (conflicting with no-blank-line-before-class)
-  "D213",    # multi-line-summary-second-line (conflicting with multi-line-summary-first-line)
-  "FBT001",  # boolean-positional-arg-in-function-definition (not wanted)
-  "FBT002",  # boolean-default-value-in-function-definition (not wanted)
-  "RUF067",  # non-empty-init-module (not wanted)
+  "incorrect-blank-line-before-class", # conflicting with no-blank-line-before-class
+  "magic-value-comparison",            # not wanted
+  "multi-line-summary-second-line",    # conflicting with multi-line-summary-first-line
+  "non-empty-init-module",             # not wanted
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"src/vremenar_utils/cli/__init__.py" = ["PLC0415"]
-"**/tests/*" = ["PLC0415", "S101", "T201"]
+"src/vremenar_utils/cli/__init__.py" = [
+  "boolean-type-hint-positional-argument",
+  "boolean-default-value-positional-argument",
+  "import-outside-top-level",
+]
+"**/tests/*" = ["assert", "import-outside-top-level", "print"]
 
 [tool.ty.environment]
 python-version = "3.11"

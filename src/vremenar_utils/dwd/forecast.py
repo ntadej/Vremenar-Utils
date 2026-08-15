@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 async def process_mosmix(
     logger: Logger,
+    *,
     local_source: bool | None = False,
     local_stations: bool | None = False,
     test_mode: bool | None = False,

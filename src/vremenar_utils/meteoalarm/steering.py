@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 async def get_alerts(
     logger: Logger,
     country: CountryID,
+    *,
     force_refresh: bool | None = False,
 ) -> None:
     """Get alerts for a specific country."""
@@ -81,6 +82,7 @@ async def get_alerts(
 async def get_alerts_and_notify(
     logger: Logger,
     country: CountryID,
+    *,
     dry_run: bool = False,
 ) -> None:
     """Get alerts and notify for a specific country."""

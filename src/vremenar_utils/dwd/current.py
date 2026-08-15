@@ -47,7 +47,7 @@ async def download_current_weather(
     await client.aclose()
 
 
-async def current_weather(logger: Logger, test_mode: bool = False) -> None:
+async def current_weather(logger: Logger, *, test_mode: bool = False) -> None:
     """Cache DWD current weather data."""
     stations: list[str] = current_stations()
     if test_mode:  # pragma: no branch

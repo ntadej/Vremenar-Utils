@@ -18,10 +18,11 @@ firebase_app = initialize_app()
 firebase_app.credential.get_credential()
 
 
-def make_message(  # ruff: ignore[too-many-arguments, too-many-positional-arguments]
+def make_message(  # ruff: ignore[too-many-arguments]
     title: str,
     subtitle: str,
     body: str,
+    *,
     important: bool = False,
     expires: datetime | None = None,
     badge: int = 0,
@@ -116,7 +117,7 @@ def prepare_message_for_token(
         logger.debug('Sending notification to device with token "%s"', message.token)
 
 
-def send_messages(messages: list[messaging.Message], dry_run: bool = False) -> None:
+def send_messages(messages: list[messaging.Message], *, dry_run: bool = False) -> None:
     """Send a batch of messages."""
     if not dry_run:  # pragma: no cover
         messaging.send_each(messages, app=firebase_app)
@@ -125,7 +126,7 @@ def send_messages(messages: list[messaging.Message], dry_run: bool = False) -> N
 class BatchNotify:
     """Send notifications in batches."""
 
-    def __init__(self, logger: Logger, dry_run: bool = False) -> None:
+    def __init__(self, logger: Logger, *, dry_run: bool = False) -> None:
         """Initialise batch notifications."""
         self.logger = logger
         self.queue: list[messaging.Message] = []

@@ -252,7 +252,7 @@ def dwd_current(
 
     from vremenar_utils.dwd.current import current_weather
 
-    asyncio.run(current_weather(logger, test_mode))
+    asyncio.run(current_weather(logger, test_mode=test_mode))
 
 
 @application.command()
@@ -303,7 +303,13 @@ def alerts_areas(
     from vremenar_utils.meteoalarm.areas import process_meteoalarm_areas
 
     asyncio.run(
-        process_meteoalarm_areas(logger, country, output, output_matches, local_source),
+        process_meteoalarm_areas(
+            logger,
+            country,
+            output,
+            output_matches,
+            local_source=local_source,
+        ),
     )
 
 
@@ -326,7 +332,7 @@ def alerts_get(
 
     from vremenar_utils.meteoalarm.steering import get_alerts
 
-    asyncio.run(get_alerts(logger, country, force_refresh))
+    asyncio.run(get_alerts(logger, country, force_refresh=force_refresh))
 
 
 @application.command()

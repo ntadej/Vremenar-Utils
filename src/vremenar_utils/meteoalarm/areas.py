@@ -73,6 +73,7 @@ async def process_meteoalarm_areas(
     country: CountryID,
     output: Path,
     output_matches: Path,
+    *,
     local_source: bool,
 ) -> None:
     """Process MeteoAlarm ares."""

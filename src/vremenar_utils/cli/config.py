@@ -43,7 +43,7 @@ class Configuration:
         """Convert configuration to object."""
         obj = {
             "Mode": self.mode,
-            "Database": self.database_type,
+            "Database": self.database_type.value,
             "Logging": {
                 "disabled": str(self.log_disabled),
                 "path": str(self.log_path),
@@ -157,7 +157,7 @@ def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-str
         if state.database_type:
             configuration.database_type = state.database_type
 
-    configuration.mode = configuration.database_type
+    configuration.mode = configuration.database_type.value
 
     if (
         "firebase" in config
