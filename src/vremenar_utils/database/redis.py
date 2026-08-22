@@ -28,7 +28,10 @@ def init_database(logger: Logger, config: Configuration) -> None:
 
     logger.info("Using %s database with ID %d", config.database_type, database)
 
-    redis = from_url(f"redis://localhost/{database}", decode_responses=True)
+    redis = from_url(
+        f"redis://{config.database_host}/{database}",
+        decode_responses=True,
+    )
 
 
 class BatchedRedis:

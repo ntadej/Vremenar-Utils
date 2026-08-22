@@ -32,6 +32,7 @@ class Configuration:
         self.path: Path = path
         self.log_disabled: bool = False
         self.log_path: Path = Path()
+        self.database_host: str = "localhost"
         self.database_type: DatabaseType = DatabaseType.Staging
         self.firebase_credentials: Path = Path()
 
@@ -45,7 +46,7 @@ class Configuration:
             "Mode": self.mode,
             "Database": self.database_type.value,
             "Logging": {
-                "disabled": str(self.log_disabled),
+                "disabled": self.log_disabled,
                 "path": str(self.log_path),
                 "debug": self.debug,
             },
@@ -124,7 +125,7 @@ def print_config_file(config_file: Path) -> None:
     )
 
 
-def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-structure]
+def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-structure, too-many-branches]
     """Initialise configuration from CLI state."""
     if not state.config_file.exists():
         config_missing(state.config_file)
@@ -143,6 +144,8 @@ def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-str
         configuration.log_path = Path(config["logging"]["path"])
     if "default_mode" in config:
         configuration.database_type = DatabaseType(config["default_mode"])
+    if "database_host" in config:
+        configuration.database_host = config["database_host"]
 
     if "commands" in config:
         configuration.commands = config["commands"]
