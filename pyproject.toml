@@ -62,6 +62,8 @@ path = "src/vremenar_utils/__init__.py"
 
 [tool.coverage.run]
 branch = true
+patch = ["_exit"]
+parallel = true
 source = ["src/vremenar_utils"]
 
 [tool.coverage.report]
