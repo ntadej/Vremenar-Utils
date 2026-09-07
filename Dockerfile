@@ -19,6 +19,14 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
+# Fetch the `runitor` binary used to wrap the scheduled commands
+FROM scratch AS runitor
+ARG RUNITOR_VERSION=v1.4.1-build.6
+ARG TARGETARCH
+ADD --chmod=755 \
+    https://github.com/bdd/runitor/releases/download/${RUNITOR_VERSION}/runitor-${RUNITOR_VERSION}-linux-${TARGETARCH} \
+    /runitor
+
 # Then, use a final image without uv
 FROM python:3.13-slim-trixie
 
@@ -28,6 +36,9 @@ RUN groupadd --system --gid 999 nonroot \
 
 # Copy the application from the builder
 COPY --from=builder --chown=nonroot:nonroot /app /app
+
+# Copy the `runitor` binary
+COPY --from=runitor /runitor /usr/local/bin/runitor
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
