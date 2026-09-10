@@ -45,7 +45,7 @@ dev = [
   "pytest-cov",
   "pytest-forked == 1.6.*",
   "ruff == 0.16.6",
-  "ty == 0.0.78",
+  "ty ==0.0.80",
   "types-python-crontab",
   "types-python-dateutil",
   "types-pyyaml",
