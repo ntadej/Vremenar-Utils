@@ -44,7 +44,7 @@ dev = [
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked == 1.6.*",
-  "ruff == 0.16.6",
+  "ruff ==0.16.7",
   "ty == 0.0.78",
   "types-python-crontab",
   "types-python-dateutil",
