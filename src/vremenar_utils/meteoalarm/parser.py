@@ -4,10 +4,10 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from httpx2 import AsyncClient, codes
-from xmltodict import parse  # type: ignore[import-untyped]
+from xmltodict import parse
 
 from vremenar_utils.cli.common import CountryID, LanguageID
 
@@ -64,7 +64,7 @@ class MeteoAlarmParser:
         feed = feed_data.get("feed", [])
         entries = feed.get("entry", [])
         for entry in entries if isinstance(entries, list) else [entries]:
-            cap_id = entry.get("cap:identifier")
+            cap_id = cast("str", entry.get("cap:identifier"))
             all_ids.add(cap_id)
             if cap_id in self.existing_alert_ids:
                 continue
@@ -77,7 +77,7 @@ class MeteoAlarmParser:
             cap_url = None
             for link in entry.get("link"):
                 if link.get("@type") == "application/cap+xml":
-                    cap_url = link.get("@href")
+                    cap_url = cast("str", link.get("@href"))
 
             if not cap_url:  # pragma: no cover
                 continue

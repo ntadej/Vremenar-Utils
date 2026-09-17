@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from httpx2 import AsyncClient, codes
-from xmltodict import parse  # type: ignore[import-untyped]
+from xmltodict import parse
 
 from . import TIMEOUT
 

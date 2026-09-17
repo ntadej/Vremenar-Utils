@@ -10,7 +10,7 @@ from pkgutil import get_data
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, TextIO
 
-from shapely.geometry import Point  # type: ignore[import-untyped]
+from shapely.geometry import Point
 
 from vremenar_utils.geo.shapes import inside_shape, load_shape
 
@@ -198,6 +198,12 @@ def _write_mosmix_stations(
         csv = writer(csvfile)
         csv_new = writer(csvfile_new)
         for station in stations:
+            if not isinstance(station["lon"], float) or not isinstance(
+                station["lat"],
+                float,
+            ):
+                continue
+
             station_id = str(station["station_id"])
             point = Point(station["lon"], station["lat"])
             valid = inside_shape(point, shape_buffered)

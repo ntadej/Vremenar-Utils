@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, cast, override
 
 from redis.asyncio import Redis, from_url
 from redis.asyncio.client import Pipeline as RedisPipeline
@@ -28,13 +29,16 @@ def init_database(logger: Logger, config: Configuration) -> None:
 
     logger.info("Using %s database with ID %d", config.database_type, database)
 
-    redis = from_url(
-        f"redis://{config.database_host}/{database}",
-        decode_responses=True,
+    redis = cast(
+        "Redis[str]",
+        from_url(
+            f"redis://{config.database_host}/{database}",
+            decode_responses=True,
+        ),
     )
 
 
-class BatchedRedis:
+class BatchedRedis(ABC):
     """Put items to redis in batches."""
 
     def __init__(self, connection: Redis[str], limit: int | None = 1000) -> None:
@@ -58,16 +62,13 @@ class BatchedRedis:
 
         self.queue.append(item)
 
+    @abstractmethod
     def process(
         self,
         pipeline: RedisPipeline[str],
         item: Any,  # ruff: ignore[any-type]
     ) -> None:
         """Process items in queue."""
-        err = (  # pragma: no cover
-            "BatchedRedis needs to be subclassed and process implemented"
-        )
-        raise NotImplementedError(err)
 
     async def _drain(self) -> None:
         """Drain the queue."""
@@ -90,7 +91,8 @@ class BatchedRedis:
 class BatchedRedisDelete(BatchedRedis):
     """Batch delete redis keys."""
 
-    def process(self, pipeline: RedisPipeline[str], item: str) -> None:  # ruff: ignore[no-self-use]
+    @override
+    def process(self, pipeline: RedisPipeline[str], item: str) -> None:
         """Process items in queue."""
         pipeline.delete(item)  # pragma: no cover
 

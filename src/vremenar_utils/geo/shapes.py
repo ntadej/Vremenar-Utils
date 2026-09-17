@@ -3,11 +3,8 @@
 from io import BytesIO, TextIOWrapper
 from pkgutil import get_data
 
-from geopandas import (  # type: ignore # ruff: ignore[blanket-type-ignore]
-    GeoDataFrame,
-    read_file,
-)
-from shapely.geometry import Point  # type: ignore # ruff: ignore[blanket-type-ignore]
+from geopandas import GeoDataFrame, GeoSeries, read_file
+from shapely.geometry import Point
 
 
 def get_shape(shape_id: str) -> None:  # pragma: no cover
@@ -19,20 +16,22 @@ def get_shape(shape_id: str) -> None:  # pragma: no cover
     gdf.to_file(f"{id}.geojson", driver="GeoJSON")
 
 
-def load_shape(country: str) -> tuple[GeoDataFrame, GeoDataFrame]:
+def load_shape(country: str) -> tuple[GeoDataFrame, GeoSeries]:
     """Load shape for a specific country."""
     data = get_data("vremenar_utils", f"data/shapes/{country}.json")
     if not data:  # pragma: no cover
-        return (GeoDataFrame(), GeoDataFrame())
+        return (GeoDataFrame(), GeoSeries())
 
     bytes_data = BytesIO(data)
     with TextIOWrapper(bytes_data, encoding="utf-8") as file:
         gdf = read_file(file)
+        if gdf.crs is None:
+            raise RuntimeError
         gdf_buffered = gdf.to_crs("EPSG:3857").buffer(2500).to_crs(gdf.crs)
         return (gdf, gdf_buffered)
 
 
-def inside_shape(point: Point, gdf: GeoDataFrame) -> bool:
+def inside_shape(point: Point, gdf: GeoDataFrame | GeoSeries) -> bool:
     """Check if the point is inside the shape."""
     result = gdf.contains(point)[:]
     return bool(result.iloc[0])

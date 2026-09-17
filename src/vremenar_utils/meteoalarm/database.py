@@ -36,7 +36,7 @@ async def get_alert_info(
         for language in LanguageID:
             pipeline.hgetall(f"alert:{country}:{alert_id}:localised_{language}")
         pipeline.hgetall(f"alert:{country}:{alert_id}:notifications")
-        response = await pipeline.execute()
+        response = cast("list[dict[str, str]]", await pipeline.execute())
     alert["info"] = response[0]
     alert["areas"] = response[1]
     for i, language in enumerate(LanguageID):

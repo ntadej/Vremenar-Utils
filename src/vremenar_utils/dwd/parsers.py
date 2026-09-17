@@ -12,11 +12,7 @@ from zipfile import ZipFile
 
 import httpx2
 from dateutil import parser as dateparser
-from lxml.etree import (  # type: ignore[import-untyped]  # ty: ignore[unresolved-import]
-    Element,
-    QName,
-    iterparse,
-)
+from lxml.etree import Element, QName, iterparse
 from parsel import Selector, SelectorList
 
 from vremenar_utils import __version__
@@ -39,6 +35,9 @@ if TYPE_CHECKING:
     from vremenar_utils.cli.logging import Logger
 
 DWD_OPEN_DATA: str = "https://opendata.dwd.de"
+
+type DWDRecord = dict[str, str | int | float | None]
+
 NS = {
     "dwd": f"{DWD_OPEN_DATA}/weather/lib/pointforecast_dwd_extension_V1_0.xsd",
     "kml": "http://www.opengis.net/kml/2.2",
@@ -246,18 +245,19 @@ class MOSMIXParserFast(Parser):
             placemark = 0
             source = ""
             for _, elem in iterparse(file):  # pragma: no branch
-                tag = QName(elem.tag).localname
+                tag = QName(elem).localname
 
                 if tag == "ProductID":
-                    source += elem.text + ":"
+                    source += f"{elem.text}:"
                     self._clear_element(elem)
                 elif tag == "IssueTime":
-                    source += elem.text
+                    source += elem.text or ""
                     self._clear_element(elem)
                 elif tag == "ForecastTimeSteps":
                     timestamps_raw = [
                         dateparser.parse(r.text).replace(tzinfo=UTC)
                         for r in elem.findall("dwd:TimeStep", namespaces=NS)
+                        if r.text
                     ]
                     timestamps = [f"{int(t.timestamp())}000" for t in timestamps_raw]
                     accepted_timestamps = self._filter_timestamps(timestamps_raw)
@@ -295,7 +295,7 @@ class MOSMIXParserFast(Parser):
             ) as file,
         ):
             for _, elem in iterparse(file):
-                tag = QName(elem.tag).localname
+                tag = QName(elem).localname
 
                 if tag in {"ProductID", "IssueTime", "ForecastTimeSteps"}:
                     self._clear_element(elem)
@@ -339,6 +339,13 @@ class MOSMIXParserFast(Parser):
 
         return accepted
 
+    @staticmethod
+    def _transpose(
+        records: dict[str, list[str | int | float | None]],
+    ) -> list[tuple[str | int | float | None, ...]]:
+        """Turn a dict of equal-length lists into a list of value tuples."""
+        return list(zip(*records.values(), strict=True))
+
     def _parse_station(
         self,
         station_elem: Element,
@@ -346,39 +353,54 @@ class MOSMIXParserFast(Parser):
         timestamps: list[str],
         accepted_timestamps: list[str],
         source: str | None = "",
-    ) -> Iterable[dict[str, str | int | float | None]]:
-        wmo_station_id = station_elem.find("./kml:name", namespaces=NS).text
-        if station_ids and wmo_station_id not in station_ids:
-            return []
+    ) -> Iterable[DWDRecord]:
+        station_elem_name = station_elem.find("./kml:name", namespaces=NS)
+        wmo_station_id = station_elem_name.text if station_elem_name is not None else ""
+        if not wmo_station_id or (station_ids and wmo_station_id not in station_ids):
+            return list[DWDRecord]()
 
-        station_name = station_elem.find("./kml:description", namespaces=NS).text
-        try:
-            lon, lat, altitude = station_elem.find(
-                "./kml:Point/kml:coordinates",
-                namespaces=NS,
-            ).text.split(",")
-        except AttributeError:  # pragma: no cover
+        station_elem_description = station_elem.find("./kml:description", namespaces=NS)
+        station_name = (
+            station_elem_description.text
+            if station_elem_description is not None
+            else ""
+        )
+
+        station_elem_coordinate = station_elem.find(
+            "./kml:Point/kml:coordinates",
+            namespaces=NS,
+        )
+        if (  # pragma: no cover
+            station_elem_coordinate is None or not station_elem_coordinate.text
+        ):
             self.logger.warning(
                 "Ignoring station without coordinates, WMO ID '%s', name '%s'",
                 wmo_station_id,
                 station_name,
             )
-            return []
+            return list[DWDRecord]()
 
-        base_record = {
+        lon, lat, altitude = station_elem_coordinate.text.split(",")
+
+        base_record: DWDRecord = {
             "source": source,
             "station_id": wmo_station_id,
         }
 
         if timestamps:
-            records: dict[str, list[str | int | float | None] | list[str]] = {
-                "timestamp": timestamps,
+            records: dict[str, list[str | int | float | None]] = {
+                "timestamp": list(timestamps),
             }
             for element, column in self.ELEMENTS.items():
-                values_str = station_elem.find(
+                values_elem = station_elem.find(
                     f'./*/dwd:Forecast[@dwd:elementName="{element}"]/dwd:value',
                     namespaces=NS,
-                ).text
+                )
+                values_str = (
+                    values_elem.text
+                    if values_elem is not None and values_elem.text
+                    else ""
+                )
                 converter = getattr(self, f"parse_{column}", float)
                 records[column] = [
                     None if row[0] == "-" else converter(row[0])
@@ -391,11 +413,11 @@ class MOSMIXParserFast(Parser):
                     raise ValueError(error)
 
             # Turn dict of lists into list of dicts
-            return (
+            return [
                 {**base_record, **dict(zip(records, row, strict=True))}
-                for row in zip(*records.values(), strict=True)
+                for row in self._transpose(records)
                 if row[0] in accepted_timestamps
-            )
+            ]
 
         dwd_station_id = None
         if self.station_id_converter:  # pragma: no branch
@@ -413,8 +435,8 @@ class MOSMIXParserFast(Parser):
 
     def _sanitize_records(
         self,
-        records: Iterable[dict[str, str | int | float | None]],
-    ) -> Iterable[dict[str, str | int | float | None]]:
+        records: Iterable[DWDRecord],
+    ) -> Iterable[DWDRecord]:
         for r in records:  # pragma: no branch
             if r.get("condition") and r["condition"] is not None:  # pragma: no branch
                 r["condition"] = synop_past_weather_code_to_condition(

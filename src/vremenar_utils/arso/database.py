@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, override
 
 from vremenar_utils.cli.common import CountryID
 from vremenar_utils.database.redis import BatchedRedis, RedisPipeline
@@ -23,7 +23,7 @@ async def store_stations(logger: Logger) -> None:
     stations = load_stations()
 
     for station_id, station in stations.items():
-        station_out = {
+        station_out: dict[bytes | str, str | float] = {
             "id": station_id,
             "name": station["title"],
             "latitude": station["latitude"],
@@ -33,7 +33,7 @@ async def store_stations(logger: Logger) -> None:
             "forecast_only": 0,
         }
 
-        station_metadata = {
+        station_metadata: dict[bytes | str, str | float] = {
             "country": station["country"],
             "region": str(station["parentId"]).strip("_"),
         }
@@ -50,10 +50,11 @@ async def store_stations(logger: Logger) -> None:
 class BatchedWeather(BatchedRedis):
     """Batched ARSO weather information save."""
 
-    def process(  # ruff: ignore[no-self-use]
+    @override
+    def process(
         self,
         pipeline: RedisPipeline[str],
-        record: dict[str, str | int | float | None],
+        record: dict[bytes | str, str | int | float | None],
     ) -> None:
         """Process ARSO weather records."""
         if not isinstance(record["timestamp"], str):  # pragma: no cover
@@ -95,10 +96,11 @@ class BatchedWeather(BatchedRedis):
 class BatchedWeather48h(BatchedRedis):
     """Batched ARSO weather information save for 48h measurements."""
 
-    def process(  # ruff: ignore[no-self-use]
+    @override
+    def process(
         self,
         pipeline: RedisPipeline[str],
-        record: dict[str, str | int | float | None],
+        record: dict[bytes | str, str | int | float | None],
     ) -> None:
         """Process ARSO weather records."""
         if not isinstance(record["timestamp"], str):  # pragma: no cover
@@ -140,11 +142,16 @@ class BatchedWeather48h(BatchedRedis):
 class BatchedMaps(BatchedRedis):
     """Batched ARSO weather map save."""
 
-    def process(self, pipeline: RedisPipeline[str], record: dict[str, str]) -> None:  # ruff: ignore[no-self-use]
+    @override
+    def process(
+        self,
+        pipeline: RedisPipeline[str],
+        record: dict[bytes | str, str],
+    ) -> None:
         """Process ARSO weather map images."""
         expiration = int(record["expiration"])
         sub_key = record["timestamp"]
-        if isinstance(record["url"], str) and "current" in record["url"]:
+        if "current" in record["url"]:
             expiration = 2
             sub_key = "current"
 

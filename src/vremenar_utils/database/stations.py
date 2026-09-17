@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 async def store_station(
     country: CountryID,
-    station: dict[str, str | int | float],
-    metadata: dict[str, str | int | float] | None = None,
+    station: dict[bytes | str, str | int | float],
+    metadata: dict[bytes | str, str | int | float] | None = None,
 ) -> None:
     """Store a station to redis."""
     station_id = station["id"]

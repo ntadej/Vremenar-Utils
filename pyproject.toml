@@ -19,9 +19,9 @@ classifiers = [
 ]
 dependencies = [
   "Babel >= 2.13",
-  "firebase-admin == 7.5.*",
+  "firebase-admin == 7.6.*",
   "geopandas == 1.1.*",
-  "httpx2 ==2.12.*",
+  "httpx2 ==2.13.*",
   "lxml",
   "parsel",
   "pyyaml",
@@ -43,11 +43,14 @@ dev = [
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked == 1.6.*",
-  "ruff == 0.16.6",
-  "ty == 0.0.78",
+  "ruff == 0.16.8",
+  "ty == 0.0.82",
+  "types-geopandas",
+  "types-lxml",
   "types-python-dateutil",
   "types-pyyaml",
   "types-redis",
+  "types-xmltodict",
 ]
 
 [project.scripts]
@@ -163,12 +166,17 @@ missing-override-decorator = "ignore"
 unused-type-ignore-comment = "ignore"
 
 [tool.mypy]
+python_version = "3.13"
 strict = true
 pretty = true
 show_column_numbers = true
 show_error_codes = true
 show_error_context = true
 warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["firebase_admin.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"

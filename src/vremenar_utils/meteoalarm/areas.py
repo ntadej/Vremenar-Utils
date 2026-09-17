@@ -143,7 +143,7 @@ async def match_meteoalarm_areas(
     if overrides_data:  # pragma: no branch
         bytes_data = BytesIO(overrides_data)
         with TextIOWrapper(bytes_data, encoding="utf-8") as file:
-            overrides = load(file)
+            overrides = cast("dict[str, str]", load(file))
 
     matches: dict[str, str] = {}
 

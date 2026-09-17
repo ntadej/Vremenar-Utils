@@ -112,7 +112,7 @@ class AlertArea:
             "polygons": self.polygons,
         }
 
-    def to_dict_for_database(self) -> dict[str, str]:
+    def to_dict_for_database(self) -> dict[bytes | str, str]:
         """Get dictionary with class properties for database usage."""
         return {
             "code": self.code,
@@ -124,7 +124,7 @@ class AlertArea:
     @classmethod
     def from_dict(
         cls,
-        dictionary: dict[str, str | list[list[list[float]]]],
+        dictionary: dict[bytes | str, str | list[list[list[float]]]],
     ) -> AlertArea:
         """Read AlertArea from a dictionary."""
         if (  # pragma: no cover
@@ -179,7 +179,7 @@ class AlertInfo:
             f" ({self.onset} - {self.expires})"
         )
 
-    def to_info_dict(self) -> dict[str, str]:
+    def to_info_dict(self) -> dict[bytes | str, str]:
         """Get dictionary with common properties."""
         return {
             "id": self.id,
@@ -192,9 +192,9 @@ class AlertInfo:
             "expires": f"{int(self.expires.timestamp())!s}000",
         }
 
-    def to_localised_dict(self, language: LanguageID) -> dict[str, str]:
+    def to_localised_dict(self, language: LanguageID) -> dict[bytes | str, str]:
         """Get dictionary with localised properties."""
-        output: dict[str, str] = {}
+        output: dict[bytes | str, str] = {}
         attributes = [
             "event",
             "headline",
@@ -232,6 +232,6 @@ class AlertNotificationInfo:
         """Represent alert notification info as string."""
         return f"{self.id}: {self.announce}/{self.onset}"
 
-    def to_dict(self) -> dict[str, int]:
+    def to_dict(self) -> dict[bytes | str, int]:
         """Get dictionary with class properties."""
         return {"announce": self.announce, "onset": self.onset}

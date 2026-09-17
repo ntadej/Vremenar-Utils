@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, override
 
 from vremenar_utils.cli.common import CountryID
 from vremenar_utils.database.redis import BatchedRedis, RedisPipeline
@@ -23,7 +23,7 @@ async def store_stations(logger: Logger) -> None:
     stations = load_stations()
 
     for station_id, station in stations.items():
-        station_out = {
+        station_out: dict[bytes | str, str | float] = {
             "id": station_id,
             "name": station["name"],
             "latitude": station["lat"],
@@ -36,7 +36,7 @@ async def store_stations(logger: Logger) -> None:
             "forecast_only": int(not station["has_reports"]),
         }
 
-        station_metadata = {
+        station_metadata: dict[bytes | str, str | float] = {
             "status": station["status"],
             "DWD_ID": station["dwd_station_id"],
         }
@@ -53,10 +53,11 @@ async def store_stations(logger: Logger) -> None:
 class BatchedMosmix(BatchedRedis):
     """Batched MOSMIX save."""
 
-    def process(  # ruff: ignore[no-self-use]
+    @override
+    def process(
         self,
         pipeline: RedisPipeline[str],
-        record: dict[str, str | int | float | None],
+        record: dict[bytes | str, str | int | float | None],
     ) -> None:
         """Process MOSMIX record."""
         if not isinstance(record["timestamp"], str):  # pragma: no cover
@@ -95,10 +96,11 @@ class BatchedMosmix(BatchedRedis):
 class BatchedCurrentWeather(BatchedRedis):
     """Batched current weather save."""
 
-    def process(  # ruff: ignore[no-self-use]
+    @override
+    def process(
         self,
         pipeline: RedisPipeline[str],
-        record: dict[str, str | int | float | None],
+        record: dict[bytes | str, str | int | float | None],
     ) -> None:
         """Process current weather record."""
         # cleanup
