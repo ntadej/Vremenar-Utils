@@ -83,8 +83,8 @@ class StationIDConverter:
         self.wmo_to_dwd.clear()
         for row in station_rows:
             values = row.css("td::text").extract()
-            dwd_id = values[1].zfill(5)
-            wmo_id = values[3]
+            dwd_id = values[1].zfill(5).strip()
+            wmo_id = values[3].strip()
             self.dwd_to_wmo[dwd_id] = wmo_id
             self.wmo_to_dwd[wmo_id] = dwd_id
         self.logger.info("Parsed %d station ID mappings", len(station_rows))
