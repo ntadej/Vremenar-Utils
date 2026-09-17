@@ -279,6 +279,23 @@ def dwd_stations(
 
 
 @application.command()
+def dwd_osm_query(
+    input_file: Annotated[Path, typer.Argument(help="Input CSV file")],
+) -> None:
+    """DWD OSM query."""
+    config = init_config(state)
+    logger = setup_logger(config)
+
+    from vremenar_utils.osm.nominatim import create_osm_cache_dir, update_dwd_cache
+
+    create_osm_cache_dir()
+
+    asyncio.run(
+        update_dwd_cache(logger, input_file),
+    )
+
+
+@application.command()
 def alerts_areas(
     country: Annotated[CountryID, typer.Argument(..., help="Country")],
     output: Annotated[Path, typer.Argument(help="Output file")] = Path("areas.json"),
