@@ -37,8 +37,6 @@ class Configuration:
         self.firebase_credentials: Path = Path()
 
         self.commands: dict[str, dict[str, str | dict[str, str]]] = {}
-        self.runitor_enabled: bool = False
-        self.runitor_ping_url: str = ""
 
     def to_object(self) -> dict[str, Any]:
         """Convert configuration to object."""
@@ -92,17 +90,6 @@ def generate_empty_config(config_file: Path) -> None:
             "staging": "",
             "production": "",
         },
-        "commands": {
-            "staging": {
-                "arso-weather": "",
-                "dwd-current": "",
-                "dwd-mosmix": "",
-            },
-        },
-        "runitor": {
-            "enabled": False,
-            "ping": "",
-        },
     }
 
     with config_file.open("w", encoding="utf-8") as f:
@@ -125,7 +112,7 @@ def print_config_file(config_file: Path) -> None:
     )
 
 
-def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-structure, too-many-branches]
+def init_config(state: TyperState) -> Configuration:
     """Initialise configuration from CLI state."""
     if not state.config_file.exists():
         config_missing(state.config_file)
@@ -146,14 +133,6 @@ def init_config(state: TyperState) -> Configuration:  # ruff: ignore[complex-str
         configuration.database_type = DatabaseType(config["default_mode"])
     if "database_host" in config:
         configuration.database_host = config["database_host"]
-
-    if "commands" in config:
-        configuration.commands = config["commands"]
-    if "runitor" in config:
-        if "enabled" in config["runitor"]:
-            configuration.runitor_enabled = config["runitor"]["enabled"]
-        if "ping" in config["runitor"]:
-            configuration.runitor_ping_url = config["runitor"]["ping"]
 
     if state:
         configuration.debug = state.debug

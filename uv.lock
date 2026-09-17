@@ -1729,15 +1729,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-crontab"
-version = "3.4.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/49/3e/f61917a63b20d0ce0dfb58e44192201892a1cfe9d4167264b93fa5485594/python_crontab-3.4.0.tar.gz", hash = "sha256:d2b5ad91f7a641d774661b7f3ba52258fd68273862c88713f4cc092ba614e707", size = 58724, upload-time = "2026-08-29T20:50:48.461Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/61/f8bc92ff12d349e18782cc1ea226ad1f6beb869715811aa7d310860b60cc/python_crontab-3.4.0-py3-none-any.whl", hash = "sha256:5237313e8ea8196295ef4ebd905ec800cb235e0cb009c6306580b1e025dbcdce", size = 27819, upload-time = "2026-08-29T20:50:47.295Z" },
-]
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1996,15 +1987,6 @@ wheels = [
 ]
 
 [[package]]
-name = "types-croniter"
-version = "6.2.4.20260711"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c0/e1/ef8900515a103efa41b29ce81e59efb18e72bc9642139c5a3a17f6022641/types_croniter-6.2.4.20260711.tar.gz", hash = "sha256:807793e109f4e0d51ec18f6277a1a5f1d133e425ac6bee3a7c3254ab1793e0ea", size = 12164, upload-time = "2026-07-11T04:51:18.624Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c8/3f/896a98180a55f855bd068b97e8c99fd4ce1885a4b43f68fd7b29641084f6/types_croniter-6.2.4.20260711-py3-none-any.whl", hash = "sha256:601b68139a47fe1b2177f433132cc81fd91155f3059a49c5cb63404c389dff01", size = 9746, upload-time = "2026-07-11T04:51:17.662Z" },
-]
-
-[[package]]
 name = "types-pyopenssl"
 version = "24.1.0.20240722"
 source = { registry = "https://pypi.org/simple" }
@@ -2015,18 +1997,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/93/29/47a346550fd2020dac9a7a6d033ea03fccb92fa47c726056618cc889745e/types-pyOpenSSL-24.1.0.20240722.tar.gz", hash = "sha256:47913b4678a01d879f503a12044468221ed8576263c1540dcb0484ca21b08c39", size = 8458, upload-time = "2024-07-22T02:32:22.558Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/98/05/c868a850b6fbb79c26f5f299b768ee0adc1f9816d3461dcf4287916f655b/types_pyOpenSSL-24.1.0.20240722-py3-none-any.whl", hash = "sha256:6a7a5d2ec042537934cfb4c9d4deb0e16c4c6250b09358df1f083682fe6fda54", size = 7499, upload-time = "2024-07-22T02:32:21.232Z" },
-]
-
-[[package]]
-name = "types-python-crontab"
-version = "3.4.0.20260901"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "types-croniter" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6a/e9/cdbc1d97207921da0f8d997157a76abdb637e8f03c9c0ef38703fbd9bc8c/types_python_crontab-3.4.0.20260901.tar.gz", hash = "sha256:f9faa406964b742145002133ac43bdcd7ae00037b27c7d9b7d3bbed6f936720a", size = 12510, upload-time = "2026-09-01T06:54:55.796Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/43/f1/1f7bba20f88e9a02c271a4dabbe9a5db482bffe2ca71aa46c651fb2955f8/types_python_crontab-3.4.0.20260901-py3-none-any.whl", hash = "sha256:d502a63cf0f10e40a56da815ee672e06d55d63f0dd93fdcc1d188eeb692fc7f9", size = 12087, upload-time = "2026-09-01T06:54:54.864Z" },
 ]
 
 [[package]]
@@ -2121,7 +2091,6 @@ dependencies = [
     { name = "httpx2" },
     { name = "lxml" },
     { name = "parsel" },
-    { name = "python-crontab" },
     { name = "pyyaml" },
     { name = "redis", extra = ["hiredis"] },
     { name = "rich" },
@@ -2143,7 +2112,6 @@ dev = [
     { name = "pytest-forked" },
     { name = "ruff" },
     { name = "ty" },
-    { name = "types-python-crontab" },
     { name = "types-python-dateutil" },
     { name = "types-pyyaml" },
     { name = "types-redis" },
@@ -2157,7 +2125,6 @@ requires-dist = [
     { name = "httpx2", specifier = "==2.12.*" },
     { name = "lxml" },
     { name = "parsel" },
-    { name = "python-crontab", specifier = "==3.4.*" },
     { name = "pyyaml" },
     { name = "redis", extras = ["hiredis"], specifier = "==8.1.*" },
     { name = "rich", specifier = "==15.0.*" },
@@ -2179,7 +2146,6 @@ dev = [
     { name = "pytest-forked", specifier = "==1.6.*" },
     { name = "ruff", specifier = "==0.16.6" },
     { name = "ty", specifier = "==0.0.78" },
-    { name = "types-python-crontab" },
     { name = "types-python-dateutil" },
     { name = "types-pyyaml" },
     { name = "types-redis" },
