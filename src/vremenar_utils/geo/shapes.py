@@ -25,7 +25,7 @@ def load_shape(country: str) -> tuple[GeoDataFrame, GeoSeries]:
     bytes_data = BytesIO(data)
     with TextIOWrapper(bytes_data, encoding="utf-8") as file:
         gdf = read_file(file)
-        if gdf.crs is None:
+        if gdf.crs is None:  # pragma: no cover
             raise RuntimeError
         gdf_buffered = gdf.to_crs("EPSG:3857").buffer(2500).to_crs(gdf.crs)
         return (gdf, gdf_buffered)

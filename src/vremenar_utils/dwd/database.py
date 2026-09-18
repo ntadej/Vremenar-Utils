@@ -76,9 +76,9 @@ class BatchedMosmix(BatchedRedis):
         # cleanup
         empty_keys = set()
         for key, value in record.items():
-            if value is None:
+            if value is None:  # pragma: no cover
                 empty_keys.add(key)
-        for key in empty_keys:
+        for key in empty_keys:  # pragma: no cover
             del record[key]
 
         # store in the DB

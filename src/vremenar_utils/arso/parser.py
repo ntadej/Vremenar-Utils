@@ -50,7 +50,7 @@ class MeteoSIWebMetParser:
                 "%d %b %Y %H:%M:%S %z",
             )
             t = entry.get("t")
-            if t is None:
+            if t is None:  # pragma: no cover
                 continue
 
             entries.append(

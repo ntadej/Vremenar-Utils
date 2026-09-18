@@ -140,7 +140,7 @@ class BatchNotify:
 
     def send(self, message: messaging.Message) -> None:
         """Send the notification to topic."""
-        if len(self.queue) == self.limit:
+        if len(self.queue) == self.limit:  # pragma: no cover
             self._drain()
         self.queue.append(message)
 

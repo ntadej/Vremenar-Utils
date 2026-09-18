@@ -270,6 +270,10 @@ def dwd_stations(
 @application.command()
 def dwd_osm_query(
     input_file: Annotated[Path, typer.Argument(help="Input CSV file")],
+    test_mode: Annotated[
+        bool,
+        typer.Option("--test-mode", help="Only run as a test on a few stations."),
+    ] = False,
 ) -> None:
     """DWD OSM query."""
     config = init_config(state)
@@ -280,7 +284,7 @@ def dwd_osm_query(
     create_osm_cache_dir()
 
     asyncio.run(
-        update_dwd_cache(logger, input_file),
+        update_dwd_cache(logger, input_file, test_mode=test_mode),
     )
 
 

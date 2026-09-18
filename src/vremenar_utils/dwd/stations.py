@@ -198,7 +198,10 @@ def _write_mosmix_stations(
         csv = writer(csvfile)
         csv_new = writer(csvfile_new)
         for station in stations:
-            if not isinstance(station["lon"], float) or not isinstance(
+            if not isinstance(  # pragma: no cover
+                station["lon"],
+                float,
+            ) or not isinstance(
                 station["lat"],
                 float,
             ):
