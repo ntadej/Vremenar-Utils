@@ -32,3 +32,17 @@ def test_arso_weather_local_stations(env: dict[str, str]) -> None:
         catch_exceptions=False,
     )
     assert result.exit_code == 0
+
+
+@pytest.mark.forked
+def test_arso_weather_48(env: dict[str, str]) -> None:
+    """Test ARSO weather 48h update."""
+    from vremenar_utils.cli import application
+
+    result = runner.invoke(
+        application,
+        ["arso-weather-48h"],
+        env=env,
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0

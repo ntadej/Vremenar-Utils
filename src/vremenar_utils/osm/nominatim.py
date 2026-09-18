@@ -24,7 +24,12 @@ def create_osm_cache_dir() -> None:
     OSM_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
-async def update_dwd_cache(logger: Logger, input_file: Path) -> None:
+async def update_dwd_cache(
+    logger: Logger,
+    input_file: Path,
+    *,
+    test_mode: bool = False,
+) -> None:
     """Update DWD Nominatim cache."""
     # Load stations
     stations: dict[str, dict[str, str | int | float]] = {}
@@ -32,7 +37,7 @@ async def update_dwd_cache(logger: Logger, input_file: Path) -> None:
         stations = load_stations_from_csv(csv_file)
 
     # Loop over stations
-    for station_id, station in stations.items():
+    for station_id, station in stations.items():  # pragma: no branch
         logger.info("Processing station: %s/%s", station_id, station["station_name"])
 
         lat = station["lat"]
@@ -58,7 +63,7 @@ async def update_dwd_cache(logger: Logger, input_file: Path) -> None:
             with reverse_cache.open() as file:
                 reverse_result = load(file)
 
-        if "error" in reverse_result:
+        if "error" in reverse_result:  # pragma: no cover
             continue
 
         osm_id = reverse_result["osm_id"]
@@ -75,3 +80,7 @@ async def update_dwd_cache(logger: Logger, input_file: Path) -> None:
 
             with details_cache.open("w") as file:
                 dump(details_result, file)
+
+        if test_mode:  # pragma: no cover
+            logger.info("Test mode enabled, stopping after first station")
+            break

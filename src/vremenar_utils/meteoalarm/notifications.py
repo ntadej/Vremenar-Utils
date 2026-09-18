@@ -53,7 +53,7 @@ async def send_start_notifications(
             task = progress.add_task("Processing", total=len(existing_alerts))
             for alert_id in existing_alerts:
                 alert = await get_alert_info(country, alert_id)
-                if int(alert["notifications"]["onset"]):
+                if int(alert["notifications"]["onset"]):  # pragma: no branch
                     continue
 
                 alert_onset = datetime.fromtimestamp(
