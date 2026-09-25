@@ -43,7 +43,7 @@ dev = [
   "pytest >= 8.0",
   "pytest-cov",
   "pytest-forked == 1.6.*",
-  "ruff == 0.16.8",
+  "ruff ==0.16.9",
   "ty == 0.0.82",
   "types-geopandas",
   "types-lxml",
