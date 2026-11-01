@@ -21,7 +21,7 @@ dependencies = [
   "Babel >= 2.13",
   "firebase-admin == 7.6.*",
   "geopandas == 1.1.*",
-  "httpx2 ==2.13.*",
+  "httpx2 ==2.16.*",
   "lxml",
   "parsel",
   "pyyaml",
